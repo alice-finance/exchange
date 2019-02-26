@@ -1,0 +1,893 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "orderStatus",
+        "type": "uint8"
+      },
+      {
+        "name": "maker",
+        "type": "address"
+      },
+      {
+        "name": "timeFrom",
+        "type": "uint256"
+      },
+      {
+        "name": "timeTo",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOrders",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "maker",
+            "type": "address"
+          },
+          {
+            "name": "askAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "askAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "askAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetFilledAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "name": "auxiliary",
+            "type": "bytes"
+          }
+        ],
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "timeFrom",
+        "type": "uint256"
+      },
+      {
+        "name": "timeTo",
+        "type": "uint256"
+      },
+      {
+        "name": "interval",
+        "type": "uint256"
+      }
+    ],
+    "name": "getQuotes",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "timeOpen",
+            "type": "uint256"
+          },
+          {
+            "name": "timeClose",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "name": "open",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "name": "high",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "name": "low",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "name": "close",
+            "type": "tuple"
+          },
+          {
+            "name": "volume",
+            "type": "uint256"
+          }
+        ],
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isOwner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MIN_QUOTE_TIME",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "nonce",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOrder",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "maker",
+            "type": "address"
+          },
+          {
+            "name": "askAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "askAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "askAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetFilledAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "name": "auxiliary",
+            "type": "bytes"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MAX_AMOUNT",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "name": "taker",
+        "type": "address"
+      },
+      {
+        "name": "timeFrom",
+        "type": "uint256"
+      },
+      {
+        "name": "timeTo",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOrderFills",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "orderNonce",
+            "type": "uint256"
+          },
+          {
+            "name": "taker",
+            "type": "address"
+          },
+          {
+            "name": "askAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "askAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "askAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetFilledAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "name": "auxiliary",
+            "type": "bytes"
+          }
+        ],
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "proxyId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "assetProxyOf",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "maker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "askAssetProxyId",
+        "type": "bytes4"
+      },
+      {
+        "indexed": true,
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "askAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "askAssetData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "name": "bidAssetProxyId",
+        "type": "bytes4"
+      },
+      {
+        "indexed": true,
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "bidAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "bidAssetData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "OrderCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "taker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "bidAssetFilledAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "OrderFilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "nonces",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "name": "filledNonces",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "OrdersFilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "OrderCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "askAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "bidAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "PriceChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "proxyId",
+        "type": "bytes4"
+      },
+      {
+        "indexed": false,
+        "name": "assetProxy",
+        "type": "address"
+      }
+    ],
+    "name": "AssetProxyRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "proxyId",
+        "type": "bytes4"
+      },
+      {
+        "name": "assetProxy",
+        "type": "address"
+      }
+    ],
+    "name": "registerAssetProxy",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "askAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "askAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "bidAssetProxyId",
+            "type": "bytes4"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetData",
+            "type": "bytes"
+          },
+          {
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "createOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetAmountToFill",
+            "type": "uint256"
+          },
+          {
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "fillOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "nonces",
+            "type": "uint256[]"
+          },
+          {
+            "name": "bidAssetAmountToFill",
+            "type": "uint256"
+          },
+          {
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "fillOrders",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "nonce",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "cancelOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -1,0 +1,639 @@
+{
+  "contracts": {
+    "Exchange": {
+      "address": "0x3C32b06F2e954882C07DE6883A05322755cef9Aa",
+      "constructorCode": "608060405234801561001057600080fd5b50614c76806100206000396000f3fe",
+      "bodyBytecodeHash": "21924f7f708e239e57c67d26fe94cb74f49d3bfd15dd22c47adc70c7295558a4",
+      "localBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
+      "deployedBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_mapping<t_address>": {
+          "id": "t_mapping<t_address>",
+          "valueType": "t_address",
+          "label": "mapping(key => address)",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.Order>": {
+          "id": "t_struct<OrderBook.Order>",
+          "kind": "struct",
+          "label": "OrderBook.Order",
+          "members": [
+            {
+              "label": "nonce",
+              "astId": 1752,
+              "type": "t_uint256",
+              "src": "560:13:1"
+            },
+            {
+              "label": "maker",
+              "astId": 1754,
+              "type": "t_address",
+              "src": "621:13:1"
+            },
+            {
+              "label": "askAssetProxyId",
+              "astId": 1756,
+              "type": "t_bytes4",
+              "src": "675:22:1"
+            },
+            {
+              "label": "askAssetAddress",
+              "astId": 1758,
+              "type": "t_address",
+              "src": "736:23:1"
+            },
+            {
+              "label": "askAssetAmount",
+              "astId": 1760,
+              "type": "t_uint256",
+              "src": "797:22:1"
+            },
+            {
+              "label": "askAssetData",
+              "astId": 1762,
+              "type": "t_bytes",
+              "src": "843:18:1"
+            },
+            {
+              "label": "bidAssetProxyId",
+              "astId": 1764,
+              "type": "t_bytes4",
+              "src": "883:22:1"
+            },
+            {
+              "label": "bidAssetAddress",
+              "astId": 1766,
+              "type": "t_address",
+              "src": "944:23:1"
+            },
+            {
+              "label": "bidAssetAmount",
+              "astId": 1768,
+              "type": "t_uint256",
+              "src": "1005:22:1"
+            },
+            {
+              "label": "bidAssetData",
+              "astId": 1770,
+              "type": "t_bytes",
+              "src": "1051:18:1"
+            },
+            {
+              "label": "bidAssetFilledAmount",
+              "astId": 1772,
+              "type": "t_uint256",
+              "src": "1091:28:1"
+            },
+            {
+              "label": "status",
+              "astId": 1774,
+              "type": "t_enum<OrderBook.OrderStatus>",
+              "src": "1156:18:1"
+            },
+            {
+              "label": "timestamp",
+              "astId": 1776,
+              "type": "t_uint256",
+              "src": "1199:17:1"
+            },
+            {
+              "label": "auxiliary",
+              "astId": 1778,
+              "type": "t_bytes",
+              "src": "1239:15:1"
+            }
+          ]
+        },
+        "t_bytes4": {
+          "id": "t_bytes4",
+          "kind": "elementary",
+          "label": "bytes4"
+        },
+        "t_bytes": {
+          "id": "t_bytes",
+          "kind": "elementary",
+          "label": "bytes"
+        },
+        "t_enum<OrderBook.OrderStatus>": {
+          "id": "t_enum<OrderBook.OrderStatus>",
+          "kind": "enum",
+          "label": "OrderBook.OrderStatus",
+          "members": [
+            "invalid",
+            "fillable",
+            "filled",
+            "cancelled"
+          ]
+        },
+        "t_array:dyn<t_struct<OrderBook.Order>>": {
+          "id": "t_array:dyn<t_struct<OrderBook.Order>>",
+          "valueType": "t_struct<OrderBook.Order>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "OrderBook.Order[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+          "valueType": "t_array:dyn<t_struct<OrderBook.Order>>",
+          "label": "mapping(key => OrderBook.Order[])",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.Price>": {
+          "id": "t_struct<OrderBook.Price>",
+          "kind": "struct",
+          "label": "OrderBook.Price",
+          "members": [
+            {
+              "label": "ask",
+              "astId": 1810,
+              "type": "t_uint256",
+              "src": "1751:11:1"
+            },
+            {
+              "label": "bid",
+              "astId": 1812,
+              "type": "t_uint256",
+              "src": "1772:11:1"
+            }
+          ]
+        },
+        "t_mapping<t_struct<OrderBook.Price>>": {
+          "id": "t_mapping<t_struct<OrderBook.Price>>",
+          "valueType": "t_struct<OrderBook.Price>",
+          "label": "mapping(key => OrderBook.Price)",
+          "kind": "mapping"
+        },
+        "t_array:dyn<t_struct<OrderBook.Price>>": {
+          "id": "t_array:dyn<t_struct<OrderBook.Price>>",
+          "valueType": "t_struct<OrderBook.Price>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "OrderBook.Price[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<OrderBook.Price>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<OrderBook.Price>>>",
+          "valueType": "t_array:dyn<t_struct<OrderBook.Price>>",
+          "label": "mapping(key => OrderBook.Price[])",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.OrderFill>": {
+          "id": "t_struct<OrderBook.OrderFill>",
+          "kind": "struct",
+          "label": "OrderBook.OrderFill",
+          "members": [
+            {
+              "label": "orderNonce",
+              "astId": 1781,
+              "type": "t_uint256",
+              "src": "1306:18:1"
+            },
+            {
+              "label": "taker",
+              "astId": 1783,
+              "type": "t_address",
+              "src": "1334:13:1"
+            },
+            {
+              "label": "askAssetProxyId",
+              "astId": 1785,
+              "type": "t_bytes4",
+              "src": "1357:22:1"
+            },
+            {
+              "label": "askAssetAddress",
+              "astId": 1787,
+              "type": "t_address",
+              "src": "1389:23:1"
+            },
+            {
+              "label": "askAssetAmount",
+              "astId": 1789,
+              "type": "t_uint256",
+              "src": "1422:22:1"
+            },
+            {
+              "label": "askAssetData",
+              "astId": 1791,
+              "type": "t_bytes",
+              "src": "1454:18:1"
+            },
+            {
+              "label": "bidAssetProxyId",
+              "astId": 1793,
+              "type": "t_bytes4",
+              "src": "1482:22:1"
+            },
+            {
+              "label": "bidAssetAddress",
+              "astId": 1795,
+              "type": "t_address",
+              "src": "1514:23:1"
+            },
+            {
+              "label": "bidAssetAmount",
+              "astId": 1797,
+              "type": "t_uint256",
+              "src": "1547:22:1"
+            },
+            {
+              "label": "bidAssetData",
+              "astId": 1799,
+              "type": "t_bytes",
+              "src": "1579:18:1"
+            },
+            {
+              "label": "bidAssetFilledAmount",
+              "astId": 1801,
+              "type": "t_uint256",
+              "src": "1607:28:1"
+            },
+            {
+              "label": "status",
+              "astId": 1803,
+              "type": "t_enum<OrderBook.OrderStatus>",
+              "src": "1645:18:1"
+            },
+            {
+              "label": "timestamp",
+              "astId": 1805,
+              "type": "t_uint256",
+              "src": "1673:17:1"
+            },
+            {
+              "label": "auxiliary",
+              "astId": 1807,
+              "type": "t_bytes",
+              "src": "1700:15:1"
+            }
+          ]
+        },
+        "t_array:dyn<t_struct<OrderBook.OrderFill>>": {
+          "id": "t_array:dyn<t_struct<OrderBook.OrderFill>>",
+          "valueType": "t_struct<OrderBook.OrderFill>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "OrderBook.OrderFill[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+          "valueType": "t_array:dyn<t_struct<OrderBook.OrderFill>>",
+          "label": "mapping(key => OrderBook.OrderFill[])",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.Quote>": {
+          "id": "t_struct<OrderBook.Quote>",
+          "kind": "struct",
+          "label": "OrderBook.Quote",
+          "members": [
+            {
+              "label": "timeOpen",
+              "astId": 1815,
+              "type": "t_uint256",
+              "src": "1819:16:1"
+            },
+            {
+              "label": "timeClose",
+              "astId": 1817,
+              "type": "t_uint256",
+              "src": "1845:17:1"
+            },
+            {
+              "label": "open",
+              "astId": 1819,
+              "type": "t_struct<OrderBook.Price>",
+              "src": "1872:10:1"
+            },
+            {
+              "label": "high",
+              "astId": 1821,
+              "type": "t_struct<OrderBook.Price>",
+              "src": "1892:10:1"
+            },
+            {
+              "label": "low",
+              "astId": 1823,
+              "type": "t_struct<OrderBook.Price>",
+              "src": "1912:9:1"
+            },
+            {
+              "label": "close",
+              "astId": 1825,
+              "type": "t_struct<OrderBook.Price>",
+              "src": "1931:11:1"
+            },
+            {
+              "label": "volume",
+              "astId": 1827,
+              "type": "t_uint256",
+              "src": "1952:14:1"
+            }
+          ]
+        },
+        "t_mapping<t_struct<OrderBook.Quote>>": {
+          "id": "t_mapping<t_struct<OrderBook.Quote>>",
+          "valueType": "t_struct<OrderBook.Quote>",
+          "label": "mapping(key => OrderBook.Quote)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 5342,
+          "type": "t_bool",
+          "src": "757:24:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 5344,
+          "type": "t_bool",
+          "src": "876:25:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 5393,
+          "type": "t_array:50<t_uint256>",
+          "src": "1891:29:26"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 3309,
+          "type": "t_address",
+          "src": "302:22:8"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 3420,
+          "type": "t_array:50<t_uint256>",
+          "src": "2186:29:8"
+        },
+        {
+          "contract": "AssetProxyRegistry",
+          "path": "contracts/proxy/AssetProxyRegistry.sol",
+          "label": "_assetProxyOfProxyId",
+          "astId": 2941,
+          "type": "t_mapping<t_address>",
+          "src": "228:60:5"
+        },
+        {
+          "contract": "AssetProxyRegistry",
+          "path": "contracts/proxy/AssetProxyRegistry.sol",
+          "label": "______gap",
+          "astId": 3002,
+          "type": "t_array:50<t_uint256>",
+          "src": "1233:29:5"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_orders",
+          "astId": 1835,
+          "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+          "src": "2046:64:1"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_currentPrice",
+          "astId": 1841,
+          "type": "t_mapping<t_struct<OrderBook.Price>>",
+          "src": "2182:68:1"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_prices",
+          "astId": 1848,
+          "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Price>>>",
+          "src": "2324:64:1"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_orderFills",
+          "astId": 1855,
+          "type": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+          "src": "2466:72:1"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_quotes",
+          "astId": 1863,
+          "type": "t_mapping<t_struct<OrderBook.Quote>>",
+          "src": "2623:82:1"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "______gap",
+          "astId": 2848,
+          "type": "t_array:50<t_uint256>",
+          "src": "12654:29:1"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "ERC20Proxy": {
+      "address": "0x6249494DFc563dBf5157D80424773928dB2b1e55",
+      "constructorCode": "608060405234801561001057600080fd5b506104af806100206000396000f3fe",
+      "bodyBytecodeHash": "2c0123fe641cd6318edea9fa47ce9868c037d7ed5e9369dbf2b55ec068c122c3",
+      "localBytecodeHash": "25db37382d63622c2e2a603b530df95f7bedeff44a0114cbfbb6964aae3128d5",
+      "deployedBytecodeHash": "25db37382d63622c2e2a603b530df95f7bedeff44a0114cbfbb6964aae3128d5",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 5342,
+          "type": "t_bool",
+          "src": "757:24:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 5344,
+          "type": "t_bool",
+          "src": "876:25:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 5393,
+          "type": "t_array:50<t_uint256>",
+          "src": "1891:29:26"
+        },
+        {
+          "contract": "ERC20Proxy",
+          "path": "contracts/proxy/ERC20Proxy.sol",
+          "label": "______gap",
+          "astId": 3097,
+          "type": "t_array:50<t_uint256>",
+          "src": "1796:29:6"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "ERC721Proxy": {
+      "address": "0xcf34ddBC437dA007e872F08524D4767531Df8517",
+      "constructorCode": "608060405234801561001057600080fd5b506105fc806100206000396000f3fe",
+      "bodyBytecodeHash": "a77195b0fa63c9f80008f2705a244181594bc06e22cc8a146d1efd76819dac35",
+      "localBytecodeHash": "536fe0c8ca290f28c371a8ca7cefb90c41951c66d37c4767593ab515f605f437",
+      "deployedBytecodeHash": "536fe0c8ca290f28c371a8ca7cefb90c41951c66d37c4767593ab515f605f437",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 5342,
+          "type": "t_bool",
+          "src": "757:24:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 5344,
+          "type": "t_bool",
+          "src": "876:25:26"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 5393,
+          "type": "t_array:50<t_uint256>",
+          "src": "1891:29:26"
+        },
+        {
+          "contract": "ERC721Proxy",
+          "path": "contracts/proxy/ERC721Proxy.sol",
+          "label": "______gap",
+          "astId": 3301,
+          "type": "t_array:50<t_uint256>",
+          "src": "3526:29:7"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    }
+  },
+  "solidityLibs": {},
+  "proxies": {
+    "exchange/Exchange": [
+      {
+        "address": "0xB5f8F835ECf7d97c2d28eBce27dc5C75dD3F26F7",
+        "version": "1.0.0",
+        "implementation": "0x3C32b06F2e954882C07DE6883A05322755cef9Aa"
+      }
+    ],
+    "exchange/ERC20Proxy": [
+      {
+        "address": "0x74c0d80310d8B22BaBDc81507d3cA89dC1765Be9",
+        "version": "1.0.0",
+        "implementation": "0x6249494DFc563dBf5157D80424773928dB2b1e55"
+      }
+    ],
+    "exchange/ERC721Proxy": [
+      {
+        "address": "0x1cD80E5d0b925F0921bf0276a309cCce1663c28C",
+        "version": "1.0.0",
+        "implementation": "0xcf34ddBC437dA007e872F08524D4767531Df8517"
+      }
+    ]
+  },
+  "zosversion": "2.2",
+  "version": "1.0.0",
+  "proxyAdmin": {
+    "address": "0x8D3Cf47e1CD4219F267ba17F5af07B8Edb95ccB0"
+  }
+}

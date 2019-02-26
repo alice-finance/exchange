@@ -1,0 +1,11 @@
+{
+  "extends": "default",
+  "rules": {
+    "state-visibility": false,
+    "compiler-fixed": false,
+    "no-inline-assembly": false,
+    "func-order": false,
+    "code-complexity": ["error", 8],
+    "two-lines-top-level-separator": false
+  }
+}
