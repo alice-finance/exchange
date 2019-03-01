@@ -183,6 +183,23 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
 
       result.length.should.be.equal(60);
     });
+
+    context("should adjust timeFrom and timeTo", async function () {
+      it("1 hour", async function () {
+        let now = await time.latest();
+        let result = await this.exchange.getQuotes(
+          this.erc20Ask.address,
+          this.erc20Bid.address,
+          0,
+          now,
+          0
+        );
+
+        result.length.should.be.equal(60);
+        result[0].timeOpen.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("3600")).toString());
+        result[59].timeClose.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("1")).toString());
+      });
+    });
   });
 
   context("on plasma node", function () {

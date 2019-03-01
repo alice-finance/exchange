@@ -303,13 +303,17 @@ contract OrderBook {
             interval = MIN_QUOTE_TIME;
         }
 
-        if (timeFrom == 0) {
-            timeFrom = now - (now % MIN_QUOTE_TIME) - 3600; // solhint-disable-line not-rely-on-time
+        if (timeTo == 0) {
+            timeTo = now; // solhint-disable-line not-rely-on-time
         }
 
-        if (timeTo == 0) {
-            timeTo = now - (now % MIN_QUOTE_TIME); // solhint-disable-line not-rely-on-time
+        timeTo = timeTo - (timeTo % MIN_QUOTE_TIME);
+
+        if (timeFrom == 0) {
+            timeFrom = timeTo - 3600; // 1 hour
         }
+
+        timeFrom = timeFrom - (timeFrom % MIN_QUOTE_TIME);
 
         return _getQuotes(askAssetAddress, bidAssetAddress, timeFrom, timeTo, interval);
     }
@@ -331,11 +335,10 @@ contract OrderBook {
     ) internal view returns (Quote[] memory) {
         mapping(uint256 => Quote) storage records = _quotes[bidAssetAddress][askAssetAddress];
         uint256 rangeCount = 0;
-        uint256 rangeInterval = 0;
         uint256 rangeStart = 0;
 
-        (rangeCount, rangeInterval, rangeStart) = _getQuotesRange(timeFrom, timeTo, interval);
-        return _calculateQuotes(records, rangeCount, rangeStart, rangeInterval);
+        (rangeCount, rangeStart) = _getQuotesRange(timeFrom, timeTo, interval);
+        return _calculateQuotes(records, rangeCount, rangeStart, interval);
     }
 
     /**
@@ -348,16 +351,14 @@ contract OrderBook {
         uint256 timeFrom,
         uint256 timeTo,
         uint256 interval
-    ) internal pure returns (uint256 rangeCount, uint256 rangeInterval, uint256 rangeStart) {
-        uint256 firstTime = timeFrom - (timeFrom % MIN_QUOTE_TIME);
-        uint256 lastTime = timeTo - (timeTo % MIN_QUOTE_TIME); // solhint-disable-line not-rely-on-time
+    ) internal pure returns (uint256 rangeCount, uint256 rangeStart) {
+        rangeStart = timeFrom;
 
-        firstTime = firstTime - (firstTime % interval);
-        lastTime = lastTime - (lastTime % interval);
-        rangeCount = ((lastTime - firstTime) / interval);
+        if ((timeTo - rangeStart) % interval > 0) {
+            rangeStart = rangeStart + ((timeTo - rangeStart) % interval);
+        }
 
-        rangeStart = firstTime;
-        rangeInterval = interval;
+        rangeCount = ((timeTo - rangeStart) / interval);
     }
 
     /**
@@ -385,7 +386,11 @@ contract OrderBook {
                 Quote storage record = records[rangeStart + i];
 
                 if (record.volume > 0) {
-                    if (i == 0) {
+                    if (quotes[rangeIndex].open.ask == 0
+                        && quotes[rangeIndex].open.bid == 0
+                        && record.open.ask > 0
+                        && record.open.bid > 0
+                    ) {
                         quotes[rangeIndex].open = record.open;
                         quotes[rangeIndex].high = record.high;
                         quotes[rangeIndex].low = record.low;
@@ -401,7 +406,7 @@ contract OrderBook {
                         }
                     }
 
-                    if (i == rangeInterval - MIN_QUOTE_TIME) {
+                    if (record.close.ask > 0 && record.close.bid > 0) {
                         quotes[rangeIndex].close = record.close;
                     }
 
