@@ -1,11 +1,11 @@
 {
   "contracts": {
     "Exchange": {
-      "address": "0x3C32b06F2e954882C07DE6883A05322755cef9Aa",
-      "constructorCode": "608060405234801561001057600080fd5b50614c76806100206000396000f3fe",
-      "bodyBytecodeHash": "21924f7f708e239e57c67d26fe94cb74f49d3bfd15dd22c47adc70c7295558a4",
-      "localBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
-      "deployedBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
+      "address": "0x7fa3D39b9C12b2842C5b0d1774ce289eF3212d97",
+      "constructorCode": "608060405234801561001057600080fd5b50614cdb806100206000396000f3fe",
+      "bodyBytecodeHash": "5bef085dc7ced4361f043d47a276c6a4bb9a64a1aca513366914c94d78e324ee",
+      "localBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
+      "deployedBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -363,7 +363,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 5342,
+          "astId": 5355,
           "type": "t_bool",
           "src": "757:24:26"
         },
@@ -371,7 +371,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 5344,
+          "astId": 5357,
           "type": "t_bool",
           "src": "876:25:26"
         },
@@ -379,7 +379,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 5393,
+          "astId": 5406,
           "type": "t_array:50<t_uint256>",
           "src": "1891:29:26"
         },
@@ -387,7 +387,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 3309,
+          "astId": 3322,
           "type": "t_address",
           "src": "302:22:8"
         },
@@ -395,7 +395,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 3420,
+          "astId": 3433,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:8"
         },
@@ -403,7 +403,7 @@
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "_assetProxyOfProxyId",
-          "astId": 2941,
+          "astId": 2954,
           "type": "t_mapping<t_address>",
           "src": "228:60:5"
         },
@@ -411,7 +411,7 @@
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "______gap",
-          "astId": 3002,
+          "astId": 3015,
           "type": "t_array:50<t_uint256>",
           "src": "1233:29:5"
         },
@@ -459,9 +459,9 @@
           "contract": "OrderBook",
           "path": "contracts/exchange/OrderBook.sol",
           "label": "______gap",
-          "astId": 2848,
+          "astId": 2861,
           "type": "t_array:50<t_uint256>",
-          "src": "12654:29:1"
+          "src": "12641:29:1"
         }
       ],
       "warnings": {
@@ -469,7 +469,50 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_orders",
+            "astId": 1835,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+            "src": "2046:64:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_currentPrice",
+            "astId": 1841,
+            "type": "t_mapping<t_struct<OrderBook.Price>>",
+            "src": "2182:68:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_prices",
+            "astId": 1848,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Price>>>",
+            "src": "2324:64:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_orderFills",
+            "astId": 1855,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+            "src": "2466:72:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_quotes",
+            "astId": 1863,
+            "type": "t_mapping<t_struct<OrderBook.Quote>>",
+            "src": "2623:82:1"
+          }
+        ],
+        "storageDiff": []
       }
     },
     "ERC20Proxy": {
@@ -612,27 +655,27 @@
     "exchange/Exchange": [
       {
         "address": "0xB5f8F835ECf7d97c2d28eBce27dc5C75dD3F26F7",
-        "version": "1.0.0",
-        "implementation": "0x3C32b06F2e954882C07DE6883A05322755cef9Aa"
+        "version": "1.0.1",
+        "implementation": "0x7fa3D39b9C12b2842C5b0d1774ce289eF3212d97"
       }
     ],
     "exchange/ERC20Proxy": [
       {
         "address": "0x74c0d80310d8B22BaBDc81507d3cA89dC1765Be9",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "implementation": "0x6249494DFc563dBf5157D80424773928dB2b1e55"
       }
     ],
     "exchange/ERC721Proxy": [
       {
         "address": "0x1cD80E5d0b925F0921bf0276a309cCce1663c28C",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "implementation": "0xcf34ddBC437dA007e872F08524D4767531Df8517"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "proxyAdmin": {
     "address": "0x8D3Cf47e1CD4219F267ba17F5af07B8Edb95ccB0"
   }

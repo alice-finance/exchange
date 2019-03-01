@@ -1,11 +1,11 @@
 {
   "contracts": {
     "Exchange": {
-      "address": "0x2ad84D91f331AF36b93Ee12e7EeB1Fe1A78CD671",
-      "constructorCode": "608060405234801561001057600080fd5b50614c76806100206000396000f3fe",
-      "bodyBytecodeHash": "21924f7f708e239e57c67d26fe94cb74f49d3bfd15dd22c47adc70c7295558a4",
-      "localBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
-      "deployedBytecodeHash": "a37c79ecb56dd7a6d1312b82a11a6514ee3a27f3eeb68dd447278fcbdf9acc2d",
+      "address": "0x56F6bc275381620e387768e55110B7715d8d3509",
+      "constructorCode": "608060405234801561001057600080fd5b50614cdb806100206000396000f3fe",
+      "bodyBytecodeHash": "5bef085dc7ced4361f043d47a276c6a4bb9a64a1aca513366914c94d78e324ee",
+      "localBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
+      "deployedBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -363,7 +363,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 5342,
+          "astId": 5355,
           "type": "t_bool",
           "src": "757:24:26"
         },
@@ -371,7 +371,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 5344,
+          "astId": 5357,
           "type": "t_bool",
           "src": "876:25:26"
         },
@@ -379,7 +379,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 5393,
+          "astId": 5406,
           "type": "t_array:50<t_uint256>",
           "src": "1891:29:26"
         },
@@ -387,7 +387,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 3309,
+          "astId": 3322,
           "type": "t_address",
           "src": "302:22:8"
         },
@@ -395,7 +395,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 3420,
+          "astId": 3433,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:8"
         },
@@ -403,7 +403,7 @@
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "_assetProxyOfProxyId",
-          "astId": 2941,
+          "astId": 2954,
           "type": "t_mapping<t_address>",
           "src": "228:60:5"
         },
@@ -411,7 +411,7 @@
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "______gap",
-          "astId": 3002,
+          "astId": 3015,
           "type": "t_array:50<t_uint256>",
           "src": "1233:29:5"
         },
@@ -459,9 +459,9 @@
           "contract": "OrderBook",
           "path": "contracts/exchange/OrderBook.sol",
           "label": "______gap",
-          "astId": 2848,
+          "astId": 2861,
           "type": "t_array:50<t_uint256>",
-          "src": "12654:29:1"
+          "src": "12641:29:1"
         }
       ],
       "warnings": {
@@ -469,7 +469,50 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_orders",
+            "astId": 1835,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+            "src": "2046:64:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_currentPrice",
+            "astId": 1841,
+            "type": "t_mapping<t_struct<OrderBook.Price>>",
+            "src": "2182:68:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_prices",
+            "astId": 1848,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Price>>>",
+            "src": "2324:64:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_orderFills",
+            "astId": 1855,
+            "type": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+            "src": "2466:72:1"
+          },
+          {
+            "contract": "OrderBook",
+            "path": "contracts/exchange/OrderBook.sol",
+            "label": "_quotes",
+            "astId": 1863,
+            "type": "t_mapping<t_struct<OrderBook.Quote>>",
+            "src": "2623:82:1"
+          }
+        ],
+        "storageDiff": []
       }
     },
     "ERC20Proxy": {
@@ -612,27 +655,27 @@
     "exchange/Exchange": [
       {
         "address": "0xF24DaC0394b078d871Fa0C843479d0e9F3754975",
-        "version": "1.0.0",
-        "implementation": "0x2ad84D91f331AF36b93Ee12e7EeB1Fe1A78CD671"
+        "version": "1.0.1",
+        "implementation": "0x56F6bc275381620e387768e55110B7715d8d3509"
       }
     ],
     "exchange/ERC20Proxy": [
       {
         "address": "0xCE6c2DE826001E2e81c3b0EC2e4Fa5ab3f2Df091",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "implementation": "0xcA14D666d638de89A21F52d49356F846c2F3D1e9"
       }
     ],
     "exchange/ERC721Proxy": [
       {
         "address": "0x44DfF862c6F84daCf77046656928CcC9430B9Fde",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "implementation": "0xF750adCD13EfcfdB8526E87dCCc305bfa14d566c"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "proxyAdmin": {
     "address": "0xF66DC88371753A88F3041a6Fe3d51B71032f44a1"
   }
