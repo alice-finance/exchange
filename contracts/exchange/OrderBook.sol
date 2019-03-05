@@ -97,6 +97,7 @@ contract OrderBook {
         return _orders[bidAssetAddress][askAssetAddress][nonce];
     }
 
+    // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**
      * @notice get all orders of given params
      */
@@ -107,90 +108,232 @@ contract OrderBook {
         address maker,
         uint256 timeFrom,
         uint256 timeTo
-    ) public view returns (Order[] memory) {
+    ) public view returns (Order[] memory results) {
         Order[] storage orders = _orders[bidAssetAddress][askAssetAddress];
 
         if (orders.length == 0) return new Order[](0);
 
-        uint count = 0;
-        uint endIndex = 0;
-        uint startIndex = 0;
+        assembly {
+            let mem_offset := mload(0x40)
+            mstore(mem_offset, orders_slot)
+            let position := keccak256(mem_offset, 0x20)
+            mstore(0x40, add(mem_offset, 0xe0))
 
-        (count, startIndex, endIndex) = _getOrdersRange(orders, orderStatus, maker, timeFrom, timeTo);
+            mstore(add(mem_offset, 0x20), sload(orders_slot))
+            mstore(add(mem_offset, 0x40), 0)
+            mstore(add(mem_offset, 0x60), mload(add(mem_offset, 0x20)))
 
-        Order[] memory results = new Order[](count);
+            // mem_offset
+            // 0x00 orders_slot
+            // 0x20 orders.length
+            // 0x40 startIndex
+            // 0x60 endIndex
+            // 0x80 count
+            // 0xa0 temp1
+            // 0xc0 length
 
-        uint index = 0;
-        for (uint i = startIndex; i < endIndex; i++) {
-            Order storage order = orders[i];
+            switch gt(timeFrom, 0)
+            case 1 {
+                let s := 0
+                let e := sub(mload(add(mem_offset, 0x20)), 1)
+                let m := div(add(s, e), 2)
 
-            if (maker != address(0) && order.maker != maker) {
-                continue;
+                for {} lt(s, e) {} {
+                    let t := sload(add(add(position, mul(m, 12)), 10))
+
+                    switch lt(t, timeFrom)
+                    case 1 {
+                        s := add(m, 1)
+                        m := div(add(s, e), 2)
+                    }
+                    case 0 {
+                        switch gt(t, timeFrom)
+                        case 1 {
+                            e := m
+                            m := div(add(s, e), 2)
+                        }
+                        case 0 {
+                            // m := add(m, 1)
+                            s := e
+                        }
+                    }
+
+                    mstore(add(mem_offset, 0xc0), add(mload(add(mem_offset, 0xc0)), 1))
+                }
+
+                mstore(add(mem_offset, 0x40), m)
             }
 
-            if (orderStatus != OrderStatus.invalid && order.status != orderStatus) {
-                continue;
+            switch gt(timeTo, 0)
+            case 1 {
+                let s := 0
+                let e := sub(mload(add(mem_offset, 0x20)), 1)
+                let m := div(add(s, e), 2)
+
+                for {} lt(s, e) {} {
+                    let t := sload(add(add(position, mul(m, 12)), 10))
+
+                    switch lt(t, timeTo)
+                    case 1 {
+                        s := add(m, 1)
+                        m := div(add(s, e), 2)
+                    }
+                    case 0 {
+                        switch gt(t, timeTo)
+                        case 1 {
+                            e := m
+                            m := div(add(s, e), 2)
+                        }
+                        case 0 {
+                            m := add(m, 1)
+                            s := e
+                        }
+                    }
+                }
+
+                mstore(add(mem_offset, 0x60), m)
             }
 
-            results[index] = orders[i];
-            index = index.add(1);
+            results := mload(0x40)
+            mstore(0x40, add(results, mul(0x20, add(sub(mload(add(mem_offset, 0x60)), mload(add(mem_offset, 0x40))), 1))))
+
+            for { let i := mload(add(mem_offset, 0x40)) } lt(i, mload(add(mem_offset, 0x60))) { i := add(i, 1) } {
+                let order_position := add(position, mul(i, 12))
+                let order_maker := and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, sload(add(order_position, 1)))
+
+                switch and(iszero(eq(maker, 0x0000000000000000000000000000000000000000)), iszero(eq(order_maker, maker)))
+                case 1 {
+                }
+                case 0 {
+                    let order_status := sload(add(order_position, 9))
+
+                    switch and(gt(orderStatus, 0), iszero(eq(order_status, orderStatus)))
+                    case 1 {
+                    }
+                    case 0 {
+                        mstore(add(mem_offset, 0x80), add(mload(add(mem_offset, 0x80)), 1))
+
+                        let offset := mload(0x40)
+                        mstore(add(results, mul(0x20, mload(add(mem_offset, 0x80)))), offset)
+                        mstore(0x40, add(offset, mul(0x20, 14)))
+
+                        // nonce
+                        mstore(offset, sload(order_position))
+
+                        // maker
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
+
+                        // askAssetProxyId
+                        offset := add(offset, 0x20)
+                        mstore(offset, mul(and(0x0000000000000000ffffffff0000000000000000000000000000000000000000, mload(add(mem_offset, 0xa0))), exp(2, 64)))
+
+                        // askAssetAddress
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
+
+                        // askAssetAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // askAssetData
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                            case 1 {
+                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                                mstore(0x40, add(q, 0x40))
+                            }
+                            mstore(offset, q)
+                        }
+
+                        // bidAssetProxyId
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(offset, mul(and(0x00000000000000000000000000000000000000000000000000000000ffffffff, mload(add(mem_offset, 0xa0))), exp(2, 224)))
+
+                        // bidAssetAddress
+                        offset := add(offset, 0x20)
+                        mstore(offset, div(and(0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000, mload(add(mem_offset, 0xa0))), exp(2, 32)))
+
+                        // bidAssetAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // bidAssetData
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                            case 1 {
+                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                                mstore(0x40, add(q, 0x40))
+                            }
+                            mstore(offset, q)
+                        }
+
+                        // bidAssetFilledAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // status
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // timestamp
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // auxiliary
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                            case 1 {
+                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                                mstore(0x40, add(q, 0x40))
+                            }
+                            mstore(offset, q)
+                        }
+                    }
+                }
+            }
+
+            mstore(results, mload(add(mem_offset, 0x80)))
         }
-
-        return results;
     }
+    // solhint-enable max-line-length, no-empty-blocks, function-max-lines
 
-    /**
-     * @notice get range of orders
-     */ // solhint-disable-next-line code-complexity
-    function _getOrdersRange(
-        Order[] storage orders,
-        OrderStatus orderStatus,
-        address maker,
-        uint256 timeFrom,
-        uint256 timeTo
-    ) internal view returns (uint256, uint256, uint256) {
-        uint count = 0;
-        uint startIndex = uint256(-1);
-        uint endIndex = 0;
-
-        for (uint i = 0; i < orders.length; i++) {
-            Order storage order = orders[i];
-
-            if (timeFrom > 0 && order.timestamp < timeFrom) {
-                continue;
-            }
-
-            if (startIndex == uint256(-1) && timeFrom > 0) {
-                startIndex = i;
-            }
-
-            if ((maker != address(0) && order.maker != maker)) {
-                continue;
-            }
-
-            if (orderStatus != OrderStatus.invalid && order.status != orderStatus) {
-                continue;
-            }
-
-            if (timeTo > 0 && order.timestamp > timeTo) {
-                endIndex = i;
-                break;
-            }
-
-            count = count.add(1);
-        }
-
-        if (startIndex == uint256(-1)) {
-            startIndex = 0;
-        }
-
-        if (endIndex == 0) {
-            endIndex = orders.length;
-        }
-
-        return (count, startIndex, endIndex);
-    }
-
+    // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**
      * @notice Get order fills of given params
      * @param askAssetAddress address of the ask asset
@@ -205,84 +348,223 @@ contract OrderBook {
         address taker,
         uint256 timeFrom,
         uint256 timeTo
-    ) public view returns (OrderFill[] memory) {
+    ) public view returns (OrderFill[] memory results) {
         OrderFill[] storage fills = _orderFills[bidAssetAddress][askAssetAddress];
 
         if (fills.length == 0) return new OrderFill[](0);
 
-        uint count = 0;
-        uint endIndex = 0;
-        uint startIndex = 0;
+        assembly {
+            let mem_offset := mload(0x40)
+            mstore(mem_offset, fills_slot)
+            let position := keccak256(mem_offset, 0x20)
+            mstore(0x40, add(mem_offset, 0xe0))
 
-        (count, startIndex, endIndex) = _getOrderFillsRange(fills, taker, timeFrom, timeTo);
+            mstore(add(mem_offset, 0x20), sload(fills_slot))
+            mstore(add(mem_offset, 0x40), 0)
+            mstore(add(mem_offset, 0x60), mload(add(mem_offset, 0x20)))
 
-        OrderFill[] memory results = new OrderFill[](count);
+            // mem_offset
+            // 0x00 fills_slot
+            // 0x20 fills.length
+            // 0x40 startIndex
+            // 0x60 endIndex
+            // 0x80 count
+            // 0xa0 temp1
+            // 0xc0 length
 
-        uint index = 0;
-        for (uint i = startIndex; i < endIndex; i++) {
-            OrderFill storage fill = fills[i];
+            switch gt(timeFrom, 0)
+            case 1 {
+                let s := 0
+                let e := sub(mload(add(mem_offset, 0x20)), 1)
+                let m := div(add(s, e), 2)
 
-            if (taker != address(0) && fill.taker != taker) {
-                continue;
+                for {} lt(s, e) {} {
+                    let t := sload(add(add(position, mul(m, 12)), 10))
+
+                    switch lt(t, timeFrom)
+                    case 1 {
+                        s := add(m, 1)
+                        m := div(add(s, e), 2)
+                    }
+                    case 0 {
+                        switch gt(t, timeFrom)
+                        case 1 {
+                            e := m
+                            m := div(add(s, e), 2)
+                        }
+                        case 0 {
+                            // m := add(m, 1)
+                            s := e
+                        }
+                    }
+
+                    mstore(add(mem_offset, 0xc0), add(mload(add(mem_offset, 0xc0)), 1))
+                }
+
+                mstore(add(mem_offset, 0x40), m)
             }
 
-            results[index] = fills[i];
-            index = index.add(1);
-        }
+            switch gt(timeTo, 0)
+            case 1 {
+                let s := 0
+                let e := sub(mload(add(mem_offset, 0x20)), 1)
+                let m := div(add(s, e), 2)
 
-        return results;
+                for {} lt(s, e) {} {
+                    let t := sload(add(add(position, mul(m, 12)), 10))
+
+                    switch lt(t, timeTo)
+                    case 1 {
+                        s := add(m, 1)
+                        m := div(add(s, e), 2)
+                    }
+                    case 0 {
+                        switch gt(t, timeTo)
+                        case 1 {
+                            e := m
+                            m := div(add(s, e), 2)
+                        }
+                        case 0 {
+                            m := add(m, 1)
+                            s := e
+                        }
+                    }
+                }
+
+                mstore(add(mem_offset, 0x60), m)
+            }
+
+            results := mload(0x40)
+            mstore(0x40, add(results, mul(0x20, add(sub(mload(add(mem_offset, 0x60)), mload(add(mem_offset, 0x40))), 1))))
+
+            for { let i := mload(add(mem_offset, 0x40)) } lt(i, mload(add(mem_offset, 0x60))) { i := add(i, 1) } {
+                let order_position := add(position, mul(i, 12))
+                let order_taker := and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, sload(add(order_position, 1)))
+
+                switch and(iszero(eq(taker, 0x0000000000000000000000000000000000000000)), iszero(eq(order_taker, taker)))
+                case 1 {
+                }
+                case 0 {
+                    mstore(add(mem_offset, 0x80), add(mload(add(mem_offset, 0x80)), 1))
+
+                    let offset := mload(0x40)
+                    mstore(add(results, mul(0x20, mload(add(mem_offset, 0x80)))), offset)
+                    mstore(0x40, add(offset, mul(0x20, 14)))
+
+                    // nonce
+                    mstore(offset, sload(order_position))
+
+                    // taker
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(add(mem_offset, 0xa0), sload(order_position))
+                    mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
+
+                    // askAssetProxyId
+                    offset := add(offset, 0x20)
+                    mstore(offset, mul(and(0x0000000000000000ffffffff0000000000000000000000000000000000000000, mload(add(mem_offset, 0xa0))), exp(2, 64)))
+
+                    // askAssetAddress
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(add(mem_offset, 0xa0), sload(order_position))
+                    mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
+
+                    // askAssetAmount
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(offset, sload(order_position))
+
+                    // askAssetData
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    {
+                        let q := mload(0x40)
+
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                        mstore(0x40, add(q, 0x20))
+                        switch gt(mload(add(mem_offset, 0xc0)), 0)
+                        case 1 {
+                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                            mstore(0x40, add(q, 0x40))
+                        }
+                        mstore(offset, q)
+                    }
+
+                    // bidAssetProxyId
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(add(mem_offset, 0xa0), sload(order_position))
+                    mstore(offset, mul(and(0x00000000000000000000000000000000000000000000000000000000ffffffff, mload(add(mem_offset, 0xa0))), exp(2, 224)))
+
+                    // bidAssetAddress
+                    offset := add(offset, 0x20)
+                    mstore(offset, div(and(0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000, mload(add(mem_offset, 0xa0))), exp(2, 32)))
+
+                    // bidAssetAmount
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(offset, sload(order_position))
+
+                    // bidAssetData
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    {
+                        let q := mload(0x40)
+
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                        mstore(0x40, add(q, 0x20))
+                        switch gt(mload(add(mem_offset, 0xc0)), 0)
+                        case 1 {
+                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                            mstore(0x40, add(q, 0x40))
+                        }
+                        mstore(offset, q)
+                    }
+
+                    // bidAssetFilledAmount
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(offset, sload(order_position))
+
+                    // status
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(offset, sload(order_position))
+
+                    // timestamp
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    mstore(offset, sload(order_position))
+
+                    // auxiliary
+                    order_position := add(order_position, 1)
+                    offset := add(offset, 0x20)
+                    {
+                        let q := mload(0x40)
+
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
+                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                        mstore(0x40, add(q, 0x20))
+                        switch gt(mload(add(mem_offset, 0xc0)), 0)
+                        case 1 {
+                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
+                            mstore(0x40, add(q, 0x40))
+                        }
+                        mstore(offset, q)
+                    }
+                }
+            }
+
+            mstore(results, mload(add(mem_offset, 0x80)))
+        }
     }
-
-    /**
-     * @notice get order fills range of given params
-     * @param fills list of order fill
-     * @param taker address of the taker
-     * @param timeFrom timestamp
-     * @param timeTo timestamp
-     */
-    function _getOrderFillsRange(
-        OrderFill[] storage fills,
-        address taker,
-        uint256 timeFrom,
-        uint256 timeTo
-    ) internal view returns (uint256, uint256, uint256) {
-        uint count = 0;
-        uint startIndex = uint256(-1);
-        uint endIndex = 0;
-
-        for (uint i = 0; i < fills.length; i++) {
-            OrderFill storage fill = fills[i];
-
-            if (timeFrom > 0 && fill.timestamp < timeFrom) {
-                continue;
-            }
-
-            if (startIndex == uint256(-1) && timeFrom > 0) {
-                startIndex = i;
-            }
-
-            if (taker != address(0) && fill.taker != taker) {
-                continue;
-            }
-
-            if (timeTo > 0 && fill.timestamp > timeTo) {
-                endIndex = i;
-                break;
-            }
-
-            count = count.add(1);
-        }
-
-        if (startIndex == uint256(-1)) {
-            startIndex = 0;
-        }
-
-        if (endIndex == 0) {
-            endIndex = fills.length;
-        }
-
-        return (count, startIndex, endIndex);
-    }
+    // solhint-enable max-line-length, no-empty-blocks, function-max-lines
 
     // Reserved storage space to allow for layout changes in the future.
     uint256[50] private ______gap;
