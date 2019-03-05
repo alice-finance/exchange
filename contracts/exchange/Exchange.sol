@@ -7,13 +7,13 @@ import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "../proxy/AssetProxyRegistry.sol";
-import "./OrderBook.sol";
+import "./Statistics.sol";
 
 
 /**
  * @title Exchange
  */
-contract Exchange is Initializable, Ownable, AssetProxyRegistry, OrderBook {
+contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
     using SafeMath for uint256;
     using Math for uint256;
 
