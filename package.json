@@ -1,6 +1,6 @@
 {
   "name": "@alice-network/exchange",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Solidity contracts for the exchange on alice network",
   "files": [
     "abis",

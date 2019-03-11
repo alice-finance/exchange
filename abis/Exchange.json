@@ -88,7 +88,7 @@
             "type": "bytes"
           }
         ],
-        "name": "",
+        "name": "results",
         "type": "tuple[]"
       }
     ],
@@ -193,7 +193,7 @@
             "type": "uint256"
           }
         ],
-        "name": "",
+        "name": "results",
         "type": "tuple[]"
       }
     ],
@@ -436,7 +436,7 @@
             "type": "bytes"
           }
         ],
-        "name": "",
+        "name": "results",
         "type": "tuple[]"
       }
     ],
