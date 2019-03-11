@@ -5,6 +5,7 @@ const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
 const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 
 const { BN, time } = require("openzeppelin-test-helpers");
+const { performance } = require("perf_hooks")
 
 contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
@@ -103,13 +104,17 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
       let timeAdjustment = new BN("3600");
       let now = await time.latest();
       now = now.sub(now.mod(timeAdjustment)).add(timeAdjustment);
-      await time.increaseTo(now);
 
-      let timeToExpend = timeAdjustment.div(MIN_QUOTE_TIME).toNumber();
-      for (i = 0; i < timeToExpend; i++) {
-        await time.increaseTo(now.add(time.duration.seconds(60).mul(new BN(i))).add(time.duration.seconds(20)));
-        await fillOrder(this, i % 6, 100); // 20000
+      let timeToExpend = now.add(timeAdjustment);
+      let t0 = performance.now();
+
+      for (; now.lt(timeToExpend); now = now.add(time.duration.seconds(5))) {
+        await time.increaseTo(now);
+        await fillOrder(this, Math.floor(Math.random() * 6), 100); // 20000
       }
+
+      let t1 = performance.now();
+      console.log("Preparing data took " + (t1 - t0) + " milliseconds.");
     });
 
     it("should get quote 60", async function () {
@@ -120,6 +125,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         0,
         MIN_QUOTE_TIME
       );
+
 
       result.length.should.be.equal(1);
     });
@@ -133,6 +139,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+
       result.length.should.be.equal(3);
     });
 
@@ -144,6 +151,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         0,
         MIN_QUOTE_TIME
       );
+
 
       result.length.should.be.equal(5);
     });
@@ -157,6 +165,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+
       result.length.should.be.equal(15);
     });
 
@@ -169,6 +178,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+
       result.length.should.be.equal(30);
     });
 
@@ -180,6 +190,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         0,
         MIN_QUOTE_TIME
       );
+
 
       result.length.should.be.equal(60);
     });
@@ -195,6 +206,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           0
         );
 
+
         result.length.should.be.equal(60);
         result[0].timeOpen.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("3600")).toString());
         result[59].timeClose.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("1")).toString());
@@ -202,7 +214,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
     });
   });
 
-  context("on plasma node", function () {
+  context.skip("on plasma node", function () {
     context("range", async function () {
       before(async function () {
         let timeToExpend = MIN_QUOTE_TIME.mul(new BN("3")).toNumber();
@@ -220,6 +232,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           0
         );
 
+
         result.length.should.be.equal(1);
       });
 
@@ -232,6 +245,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           MIN_QUOTE_TIME
         );
 
+
         result.length.should.be.equal(59);
       });
 
@@ -243,6 +257,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           (await time.latest()).sub(time.duration.seconds(60)),
           MIN_QUOTE_TIME
         );
+
 
         result.length.should.be.equal(1);
       });
