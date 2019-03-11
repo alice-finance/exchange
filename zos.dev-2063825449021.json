@@ -1,11 +1,11 @@
 {
   "contracts": {
     "Exchange": {
-      "address": "0x56F6bc275381620e387768e55110B7715d8d3509",
-      "constructorCode": "608060405234801561001057600080fd5b50614cdb806100206000396000f3fe",
-      "bodyBytecodeHash": "5bef085dc7ced4361f043d47a276c6a4bb9a64a1aca513366914c94d78e324ee",
-      "localBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
-      "deployedBytecodeHash": "948de0db19395c53b72e342ba3ba3c2e95133684a8a2b3f3c406004dd2b1d9c5",
+      "address": "0xfc82F3dfAb7f109601a1c64e29c65ED9627eCe04",
+      "constructorCode": "608060405234801561001057600080fd5b506149ef806100206000396000f3fe",
+      "bodyBytecodeHash": "70e6cff1c0d73dc5eaa463e5f3773e1426f1d8c6291a9ae0eb6d98fac55486e3",
+      "localBytecodeHash": "e89e091e2fa4db2dafe66fbdd18263eace72409b0c0556656d7a80c6da49d644",
+      "deployedBytecodeHash": "e89e091e2fa4db2dafe66fbdd18263eace72409b0c0556656d7a80c6da49d644",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -363,57 +363,57 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 5355,
+          "astId": 4490,
           "type": "t_bool",
-          "src": "757:24:26"
+          "src": "757:24:27"
         },
         {
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 5357,
+          "astId": 4492,
           "type": "t_bool",
-          "src": "876:25:26"
+          "src": "876:25:27"
         },
         {
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 5406,
+          "astId": 4541,
           "type": "t_array:50<t_uint256>",
-          "src": "1891:29:26"
+          "src": "1891:29:27"
         },
         {
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 3322,
+          "astId": 2457,
           "type": "t_address",
-          "src": "302:22:8"
+          "src": "302:22:9"
         },
         {
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 3433,
+          "astId": 2568,
           "type": "t_array:50<t_uint256>",
-          "src": "2186:29:8"
+          "src": "2186:29:9"
         },
         {
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "_assetProxyOfProxyId",
-          "astId": 2954,
+          "astId": 2089,
           "type": "t_mapping<t_address>",
-          "src": "228:60:5"
+          "src": "228:60:6"
         },
         {
           "contract": "AssetProxyRegistry",
           "path": "contracts/proxy/AssetProxyRegistry.sol",
           "label": "______gap",
-          "astId": 3015,
+          "astId": 2150,
           "type": "t_array:50<t_uint256>",
-          "src": "1233:29:5"
+          "src": "1233:29:6"
         },
         {
           "contract": "OrderBook",
@@ -459,9 +459,9 @@
           "contract": "OrderBook",
           "path": "contracts/exchange/OrderBook.sol",
           "label": "______gap",
-          "astId": 2861,
+          "astId": 1967,
           "type": "t_array:50<t_uint256>",
-          "src": "12641:29:1"
+          "src": "23570:29:1"
         }
       ],
       "warnings": {
@@ -655,27 +655,27 @@
     "exchange/Exchange": [
       {
         "address": "0xF24DaC0394b078d871Fa0C843479d0e9F3754975",
-        "version": "1.0.1",
-        "implementation": "0x56F6bc275381620e387768e55110B7715d8d3509"
+        "version": "1.0.2",
+        "implementation": "0xfc82F3dfAb7f109601a1c64e29c65ED9627eCe04"
       }
     ],
     "exchange/ERC20Proxy": [
       {
         "address": "0xCE6c2DE826001E2e81c3b0EC2e4Fa5ab3f2Df091",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "implementation": "0xcA14D666d638de89A21F52d49356F846c2F3D1e9"
       }
     ],
     "exchange/ERC721Proxy": [
       {
         "address": "0x44DfF862c6F84daCf77046656928CcC9430B9Fde",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "implementation": "0xF750adCD13EfcfdB8526E87dCCc305bfa14d566c"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "proxyAdmin": {
     "address": "0xF66DC88371753A88F3041a6Fe3d51B71032f44a1"
   }
