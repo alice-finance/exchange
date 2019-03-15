@@ -840,6 +840,42 @@
             "type": "address"
           },
           {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "bidAssetAmountToFill",
+            "type": "uint256"
+          },
+          {
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "fillAndCreateOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
             "name": "nonces",
             "type": "uint256[]"
           },
@@ -857,6 +893,42 @@
       }
     ],
     "name": "fillOrders",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "askAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "bidAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "nonces",
+            "type": "uint256[]"
+          },
+          {
+            "name": "bidAssetAmountToFill",
+            "type": "uint256"
+          },
+          {
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "fillAndCreateOrders",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
