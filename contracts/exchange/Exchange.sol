@@ -167,7 +167,7 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
     }
 
     /**
-     * @dev Fill order with given params
+     * @notice Fill order with given params
      * @param params struct FillOrderParams
      */
     function fillOrder(FillOrderParams memory params) public {
@@ -189,6 +189,40 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             msg.sender,
             params.bidAssetAmountToFill
         ), "order not filled");
+    }
+
+    /**
+     * @notice Fill the order with given params. Create new order when
+     * `bidAssetAmountToFill` remains after targeted order is filled entirely.
+     * @param params struct FillOrderParams
+     */
+    function fillAndCreateOrder(FillOrderParams memory params) public {
+        require(_orders[params.bidAssetAddress][params.askAssetAddress].length > params.nonce, "order not exists");
+        Order storage order = _orders[params.bidAssetAddress][params.askAssetAddress][params.nonce];
+
+        uint256 filled = order.bidAssetFilledAmount;
+
+        fillOrder(params);
+
+        filled = order.bidAssetFilledAmount - filled;
+
+        // create new order when overfilled
+        if (params.bidAssetAmountToFill > filled) {
+            uint256 newBidAssetAmount = params.bidAssetAmountToFill - filled;
+            uint256 newAskAssetAmount = (newBidAssetAmount * order.bidAssetAmount) / order.askAssetAmount;
+
+            createOrder(CreateOrderParams(
+                order.bidAssetProxyId,
+                order.bidAssetAddress,
+                newBidAssetAmount,
+                order.bidAssetData,
+                order.askAssetProxyId,
+                order.askAssetAddress,
+                newAskAssetAmount,
+                order.askAssetData,
+                0
+            ));
+        }
     }
 
     /**
@@ -237,7 +271,52 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             }
         }
 
-        require(amountToFill < params.bidAssetAmountToFill, "filled nothing");
+        require(amountToFill != params.bidAssetAmountToFill, "filled nothing");
+    }
+
+    /**
+     * @notice Fill orders with given params. Create new order when
+     * `bidAssetAmountToFill` remains after targeted orders are filled entirely.
+     * @param params struct FillOrdersParams
+     */
+    function fillAndCreateOrders(FillOrdersParams memory params) public {
+        require(params.nonces.length > 0, "no nonces");
+        uint256[] memory nonces = params.nonces;
+
+        uint256 i;
+        uint256 before;
+
+        for (i = 0; i < nonces.length; i++) {
+            before += _orders[params.bidAssetAddress][params.askAssetAddress][nonces[i]].bidAssetFilledAmount;
+        }
+
+        fillOrders(params);
+
+        uint256 filled;
+
+        for (i = 0; i < nonces.length; i++) {
+            filled += _orders[params.bidAssetAddress][params.askAssetAddress][nonces[i]].bidAssetFilledAmount;
+        }
+
+        filled = filled - before;
+
+        if (params.bidAssetAmountToFill > filled) {
+            Order storage firstOrder = _orders[params.bidAssetAddress][params.askAssetAddress][nonces[0]];
+            uint256 newBidAssetAmount = params.bidAssetAmountToFill - filled;
+            uint256 newAskAssetAmount = (newBidAssetAmount * firstOrder.bidAssetAmount) / firstOrder.askAssetAmount;
+
+            createOrder(CreateOrderParams(
+                firstOrder.bidAssetProxyId,
+                firstOrder.bidAssetAddress,
+                newBidAssetAmount,
+                firstOrder.bidAssetData,
+                firstOrder.askAssetProxyId,
+                firstOrder.askAssetAddress,
+                newAskAssetAmount,
+                firstOrder.askAssetData,
+                0
+            ));
+        }
     }
 
     /**

@@ -373,4 +373,48 @@ contract("Exchange.fillOrder", function ([admin, owner, user1, user2, user3]) {
       order.status.should.be.equal("2");
     });
   });
+
+  context("fill and create order", function () {
+    let overfillAmount = erc20BidValue.div(new BN("2"));
+    let overfillValue = erc20BidValue.add(overfillAmount);
+
+    beforeEach(async function () {
+      await this.erc20Bid.mint(user2, overfillValue, { from: admin });
+      await this.erc20Ask.approve(this.erc20Proxy.address, erc20AskValue, { from: user1 });
+      await this.erc20Bid.approve(this.erc20Proxy.address, overfillValue, { from: user2 });
+
+      await this.exchange.createOrder({
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: erc20BidValue.toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      }, { from: user1 });
+    });
+
+    it("should create new order", async function () {
+      const expectedNewAskAssetAmount = overfillAmount;
+      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20BidValue).div(erc20AskValue);
+
+      const { logs } = await this.exchange.fillAndCreateOrder({
+        askAssetAddress: this.erc20Ask.address,
+        bidAssetAddress: this.erc20Bid.address,
+        nonce: 0,
+        bidAssetAmountToFill: overfillValue.toString(),
+        feeAmount: 0
+      }, { from: user2 });
+
+      expectEvent.inLogs(logs, "OrderFilled", { status: new BN("2") });
+      expectEvent.inLogs(logs, "OrderCreated", {
+        askAssetAddress: this.erc20Bid.address,
+        askAssetAmount: expectedNewAskAssetAmount,
+        bidAssetAddress: this.erc20Ask.address,
+        bidAssetAmount: expectedNewBidAssetAmount
+      });
+    });
+  })
 });

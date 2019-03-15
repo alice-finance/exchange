@@ -12,7 +12,13 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
   const erc20AskValue = new BN("10000");
-  const erc20BidValue = new BN("300000");
+  const erc20Bid1Value = new BN("10000");
+  const erc20Bid2Value = new BN("20000");
+  const erc20Bid3Value = new BN("30000");
+  const erc20Bid4Value = new BN("40000");
+  const erc20Bid5Value = new BN("50000");
+  const erc20Bid6Value = new BN("60000");
+  const erc20BidValue = erc20Bid1Value.add(erc20Bid2Value).add(erc20Bid3Value).add(erc20Bid4Value).add(erc20Bid5Value).add(erc20Bid6Value)
 
   async function initializeExchange(exchange, owner) {
     const signature = "initialize(address)";
@@ -57,7 +63,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("10000").toString(),
+      bidAssetAmount: erc20Bid1Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user1 });
@@ -69,7 +75,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("20000").toString(),
+      bidAssetAmount: erc20Bid2Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user2 });
@@ -81,7 +87,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("30000").toString(),
+      bidAssetAmount: erc20Bid3Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user3 });
@@ -93,7 +99,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("40000").toString(),
+      bidAssetAmount: erc20Bid4Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user4 });
@@ -105,7 +111,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("50000").toString(),
+      bidAssetAmount: erc20Bid5Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user5 });
@@ -117,7 +123,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       askAssetData: "0x00",
       bidAssetProxyId: ERC20_PROXY_ID,
       bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("60000").toString(),
+      bidAssetAmount: erc20Bid6Value.toString(),
       bidAssetData: "0x00",
       feeAmount: 0
     }, { from: user6 });
@@ -129,18 +135,24 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
         askAssetAddress: this.erc20Ask.address,
         bidAssetAddress: this.erc20Bid.address,
         nonces: [0, 1, 2, 3, 4, 5],
-        bidAssetAmountToFill: new BN("210000").toString(),
+        bidAssetAmountToFill: erc20BidValue.toString(),
         feeAmount: 0
       }, { from: user7 });
 
       expectEvent.inLogs(logs, "OrderFilled", { status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("0"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("1"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("2"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("3"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("4"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("5"), status: new BN("2") });
 
-      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(new BN("10000"));
-      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(new BN("20000"));
-      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(new BN("30000"));
-      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(new BN("40000"));
-      (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(new BN("50000"));
-      (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(new BN("60000"));
+      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(erc20Bid1Value);
+      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(erc20Bid2Value);
+      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(erc20Bid3Value);
+      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(erc20Bid4Value);
+      (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(erc20Bid5Value);
+      (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(erc20Bid6Value);
       (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(erc20AskValue.mul(new BN("6")));
     });
 
@@ -150,21 +162,25 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [0, 1, 2, 3, 4, 5],
-          bidAssetAmountToFill: new BN("100001").toString(),
+          bidAssetAmountToFill: erc20Bid1Value.add(erc20Bid2Value).add(erc20Bid3Value).add(erc20Bid4Value).toString(),
           feeAmount: 0
         },
         { from: user7 }
       );
 
       expectEvent.inLogs(logs, "OrderFilled", { status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("0"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("1"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("2"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("3"), status: new BN("2") });
 
-      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(new BN("10000"));
-      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(new BN("20000"));
-      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(new BN("30000"));
-      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(new BN("40000"));
+      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(erc20Bid1Value);
+      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(erc20Bid2Value);
+      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(erc20Bid3Value);
+      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(erc20Bid4Value);
       (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(new BN("0"));
       (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(new BN("0"));
-      (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(new BN("40000"));
+      (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(erc20AskValue.mul(new BN("4")));
     });
 
     it("should fill if some orders are already filled", async function() {
@@ -176,7 +192,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [4, 2, 0],
-          bidAssetAmountToFill: new BN("90000").toString(),
+          bidAssetAmountToFill: erc20Bid1Value.add(erc20Bid3Value).add(erc20Bid5Value).toString(),
           feeAmount: 0
         },
         { from: user7 }
@@ -187,20 +203,24 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [5, 4, 3, 2, 1, 0],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         },
         { from: user8 }
       );
 
-      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(new BN("10000"));
-      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(new BN("20000"));
-      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(new BN("30000"));
-      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(new BN("40000"));
-      (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(new BN("50000"));
-      (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(new BN("60000"));
-      (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(new BN("30000"));
-      (await this.erc20Ask.balanceOf(user8)).should.be.bignumber.equal(new BN("30000"));
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("1"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("3"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("5"), status: new BN("2") });
+
+      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(erc20Bid1Value);
+      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(erc20Bid2Value);
+      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(erc20Bid3Value);
+      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(erc20Bid4Value);
+      (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(erc20Bid5Value);
+      (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(erc20Bid6Value);
+      (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(erc20AskValue.mul(new BN("3")));
+      (await this.erc20Ask.balanceOf(user8)).should.be.bignumber.equal(erc20AskValue.mul(new BN("3")));
     });
 
     it("should revert if given address is ZERO", async function () {
@@ -209,7 +229,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: ZERO_ADDRESS,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [0, 1, 2, 3, 4, 5],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         }, { from: user7 })
       );
@@ -219,7 +239,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: ZERO_ADDRESS,
           nonces: [0, 1, 2, 3, 4, 5],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         }, { from: user7 })
       );
@@ -231,7 +251,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         }, { from: user7 })
       );
@@ -243,7 +263,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [5, 3, 7, 1, 9],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         }, { from: user7 })
       );
@@ -281,7 +301,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
         askAssetAddress: this.erc20Ask.address,
         bidAssetAddress: this.erc20Bid.address,
         nonces: [0, 1, 2, 3, 4, 5],
-        bidAssetAmountToFill: new BN("210000").toString(),
+        bidAssetAmountToFill: erc20BidValue.toString(),
         feeAmount: 0
       }, { from: user7 });
 
@@ -290,10 +310,50 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
           nonces: [0, 1, 2, 3, 4, 5],
-          bidAssetAmountToFill: new BN("210000").toString(),
+          bidAssetAmountToFill: erc20BidValue.toString(),
           feeAmount: 0
         }, { from: user8 })
       );
+    });
+  });
+
+  describe('fill and create orders', function () {
+    it('should create new order', async function () {
+      const overfillAmount = erc20Bid4Value;
+      const overfillValue = erc20BidValue.add(overfillAmount);
+      const expectedNewAskAssetAmount = overfillAmount;
+      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20Bid1Value).div(erc20AskValue);
+
+      const { logs } = await this.exchange.fillAndCreateOrders({
+        askAssetAddress: this.erc20Ask.address,
+        bidAssetAddress: this.erc20Bid.address,
+        nonces: [0, 1, 2, 3, 4, 5],
+        bidAssetAmountToFill: overfillValue.toString(),
+        feeAmount: 0
+      }, { from: user7 });
+
+      expectEvent.inLogs(logs, "OrderFilled", { status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("0"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("1"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("2"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("3"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("4"), status: new BN("2") });
+      // expectEvent.inLogs(logs, "OrderFilled", { nonce: new BN("5"), status: new BN("2") });
+
+      (await this.erc20Bid.balanceOf(user1)).should.be.bignumber.equal(erc20Bid1Value);
+      (await this.erc20Bid.balanceOf(user2)).should.be.bignumber.equal(erc20Bid2Value);
+      (await this.erc20Bid.balanceOf(user3)).should.be.bignumber.equal(erc20Bid3Value);
+      (await this.erc20Bid.balanceOf(user4)).should.be.bignumber.equal(erc20Bid4Value);
+      (await this.erc20Bid.balanceOf(user5)).should.be.bignumber.equal(erc20Bid5Value);
+      (await this.erc20Bid.balanceOf(user6)).should.be.bignumber.equal(erc20Bid6Value);
+      (await this.erc20Ask.balanceOf(user7)).should.be.bignumber.equal(erc20AskValue.mul(new BN("6")));
+
+      expectEvent.inLogs(logs, "OrderCreated", {
+        askAssetAddress: this.erc20Bid.address,
+        askAssetAmount: expectedNewAskAssetAmount,
+        bidAssetAddress: this.erc20Ask.address,
+        bidAssetAmount: expectedNewBidAssetAmount
+      })
     });
   });
 });
