@@ -1,7 +1,7 @@
 {
   "zosversion": "2",
   "name": "exchange",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "contracts": {
     "Exchange": "Exchange",
     "ERC20Proxy": "ERC20Proxy",

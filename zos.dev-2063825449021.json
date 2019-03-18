@@ -1,11 +1,11 @@
 {
   "contracts": {
     "Exchange": {
-      "address": "0xe915398f2958D6D5442aa5D53fC6786399F57826",
+      "address": "0xde1F2a15370b8A3587bd705571D32Bbe097e475D",
       "constructorCode": "608060405234801561001057600080fd5b50614feb806100206000396000f3fe",
-      "bodyBytecodeHash": "25e2a18817131cc34d16a9d123744965d7df9024ca88812db9c2baef4232627f",
-      "localBytecodeHash": "9efdfd7685dda5033c57bd4d7c7cced921c64b8c779f8780305c2e39f4ef18f2",
-      "deployedBytecodeHash": "9efdfd7685dda5033c57bd4d7c7cced921c64b8c779f8780305c2e39f4ef18f2",
+      "bodyBytecodeHash": "356ee2beff591a84d9960948741912d945412809632546479c7d2678e78b8f5d",
+      "localBytecodeHash": "bf5d0094b3508aa0c9f5d4192b985475505c67bc2ea495f7ce30be05db79943f",
+      "deployedBytecodeHash": "bf5d0094b3508aa0c9f5d4192b985475505c67bc2ea495f7ce30be05db79943f",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -655,27 +655,27 @@
     "exchange/Exchange": [
       {
         "address": "0xF24DaC0394b078d871Fa0C843479d0e9F3754975",
-        "version": "1.0.3",
-        "implementation": "0xe915398f2958D6D5442aa5D53fC6786399F57826"
+        "version": "1.0.4",
+        "implementation": "0xde1F2a15370b8A3587bd705571D32Bbe097e475D"
       }
     ],
     "exchange/ERC20Proxy": [
       {
         "address": "0xCE6c2DE826001E2e81c3b0EC2e4Fa5ab3f2Df091",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "implementation": "0xcA14D666d638de89A21F52d49356F846c2F3D1e9"
       }
     ],
     "exchange/ERC721Proxy": [
       {
         "address": "0x44DfF862c6F84daCf77046656928CcC9430B9Fde",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "implementation": "0xF750adCD13EfcfdB8526E87dCCc305bfa14d566c"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "proxyAdmin": {
     "address": "0xF66DC88371753A88F3041a6Fe3d51B71032f44a1"
   }
