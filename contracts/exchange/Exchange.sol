@@ -208,17 +208,17 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
 
         // create new order when overfilled
         if (params.bidAssetAmountToFill > filled) {
-            uint256 newBidAssetAmount = params.bidAssetAmountToFill - filled;
-            uint256 newAskAssetAmount = (newBidAssetAmount * order.bidAssetAmount) / order.askAssetAmount;
+            uint256 newAskAssetAmount = params.bidAssetAmountToFill - filled;
+            uint256 newBidAssetAmount = (newAskAssetAmount * order.askAssetAmount) / order.bidAssetAmount;
 
             createOrder(CreateOrderParams(
                 order.bidAssetProxyId,
                 order.bidAssetAddress,
-                newBidAssetAmount,
+                newAskAssetAmount,
                 order.bidAssetData,
                 order.askAssetProxyId,
                 order.askAssetAddress,
-                newAskAssetAmount,
+                newBidAssetAmount,
                 order.askAssetData,
                 0
             ));
@@ -302,17 +302,17 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
 
         if (params.bidAssetAmountToFill > filled) {
             Order storage firstOrder = _orders[params.bidAssetAddress][params.askAssetAddress][nonces[0]];
-            uint256 newBidAssetAmount = params.bidAssetAmountToFill - filled;
-            uint256 newAskAssetAmount = (newBidAssetAmount * firstOrder.bidAssetAmount) / firstOrder.askAssetAmount;
+            uint256 newAskAssetAmount = params.bidAssetAmountToFill - filled;
+            uint256 newBidAssetAmount = (newAskAssetAmount * firstOrder.askAssetAmount) / firstOrder.bidAssetAmount;
 
             createOrder(CreateOrderParams(
                 firstOrder.bidAssetProxyId,
                 firstOrder.bidAssetAddress,
-                newBidAssetAmount,
+                newAskAssetAmount,
                 firstOrder.bidAssetData,
                 firstOrder.askAssetProxyId,
                 firstOrder.askAssetAddress,
-                newAskAssetAmount,
+                newBidAssetAmount,
                 firstOrder.askAssetData,
                 0
             ));

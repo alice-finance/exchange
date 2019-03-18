@@ -375,7 +375,7 @@ contract("Exchange.fillOrder", function ([admin, owner, user1, user2, user3]) {
   });
 
   context("fill and create order", function () {
-    let overfillAmount = erc20BidValue.div(new BN("2"));
+    let overfillAmount = erc20BidValue.div(new BN("3"));
     let overfillValue = erc20BidValue.add(overfillAmount);
 
     beforeEach(async function () {
@@ -398,7 +398,7 @@ contract("Exchange.fillOrder", function ([admin, owner, user1, user2, user3]) {
 
     it("should create new order", async function () {
       const expectedNewAskAssetAmount = overfillAmount;
-      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20BidValue).div(erc20AskValue);
+      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20AskValue).div(erc20BidValue);
 
       const { logs } = await this.exchange.fillAndCreateOrder({
         askAssetAddress: this.erc20Ask.address,

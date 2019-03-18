@@ -322,7 +322,7 @@ contract("Exchange.fillOrders", function ([admin, owner, user1, user2, user3, us
       const overfillAmount = erc20Bid4Value;
       const overfillValue = erc20BidValue.add(overfillAmount);
       const expectedNewAskAssetAmount = overfillAmount;
-      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20Bid1Value).div(erc20AskValue);
+      const expectedNewBidAssetAmount = expectedNewAskAssetAmount.mul(erc20AskValue).div(erc20Bid1Value);
 
       const { logs } = await this.exchange.fillAndCreateOrders({
         askAssetAddress: this.erc20Ask.address,
