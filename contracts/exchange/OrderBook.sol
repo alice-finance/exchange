@@ -333,6 +333,13 @@ contract OrderBook {
     }
     // solhint-enable max-line-length, no-empty-blocks, function-max-lines
 
+    function currentPrice(
+        address askAssetAddress,
+        address bidAssetAddress
+    ) public view returns (Price memory results) {
+        return _currentPrice[bidAssetAddress][askAssetAddress];
+    }
+
     // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**
      * @notice Get order fills of given params
