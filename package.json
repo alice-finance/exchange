@@ -34,15 +34,15 @@
   "dependencies": {
     "openzeppelin-eth": "2.1.2",
     "openzeppelin-solidity": "2.1.2",
-    "zos-lib": "^2.2.0"
+    "zos-lib": "^2.2.3"
   },
   "devDependencies": {
     "@alice-network/zos": "^2.2.1",
     "dotenv": "^6.2.0",
     "eth-gas-reporter": "^0.1.12",
-    "loom-js": "1.38.0",
-    "loom-truffle-provider": "0.11.0",
-    "openzeppelin-test-helpers": "^0.1.2",
+    "loom-js": "^1.51.1",
+    "loom-truffle-provider": "^0.13.0",
+    "openzeppelin-test-helpers": "^0.3.2",
     "solhint": "^1.5.0",
     "solidity-coverage": "^0.5.11",
     "truffle": "5.0.2",
