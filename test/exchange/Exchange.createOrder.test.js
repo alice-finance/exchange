@@ -4,10 +4,11 @@ const ERC721Proxy = artifacts.require("./proxy/ERC721Proxy.sol");
 const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
 const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 
-const { BN,  constants, expectEvent, shouldFail } = require("openzeppelin-test-helpers");
+const { BN, constants, expectEvent, shouldFail } = require("openzeppelin-test-helpers");
+const { expect } = require("chai");
 const { ZERO_ADDRESS } = constants;
 
-contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
+contract("Exchange.createOrder", function([admin, owner, user1, user2]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
@@ -24,7 +25,7 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
     await exchange.methods[signature](...args, { from: admin });
   }
 
-  beforeEach(async function () {
+  beforeEach(async function() {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
 
@@ -45,21 +46,23 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
     await this.erc721Bid.mint(user2, erc721BidTokenId, { from: admin });
   });
 
-
-  it("should create erc20 to erc20", async function () {
+  it("should create erc20 to erc20", async function() {
     await this.erc20Ask.approve(this.erc20Proxy.address, erc20AskValue, { from: user1 });
 
-    let { logs } = await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: erc20BidValue.toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: user1 });
+    let { logs } = await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: erc20BidValue.toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: user1 }
+    );
 
     expectEvent.inLogs(logs, "OrderCreated", {
       nonce: new BN("0"),
@@ -76,23 +79,26 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
 
     let order = await this.exchange.getOrder(this.erc20Ask.address, this.erc20Bid.address, new BN("0"));
 
-    order.nonce.should.be.equal("0");
+    expect(order.nonce).to.be.equal("0");
   });
 
-  it("should create erc20 to erc721", async function () {
+  it("should create erc20 to erc721", async function() {
     await this.erc20Ask.approve(this.erc20Proxy.address, erc20AskValue, { from: user1 });
 
-    let { logs } = await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC721_PROXY_ID,
-      bidAssetAddress: this.erc721Bid.address,
-      bidAssetAmount: 1,
-      bidAssetData: erc721BidTokenIdData,
-      feeAmount: 0
-    }, { from: user1 });
+    let { logs } = await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC721_PROXY_ID,
+        bidAssetAddress: this.erc721Bid.address,
+        bidAssetAmount: 1,
+        bidAssetData: erc721BidTokenIdData,
+        feeAmount: 0
+      },
+      { from: user1 }
+    );
 
     expectEvent.inLogs(logs, "OrderCreated", {
       nonce: new BN("0"),
@@ -109,23 +115,26 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
 
     let order = await this.exchange.getOrder(this.erc20Ask.address, this.erc721Bid.address, new BN("0"));
 
-    order.nonce.should.be.equal("0");
+    expect(order.nonce).to.be.equal("0");
   });
 
-  it("should create erc721 to erc20", async function () {
+  it("should create erc721 to erc20", async function() {
     await this.erc721Ask.approve(this.erc721Proxy.address, erc721AskTokenId, { from: user1 });
 
-    let { logs } = await this.exchange.createOrder({
-      askAssetProxyId: ERC721_PROXY_ID,
-      askAssetAddress: this.erc721Ask.address,
-      askAssetAmount: 1,
-      askAssetData: erc721AskTokenIdData,
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: erc20BidValue.toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: user1 });
+    let { logs } = await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC721_PROXY_ID,
+        askAssetAddress: this.erc721Ask.address,
+        askAssetAmount: 1,
+        askAssetData: erc721AskTokenIdData,
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: erc20BidValue.toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: user1 }
+    );
 
     expectEvent.inLogs(logs, "OrderCreated", {
       nonce: new BN("0"),
@@ -142,23 +151,26 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
 
     let order = await this.exchange.getOrder(this.erc721Ask.address, this.erc20Bid.address, new BN("0"));
 
-    order.nonce.should.be.equal("0");
+    expect(order.nonce).to.be.equal("0");
   });
 
-  it("should create erc721 to erc721", async function () {
+  it("should create erc721 to erc721", async function() {
     await this.erc721Ask.approve(this.erc721Proxy.address, erc721AskTokenId, { from: user1 });
 
-    let { logs } = await this.exchange.createOrder({
-      askAssetProxyId: ERC721_PROXY_ID,
-      askAssetAddress: this.erc721Ask.address,
-      askAssetAmount: 1,
-      askAssetData: erc721AskTokenIdData,
-      bidAssetProxyId: ERC721_PROXY_ID,
-      bidAssetAddress: this.erc721Bid.address,
-      bidAssetAmount: 1,
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: user1 });
+    let { logs } = await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC721_PROXY_ID,
+        askAssetAddress: this.erc721Ask.address,
+        askAssetAmount: 1,
+        askAssetData: erc721AskTokenIdData,
+        bidAssetProxyId: ERC721_PROXY_ID,
+        bidAssetAddress: this.erc721Bid.address,
+        bidAssetAmount: 1,
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: user1 }
+    );
 
     expectEvent.inLogs(logs, "OrderCreated", {
       nonce: new BN("0"),
@@ -175,179 +187,212 @@ contract("Exchange.createOrder", function ([admin, owner, user1, user2]) {
 
     let order = await this.exchange.getOrder(this.erc721Ask.address, this.erc721Bid.address, new BN("0"));
 
-    order.nonce.should.be.equal("0");
+    expect(order.nonce).to.be.equal("0");
   });
 
-  context("should revert", function () {
-    beforeEach(async function () {
+  context("should revert", function() {
+    beforeEach(async function() {
       await this.erc20Ask.approve(this.erc20Proxy.address, LIMIT, { from: user1 });
     });
 
-    it("when proxy id is 0", async function () {
+    it("when proxy id is 0", async function() {
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: "0x00",
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: "0x00",
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
 
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: "0x00",
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
-      );
-    });
-
-    it("when proxy id is invalid", async function () {
-      await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: "0x12345678",
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
-      );
-
-      await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: "0x12345678",
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: "0x00",
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
     });
 
-    it("when asset address is 0", async function () {
+    it("when proxy id is invalid", async function() {
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: ZERO_ADDRESS,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: "0x12345678",
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
 
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: ZERO_ADDRESS,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
-      );
-    });
-
-    it("when asset amount is 0", async function () {
-      await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: 0,
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
-      );
-
-      await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 0,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: "0x12345678",
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
     });
 
-    it("when asset amount exceedes limit", async function () {
+    it("when asset address is 0", async function() {
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: LIMIT.add(new BN("1")).toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: ZERO_ADDRESS,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
 
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: LIMIT.add(new BN("1")).toString(),
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: ZERO_ADDRESS,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
     });
 
-    it("when asset is not transferable", async function () {
+    it("when asset amount is 0", async function() {
+      await shouldFail.reverting(
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: 0,
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
+      );
+
+      await shouldFail.reverting(
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 0,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
+      );
+    });
+
+    it("when asset amount exceedes limit", async function() {
+      await shouldFail.reverting(
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: LIMIT.add(new BN("1")).toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
+      );
+
+      await shouldFail.reverting(
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: LIMIT.add(new BN("1")).toString(),
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
+      );
+    });
+
+    it("when asset is not transferable", async function() {
       await this.erc20Ask.approve(this.erc20Proxy.address, 0, { from: user1 });
 
       await shouldFail.reverting(
-        this.exchange.createOrder({
-          askAssetProxyId: ERC20_PROXY_ID,
-          askAssetAddress: this.erc20Ask.address,
-          askAssetAmount: erc20AskValue.toString(),
-          askAssetData: "0x00",
-          bidAssetProxyId: ERC721_PROXY_ID,
-          bidAssetAddress: this.erc721Bid.address,
-          bidAssetAmount: 1,
-          bidAssetData: erc721BidTokenIdData,
-          feeAmount: 0
-        }, { from: user1 })
+        this.exchange.createOrder(
+          {
+            askAssetProxyId: ERC20_PROXY_ID,
+            askAssetAddress: this.erc20Ask.address,
+            askAssetAmount: erc20AskValue.toString(),
+            askAssetData: "0x00",
+            bidAssetProxyId: ERC721_PROXY_ID,
+            bidAssetAddress: this.erc721Bid.address,
+            bidAssetAmount: 1,
+            bidAssetData: erc721BidTokenIdData,
+            feeAmount: 0
+          },
+          { from: user1 }
+        )
       );
     });
   });

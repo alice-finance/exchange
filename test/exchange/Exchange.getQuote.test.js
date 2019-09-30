@@ -5,9 +5,10 @@ const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
 const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 
 const { BN, time } = require("openzeppelin-test-helpers");
-const { performance } = require("perf_hooks")
+const { expect } = require("chai");
+const { performance } = require("perf_hooks");
 
-contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
+contract("Exchange.getQuote", function([admin, owner, maker, taker]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
@@ -29,17 +30,20 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
       bidAssetAmount = web3.utils.toBN(bidAssetAmount);
     }
 
-    await context.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: context.erc20Ask.address,
-      askAssetAmount: askAssetAmount.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: context.erc20Bid.address,
-      bidAssetAmount: bidAssetAmount.toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker });
+    await context.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: context.erc20Ask.address,
+        askAssetAmount: askAssetAmount.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: context.erc20Bid.address,
+        bidAssetAmount: bidAssetAmount.toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker }
+    );
   }
 
   async function fillOrder(context, nonce, amountToFill) {
@@ -47,16 +51,19 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
       amountToFill = web3.utils.toBN(amountToFill);
     }
 
-    await context.exchange.fillOrder({
-      askAssetAddress: context.erc20Ask.address,
-      bidAssetAddress: context.erc20Bid.address,
-      nonce: nonce,
-      bidAssetAmountToFill: amountToFill.toString(),
-      feeAmount: 0
-    }, { from: taker });
+    await context.exchange.fillOrder(
+      {
+        askAssetAddress: context.erc20Ask.address,
+        bidAssetAddress: context.erc20Bid.address,
+        nonce: nonce,
+        bidAssetAmountToFill: amountToFill.toString(),
+        feeAmount: 0
+      },
+      { from: taker }
+    );
   }
 
-  before(async function () {
+  before(async function() {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
 
@@ -84,23 +91,17 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
     await createOrder(this, erc20AskValue, 5000000);
   });
 
-  it("no fills", async function () {
-    let result = await this.exchange.getQuotes(
-      this.erc20Ask.address,
-      this.erc20Bid.address,
-      0,
-      0,
-      0
-    );
+  it("no fills", async function() {
+    let result = await this.exchange.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, 0, 0);
 
-    result.length.should.be.equal(60);
+    expect(result.length).to.be.equal(60);
     result.forEach(quote => {
-      quote.volume.should.be.equal("0");
+      expect(quote.volume).to.be.equal("0");
     });
   });
 
-  context("on ethereum node", function () {
-    before(async function () {
+  context("on ethereum node", function() {
+    before(async function() {
       let timeAdjustment = new BN("3600");
       let now = await time.latest();
       now = now.sub(now.mod(timeAdjustment)).add(timeAdjustment);
@@ -117,7 +118,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
       console.log("Preparing data took " + (t1 - t0) + " milliseconds.");
     });
 
-    it("should get quote 60", async function () {
+    it("should get quote 60", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -126,11 +127,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(1);
+      expect(result.length).to.be.equal(1);
     });
 
-    it("should get quote 180", async function () {
+    it("should get quote 180", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -139,11 +139,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(3);
+      expect(result.length).to.be.equal(3);
     });
 
-    it("should get quote 300", async function () {
+    it("should get quote 300", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -152,11 +151,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(5);
+      expect(result.length).to.be.equal(5);
     });
 
-    it("should get quote 900", async function () {
+    it("should get quote 900", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -165,11 +163,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(15);
+      expect(result.length).to.be.equal(15);
     });
 
-    it("should get quote 1800", async function () {
+    it("should get quote 1800", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -178,11 +175,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(30);
+      expect(result.length).to.be.equal(30);
     });
 
-    it("should get quote 3600", async function () {
+    it("should get quote 3600", async function() {
       let result = await this.exchange.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
@@ -191,39 +187,41 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
-
-      result.length.should.be.equal(60);
+      expect(result.length).to.be.equal(60);
     });
 
-    context("should adjust timeFrom and timeTo", async function () {
-      it("1 hour", async function () {
+    context("should adjust timeFrom and timeTo", async function() {
+      it("1 hour", async function() {
         let now = await time.latest();
-        let result = await this.exchange.getQuotes(
-          this.erc20Ask.address,
-          this.erc20Bid.address,
-          0,
-          now,
-          0
+        let result = await this.exchange.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, now, 0);
+
+        expect(result.length).to.be.equal(60);
+        expect(result[0].timeOpen).to.be.equal(
+          now
+            .sub(now.mod(new BN("60")))
+            .sub(new BN("3600"))
+            .toString()
         );
-
-
-        result.length.should.be.equal(60);
-        result[0].timeOpen.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("3600")).toString());
-        result[59].timeClose.should.be.equal(now.sub(now.mod(new BN("60"))).sub(new BN("1")).toString());
+        expect(result[59].timeClose).to.be.equal(
+          now
+            .sub(now.mod(new BN("60")))
+            .sub(new BN("1"))
+            .toString()
+        );
       });
     });
   });
 
-  context.skip("on plasma node", function () {
-    context("range", async function () {
-      before(async function () {
+  context.skip("on plasma node", function() {
+    context("range", async function() {
+      before(async function() {
         let timeToExpend = MIN_QUOTE_TIME.mul(new BN("3")).toNumber();
         for (i = 0; i < timeToExpend; i++) {
           await fillOrder(this, i % 6, 100); // 20000
         }
       });
 
-      it("should get quote 60", async function () {
+      it("should get quote 60", async function() {
         let result = await this.exchange.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -232,11 +230,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           0
         );
 
-
-        result.length.should.be.equal(1);
+        expect(result.length).to.be.equal(1);
       });
 
-      it("should get quote 120", async function () {
+      it("should get quote 120", async function() {
         let result = await this.exchange.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -245,11 +242,10 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           MIN_QUOTE_TIME
         );
 
-
-        result.length.should.be.equal(59);
+        expect(result.length).to.be.equal(59);
       });
 
-      it("should get quote 180", async function () {
+      it("should get quote 180", async function() {
         let result = await this.exchange.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -258,8 +254,7 @@ contract("Exchange.getQuote", function ([admin, owner, maker, taker]) {
           MIN_QUOTE_TIME
         );
 
-
-        result.length.should.be.equal(1);
+        expect(result.length).to.be.equal(1);
       });
     });
   });

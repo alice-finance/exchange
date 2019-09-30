@@ -5,8 +5,9 @@ const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
 const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 
 const { BN, expectEvent, shouldFail } = require("openzeppelin-test-helpers");
+const { expect } = require("chai");
 
-contract("Exchange.cancelOrder", function ([admin, owner, user1, user2]) {
+contract("Exchange.cancelOrder", function([admin, owner, user1, user2]) {
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
   const erc20AskValue = new BN("10000");
@@ -20,7 +21,7 @@ contract("Exchange.cancelOrder", function ([admin, owner, user1, user2]) {
     await exchange.methods[signature](...args, { from: admin });
   }
 
-  beforeEach(async function () {
+  beforeEach(async function() {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
 
@@ -45,26 +46,32 @@ contract("Exchange.cancelOrder", function ([admin, owner, user1, user2]) {
     beforeEach(async function() {
       await this.erc20Ask.approve(this.erc20Proxy.address, erc20AskValue, { from: user1 });
 
-      await this.exchange.createOrder({
-        askAssetProxyId: ERC20_PROXY_ID,
-        askAssetAddress: this.erc20Ask.address,
-        askAssetAmount: erc20AskValue.toString(),
-        askAssetData: "0x00",
-        bidAssetProxyId: ERC20_PROXY_ID,
-        bidAssetAddress: this.erc20Bid.address,
-        bidAssetAmount: erc20BidValue.toString(),
-        bidAssetData: "0x00",
-        feeAmount: 0
-      }, { from: user1 });
+      await this.exchange.createOrder(
+        {
+          askAssetProxyId: ERC20_PROXY_ID,
+          askAssetAddress: this.erc20Ask.address,
+          askAssetAmount: erc20AskValue.toString(),
+          askAssetData: "0x00",
+          bidAssetProxyId: ERC20_PROXY_ID,
+          bidAssetAddress: this.erc20Bid.address,
+          bidAssetAmount: erc20BidValue.toString(),
+          bidAssetData: "0x00",
+          feeAmount: 0
+        },
+        { from: user1 }
+      );
     });
 
     context("should cancel", function() {
       it("not filled order", async function() {
-        let { logs } = await this.exchange.cancelOrder({
-          askAssetAddress: this.erc20Ask.address,
-          bidAssetAddress: this.erc20Bid.address,
-          nonce: 0
-        }, { from: user1 });
+        let { logs } = await this.exchange.cancelOrder(
+          {
+            askAssetAddress: this.erc20Ask.address,
+            bidAssetAddress: this.erc20Bid.address,
+            nonce: 0
+          },
+          { from: user1 }
+        );
 
         expectEvent.inLogs(logs, "OrderCancelled", {
           askAssetAddress: this.erc20Ask.address,
@@ -73,21 +80,27 @@ contract("Exchange.cancelOrder", function ([admin, owner, user1, user2]) {
         });
       });
 
-      it("partially filled order", async function () {
+      it("partially filled order", async function() {
         await this.erc20Bid.approve(this.erc20Proxy.address, erc20BidValue, { from: user2 });
-        await this.exchange.fillOrder({
-          askAssetAddress: this.erc20Ask.address,
-          bidAssetAddress: this.erc20Bid.address,
-          nonce: 0,
-          bidAssetAmountToFill: erc20BidValue.div(new BN("2")).toString(),
-          feeAmount: 0
-        }, { from: user2 });
+        await this.exchange.fillOrder(
+          {
+            askAssetAddress: this.erc20Ask.address,
+            bidAssetAddress: this.erc20Bid.address,
+            nonce: 0,
+            bidAssetAmountToFill: erc20BidValue.div(new BN("2")).toString(),
+            feeAmount: 0
+          },
+          { from: user2 }
+        );
 
-        let { logs } = await this.exchange.cancelOrder({
-          askAssetAddress: this.erc20Ask.address,
-          bidAssetAddress: this.erc20Bid.address,
-          nonce: 0
-        }, { from: user1 });
+        let { logs } = await this.exchange.cancelOrder(
+          {
+            askAssetAddress: this.erc20Ask.address,
+            bidAssetAddress: this.erc20Bid.address,
+            nonce: 0
+          },
+          { from: user1 }
+        );
 
         expectEvent.inLogs(logs, "OrderCancelled", {
           askAssetAddress: this.erc20Ask.address,
@@ -100,49 +113,64 @@ contract("Exchange.cancelOrder", function ([admin, owner, user1, user2]) {
     context("should revert", function() {
       it("when maker is not caller", async function() {
         await shouldFail.reverting(
-          this.exchange.cancelOrder({
-            askAssetAddress: this.erc20Ask.address,
-            bidAssetAddress: this.erc20Bid.address,
-            nonce: 0
-          }, { from: user2 })
+          this.exchange.cancelOrder(
+            {
+              askAssetAddress: this.erc20Ask.address,
+              bidAssetAddress: this.erc20Bid.address,
+              nonce: 0
+            },
+            { from: user2 }
+          )
         );
       });
 
       it("when order is already cancelled", async function() {
-        await this.exchange.cancelOrder({
-          askAssetAddress: this.erc20Ask.address,
-          bidAssetAddress: this.erc20Bid.address,
-          nonce: 0
-        }, { from: user1 });
-
-        await shouldFail.reverting(
-          this.exchange.cancelOrder({
+        await this.exchange.cancelOrder(
+          {
             askAssetAddress: this.erc20Ask.address,
             bidAssetAddress: this.erc20Bid.address,
             nonce: 0
-          }, { from: user1 })
+          },
+          { from: user1 }
+        );
+
+        await shouldFail.reverting(
+          this.exchange.cancelOrder(
+            {
+              askAssetAddress: this.erc20Ask.address,
+              bidAssetAddress: this.erc20Bid.address,
+              nonce: 0
+            },
+            { from: user1 }
+          )
         );
       });
 
       it("when order is already filled", async function() {
         await this.erc20Bid.approve(this.erc20Proxy.address, erc20BidValue, { from: user2 });
-        await this.exchange.fillOrder({
-          askAssetAddress: this.erc20Ask.address,
-          bidAssetAddress: this.erc20Bid.address,
-          nonce: 0,
-          bidAssetAmountToFill: erc20BidValue.toString(),
-          feeAmount: 0
-        }, { from: user2 });
-
-        let order = await this.exchange.getOrder(this.erc20Ask.address, this.erc20Bid.address, 0);
-        order.status.should.be.equal("2");
-
-        await shouldFail.reverting(
-          this.exchange.cancelOrder({
+        await this.exchange.fillOrder(
+          {
             askAssetAddress: this.erc20Ask.address,
             bidAssetAddress: this.erc20Bid.address,
-            nonce: 0
-          }, { from: user1 })
+            nonce: 0,
+            bidAssetAmountToFill: erc20BidValue.toString(),
+            feeAmount: 0
+          },
+          { from: user2 }
+        );
+
+        let order = await this.exchange.getOrder(this.erc20Ask.address, this.erc20Bid.address, 0);
+        expect(order.status).to.be.equal("2");
+
+        await shouldFail.reverting(
+          this.exchange.cancelOrder(
+            {
+              askAssetAddress: this.erc20Ask.address,
+              bidAssetAddress: this.erc20Bid.address,
+              nonce: 0
+            },
+            { from: user1 }
+          )
         );
       });
     });

@@ -1,5 +1,5 @@
 {
-  "name": "@alice-network/exchange",
+  "name": "@alice-finance/exchange",
   "version": "1.0.4",
   "description": "Solidity contracts for the exchange on alice network",
   "files": [
@@ -11,41 +11,46 @@
     "zos.dev-15935000495001.json"
   ],
   "scripts": {
+    "compile": "./node_modules/.bin/truffle compile",
     "build": "./node_modules/.bin/truffle compile --all && node scripts/build-abis.js",
-    "test": "./node_modules/.bin/truffle test",
+    "test": "./scripts/test.sh",
     "test:coverage": "./node_modules/.bin/solidity-coverage",
     "deploy": "scripts/deploy.sh",
     "upgrade": "scripts/upgrade.sh",
-    "console": "./node_modules/.bin/truffle console --network console",
-    "prepack": "npm run build",
-    "preversion": "npm test",
-    "postversion": "git push && git push --tags && npm publish --access=public"
+    "prettier": "./node_modules/.bin/prettier contracts/**/*.sol --write ",
+    "prettier:js": "./node_modules/.bin/prettier test/**/*.js --write --print-width 120"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alice-network/exchange.git"
+    "url": "https://github.com/alice-finance/exchange.git"
   },
   "author": "Changhwan Choi <changhwan@dnext.co>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alice-network/exchange/issues"
+    "url": "https://github.com/alice-finance/exchange/issues"
   },
-  "homepage": "https://github.com/alice-network/exchange",
+  "homepage": "https://github.com/alice-finance/exchange",
   "dependencies": {
-    "openzeppelin-eth": "2.1.2",
-    "openzeppelin-solidity": "2.1.2",
-    "zos-lib": "^2.2.3"
+    "@openzeppelin/contracts-ethereum-package": "^2.2.3",
+    "@openzeppelin/upgrades": "^2.5.3",
+    "openzeppelin-solidity": "^2.3.0"
   },
   "devDependencies": {
     "@alice-network/zos": "^2.2.1",
-    "dotenv": "^6.2.0",
-    "eth-gas-reporter": "^0.1.12",
+    "@openzeppelin/cli": "^2.5.3",
+    "chai": "^4.2.0",
+    "chai-bn": "^0.2.0",
+    "dotenv": "^8.0.0",
+    "eth-gas-reporter": "^0.2.0",
+    "ganache-cli": "^6.7.0",
     "loom-js": "^1.51.1",
     "loom-truffle-provider": "^0.13.0",
-    "openzeppelin-test-helpers": "^0.3.2",
-    "solhint": "^1.5.0",
-    "solidity-coverage": "^0.5.11",
-    "truffle": "5.0.2",
+    "openzeppelin-test-helpers": "^0.4.0",
+    "prettier": "^1.18.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.34",
+    "solhint": "^2.0.0",
+    "solidity-coverage": "^0.6.0",
+    "truffle": "^5.0.2",
     "yargs": "12.0.5"
   },
   "engines": {

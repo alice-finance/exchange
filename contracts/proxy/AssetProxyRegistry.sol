@@ -1,16 +1,15 @@
 pragma solidity ^0.5.3;
 
-import "zos-lib/contracts/Initializable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 import "../proxy/AssetProxy.sol";
-
 
 /**
  * @title AssetProxyRegistry
  */
 contract AssetProxyRegistry is Initializable {
     // registered asset proxies
-    mapping (bytes4 => AssetProxy) internal _assetProxyOfProxyId;
+    mapping(bytes4 => AssetProxy) internal _assetProxyOfProxyId;
 
     event AssetProxyRegistered(bytes4 proxyId, AssetProxy assetProxy);
 
@@ -21,7 +20,10 @@ contract AssetProxyRegistry is Initializable {
      */
     function registerAssetProxy(bytes4 proxyId, AssetProxy assetProxy) public {
         require(proxyId != 0, "proxyId is 0");
-        require(address(_assetProxyOfProxyId[proxyId]) == address(0), "assetProxy of same proxyId already registered");
+        require(
+            address(_assetProxyOfProxyId[proxyId]) == address(0),
+            "assetProxy of same proxyId already registered"
+        );
 
         _assetProxyOfProxyId[proxyId] = assetProxy;
 

@@ -4,14 +4,13 @@ import "openzeppelin-solidity/contracts/token/ERC721/IERC721.sol";
 
 import "./AssetProxy.sol";
 
-
 /**
  * @title ERC721Proxy
  * @dev AssetProxy of ERC721 tokens
  */
 contract ERC721Proxy is AssetProxy {
     /// @dev ID of ERC721 Proxy
-    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721(uint256)"));
+    bytes4 internal constant PROXY_ID = bytes4(keccak256("ERC721(uint256)"));
 
     /**
      * @dev get ID of current proxy
@@ -53,7 +52,10 @@ contract ERC721Proxy is AssetProxy {
         address assetAddress,
         bytes memory assetData
     ) public {
-        require(canTransferFrom(from, amount, assetAddress, assetData), "cannot transfer from");
+        require(
+            canTransferFrom(from, amount, assetAddress, assetData),
+            "cannot transfer from"
+        );
 
         uint256 tokenId = _decodeTokenId(assetData);
         bytes memory data = _decodeData(assetData);
@@ -67,7 +69,11 @@ contract ERC721Proxy is AssetProxy {
      * @param assetData Extra asset data
      * @return decoded token ID
      */
-    function _decodeTokenId(bytes memory assetData) private pure returns (uint256 tokenId) {
+    function _decodeTokenId(bytes memory assetData)
+        private
+        pure
+        returns (uint256 tokenId)
+    {
         assembly {
             tokenId := mload(add(assetData, 0x20))
         }
@@ -78,7 +84,11 @@ contract ERC721Proxy is AssetProxy {
      * @param assetData extra asset data
      * @return decoded data
      */
-    function _decodeData(bytes memory assetData) private pure returns (bytes memory) {
+    function _decodeData(bytes memory assetData)
+        private
+        pure
+        returns (bytes memory)
+    {
         uint256 dataLength = assetData.length - 0x20;
         bytes memory data = new bytes(dataLength);
         _memcpy(data, 0, assetData, 0x20, dataLength);
@@ -88,9 +98,15 @@ contract ERC721Proxy is AssetProxy {
     /**
      * @dev perform memcpy
      */
-    function _memcpy(bytes memory dst, uint256 dstOffset, bytes memory src, uint256 srcOffset, uint len) private pure {
-        uint d;
-        uint s;
+    function _memcpy(
+        bytes memory dst,
+        uint256 dstOffset,
+        bytes memory src,
+        uint256 srcOffset,
+        uint256 len
+    ) private pure {
+        uint256 d;
+        uint256 s;
         assembly {
             d := dst
             s := src
@@ -99,14 +115,17 @@ contract ERC721Proxy is AssetProxy {
         // Copy word-length chunks while possible
         for (; len >= 32; len -= 32) {
             assembly {
-                mstore(add(add(dst, 0x20), dstOffset), mload(add(add(src, 0x20), srcOffset)))
+                mstore(
+                    add(add(dst, 0x20), dstOffset),
+                    mload(add(add(src, 0x20), srcOffset))
+                )
             }
             d += 32;
             s += 32;
         }
 
         // Copy remaining bytes
-        uint mask = 256 ** (32 - len) - 1;
+        uint256 mask = 256**(32 - len) - 1;
         assembly {
             let srcpart := and(mload(add(add(src, 0x20), srcOffset)), not(mask))
             let dstpart := and(mload(add(add(dst, 0x20), dstOffset)), mask)

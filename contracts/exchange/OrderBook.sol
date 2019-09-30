@@ -3,7 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-
 /**
  * @title OrderBook
  */
@@ -23,8 +22,8 @@ contract OrderBook {
     }
 
     struct Order {
-        uint256 nonce;  // nonce of order in specific market
-        address maker;  // The address of order maker
+        uint256 nonce; // nonce of order in specific market
+        address maker; // The address of order maker
         bytes4 askAssetProxyId; // The proxy ID of ask asset
         address askAssetAddress; // The address of ask asset
         uint256 askAssetAmount; // Ask amount
@@ -133,199 +132,353 @@ contract OrderBook {
             // 0xc0 length
 
             switch gt(timeFrom, 0)
-            case 1 {
-                let s := 0
-                let e := sub(mload(add(mem_offset, 0x20)), 1)
-                let m := div(add(s, e), 2)
+                case 1 {
+                    let s := 0
+                    let e := sub(mload(add(mem_offset, 0x20)), 1)
+                    let m := div(add(s, e), 2)
 
-                for {} lt(s, e) {} {
-                    let t := sload(add(add(position, mul(m, 12)), 10))
+                    for {
 
-                    switch lt(t, timeFrom)
-                    case 1 {
-                        s := add(m, 1)
-                        m := div(add(s, e), 2)
+                    } lt(s, e) {
+
+                    } {
+                        let t := sload(add(add(position, mul(m, 12)), 10))
+
+                        switch lt(t, timeFrom)
+                            case 1 {
+                                s := add(m, 1)
+                                m := div(add(s, e), 2)
+                            }
+                            case 0 {
+                                switch gt(t, timeFrom)
+                                    case 1 {
+                                        e := m
+                                        m := div(add(s, e), 2)
+                                    }
+                                    case 0 {
+                                        // m := add(m, 1)
+                                        s := e
+                                    }
+                            }
+
+                        mstore(
+                            add(mem_offset, 0xc0),
+                            add(mload(add(mem_offset, 0xc0)), 1)
+                        )
                     }
-                    case 0 {
-                        switch gt(t, timeFrom)
-                        case 1 {
-                            e := m
-                            m := div(add(s, e), 2)
-                        }
-                        case 0 {
-                            // m := add(m, 1)
-                            s := e
-                        }
-                    }
 
-                    mstore(add(mem_offset, 0xc0), add(mload(add(mem_offset, 0xc0)), 1))
+                    mstore(add(mem_offset, 0x40), m)
                 }
-
-                mstore(add(mem_offset, 0x40), m)
-            }
 
             switch gt(timeTo, 0)
-            case 1 {
-                let s := 0
-                let e := sub(mload(add(mem_offset, 0x20)), 1)
-                let m := div(add(s, e), 2)
+                case 1 {
+                    let s := 0
+                    let e := sub(mload(add(mem_offset, 0x20)), 1)
+                    let m := div(add(s, e), 2)
 
-                for {} lt(s, e) {} {
-                    let t := sload(add(add(position, mul(m, 12)), 10))
+                    for {
 
-                    switch lt(t, timeTo)
-                    case 1 {
-                        s := add(m, 1)
-                        m := div(add(s, e), 2)
+                    } lt(s, e) {
+
+                    } {
+                        let t := sload(add(add(position, mul(m, 12)), 10))
+
+                        switch lt(t, timeTo)
+                            case 1 {
+                                s := add(m, 1)
+                                m := div(add(s, e), 2)
+                            }
+                            case 0 {
+                                switch gt(t, timeTo)
+                                    case 1 {
+                                        e := m
+                                        m := div(add(s, e), 2)
+                                    }
+                                    case 0 {
+                                        m := add(m, 1)
+                                        s := e
+                                    }
+                            }
                     }
-                    case 0 {
-                        switch gt(t, timeTo)
-                        case 1 {
-                            e := m
-                            m := div(add(s, e), 2)
-                        }
-                        case 0 {
-                            m := add(m, 1)
-                            s := e
-                        }
-                    }
+
+                    mstore(add(mem_offset, 0x60), m)
                 }
-
-                mstore(add(mem_offset, 0x60), m)
-            }
 
             results := mload(0x40)
-            mstore(0x40, add(results, mul(0x20, add(sub(mload(add(mem_offset, 0x60)), mload(add(mem_offset, 0x40))), 1))))
+            mstore(
+                0x40,
+                add(
+                    results,
+                    mul(
+                        0x20,
+                        add(
+                            sub(
+                                mload(add(mem_offset, 0x60)),
+                                mload(add(mem_offset, 0x40))
+                            ),
+                            1
+                        )
+                    )
+                )
+            )
 
-            for { let i := mload(add(mem_offset, 0x40)) } lt(i, mload(add(mem_offset, 0x60))) { i := add(i, 1) } {
+            for {
+                let i := mload(add(mem_offset, 0x40))
+            } lt(i, mload(add(mem_offset, 0x60))) {
+                i := add(i, 1)
+            } {
                 let order_position := add(position, mul(i, 12))
-                let order_maker := and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, sload(add(order_position, 1)))
+                let order_maker := and(
+                    0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                    sload(add(order_position, 1))
+                )
 
-                switch and(iszero(eq(maker, 0x0000000000000000000000000000000000000000)), iszero(eq(order_maker, maker)))
-                case 1 {
-                }
-                case 0 {
-                    let order_status := sload(add(order_position, 9))
-
-                    switch and(gt(orderStatus, 0), iszero(eq(order_status, orderStatus)))
+                switch and(
+                    iszero(
+                        eq(maker, 0x0000000000000000000000000000000000000000)
+                    ),
+                    iszero(eq(order_maker, maker))
+                )
                     case 1 {
+
                     }
                     case 0 {
-                        mstore(add(mem_offset, 0x80), add(mload(add(mem_offset, 0x80)), 1))
+                        let order_status := sload(add(order_position, 9))
 
-                        let offset := mload(0x40)
-                        mstore(add(results, mul(0x20, mload(add(mem_offset, 0x80)))), offset)
-                        mstore(0x40, add(offset, mul(0x20, 14)))
-
-                        // nonce
-                        mstore(offset, sload(order_position))
-
-                        // maker
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
-
-                        // askAssetProxyId
-                        offset := add(offset, 0x20)
-                        mstore(offset, mul(and(0x0000000000000000ffffffff0000000000000000000000000000000000000000, mload(add(mem_offset, 0xa0))), exp(2, 64)))
-
-                        // askAssetAddress
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
-
-                        // askAssetAmount
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(offset, sload(order_position))
-
-                        // askAssetData
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        {
-                            let q := mload(0x40)
-
-                            mstore(add(mem_offset, 0xa0), sload(order_position))
-                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                            mstore(0x40, add(q, 0x20))
-                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                        switch and(
+                            gt(orderStatus, 0),
+                            iszero(eq(order_status, orderStatus))
+                        )
                             case 1 {
-                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                                mstore(0x40, add(q, 0x40))
+
                             }
-                            mstore(offset, q)
-                        }
+                            case 0 {
+                                mstore(
+                                    add(mem_offset, 0x80),
+                                    add(mload(add(mem_offset, 0x80)), 1)
+                                )
 
-                        // bidAssetProxyId
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(offset, mul(and(0x00000000000000000000000000000000000000000000000000000000ffffffff, mload(add(mem_offset, 0xa0))), exp(2, 224)))
+                                let offset := mload(0x40)
+                                mstore(
+                                    add(
+                                        results,
+                                        mul(0x20, mload(add(mem_offset, 0x80)))
+                                    ),
+                                    offset
+                                )
+                                mstore(0x40, add(offset, mul(0x20, 14)))
 
-                        // bidAssetAddress
-                        offset := add(offset, 0x20)
-                        mstore(offset, div(and(0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000, mload(add(mem_offset, 0xa0))), exp(2, 32)))
+                                // nonce
+                                mstore(offset, sload(order_position))
 
-                        // bidAssetAmount
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(offset, sload(order_position))
+                                // maker
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(
+                                    add(mem_offset, 0xa0),
+                                    sload(order_position)
+                                )
+                                mstore(
+                                    offset,
+                                    and(
+                                        0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                                        mload(add(mem_offset, 0xa0))
+                                    )
+                                )
 
-                        // bidAssetData
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        {
-                            let q := mload(0x40)
+                                // askAssetProxyId
+                                offset := add(offset, 0x20)
+                                mstore(
+                                    offset,
+                                    mul(
+                                        and(
+                                            0x0000000000000000ffffffff0000000000000000000000000000000000000000,
+                                            mload(add(mem_offset, 0xa0))
+                                        ),
+                                        exp(2, 64)
+                                    )
+                                )
 
-                            mstore(add(mem_offset, 0xa0), sload(order_position))
-                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                            mstore(0x40, add(q, 0x20))
-                            switch gt(mload(add(mem_offset, 0xc0)), 0)
-                            case 1 {
-                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                                mstore(0x40, add(q, 0x40))
+                                // askAssetAddress
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(
+                                    add(mem_offset, 0xa0),
+                                    sload(order_position)
+                                )
+                                mstore(
+                                    offset,
+                                    and(
+                                        0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                                        mload(add(mem_offset, 0xa0))
+                                    )
+                                )
+
+                                // askAssetAmount
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(offset, sload(order_position))
+
+                                // askAssetData
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                {
+                                    let q := mload(0x40)
+
+                                    mstore(
+                                        add(mem_offset, 0xa0),
+                                        sload(order_position)
+                                    )
+                                    mstore(
+                                        add(mem_offset, 0xc0),
+                                        and(
+                                            0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(
+                                        q,
+                                        div(mload(add(mem_offset, 0xc0)), 2)
+                                    )
+                                    mstore(0x40, add(q, 0x20))
+                                    switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                        case 1 {
+                                            mstore(
+                                                add(q, 0x20),
+                                                and(
+                                                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                                    mload(add(mem_offset, 0xa0))
+                                                )
+                                            )
+                                            mstore(0x40, add(q, 0x40))
+                                        }
+                                    mstore(offset, q)
+                                }
+
+                                // bidAssetProxyId
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(
+                                    add(mem_offset, 0xa0),
+                                    sload(order_position)
+                                )
+                                mstore(
+                                    offset,
+                                    mul(
+                                        and(
+                                            0x00000000000000000000000000000000000000000000000000000000ffffffff,
+                                            mload(add(mem_offset, 0xa0))
+                                        ),
+                                        exp(2, 224)
+                                    )
+                                )
+
+                                // bidAssetAddress
+                                offset := add(offset, 0x20)
+                                mstore(
+                                    offset,
+                                    div(
+                                        and(
+                                            0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000,
+                                            mload(add(mem_offset, 0xa0))
+                                        ),
+                                        exp(2, 32)
+                                    )
+                                )
+
+                                // bidAssetAmount
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(offset, sload(order_position))
+
+                                // bidAssetData
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                {
+                                    let q := mload(0x40)
+
+                                    mstore(
+                                        add(mem_offset, 0xa0),
+                                        sload(order_position)
+                                    )
+                                    mstore(
+                                        add(mem_offset, 0xc0),
+                                        and(
+                                            0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(
+                                        q,
+                                        div(mload(add(mem_offset, 0xc0)), 2)
+                                    )
+                                    mstore(0x40, add(q, 0x20))
+                                    switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                        case 1 {
+                                            mstore(
+                                                add(q, 0x20),
+                                                and(
+                                                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                                    mload(add(mem_offset, 0xa0))
+                                                )
+                                            )
+                                            mstore(0x40, add(q, 0x40))
+                                        }
+                                    mstore(offset, q)
+                                }
+
+                                // bidAssetFilledAmount
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(offset, sload(order_position))
+
+                                // status
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(offset, sload(order_position))
+
+                                // timestamp
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                mstore(offset, sload(order_position))
+
+                                // auxiliary
+                                order_position := add(order_position, 1)
+                                offset := add(offset, 0x20)
+                                {
+                                    let q := mload(0x40)
+
+                                    mstore(
+                                        add(mem_offset, 0xa0),
+                                        sload(order_position)
+                                    )
+                                    mstore(
+                                        add(mem_offset, 0xc0),
+                                        and(
+                                            0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(
+                                        q,
+                                        div(mload(add(mem_offset, 0xc0)), 2)
+                                    )
+                                    mstore(0x40, add(q, 0x20))
+                                    switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                        case 1 {
+                                            mstore(
+                                                add(q, 0x20),
+                                                and(
+                                                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                                    mload(add(mem_offset, 0xa0))
+                                                )
+                                            )
+                                            mstore(0x40, add(q, 0x40))
+                                        }
+                                    mstore(offset, q)
+                                }
                             }
-                            mstore(offset, q)
-                        }
-
-                        // bidAssetFilledAmount
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(offset, sload(order_position))
-
-                        // status
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(offset, sload(order_position))
-
-                        // timestamp
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        mstore(offset, sload(order_position))
-
-                        // auxiliary
-                        order_position := add(order_position, 1)
-                        offset := add(offset, 0x20)
-                        {
-                            let q := mload(0x40)
-
-                            mstore(add(mem_offset, 0xa0), sload(order_position))
-                            mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                            mstore(0x40, add(q, 0x20))
-                            switch gt(mload(add(mem_offset, 0xc0)), 0)
-                            case 1 {
-                                mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                                mstore(0x40, add(q, 0x40))
-                            }
-                            mstore(offset, q)
-                        }
                     }
-                }
             }
 
             mstore(results, mload(add(mem_offset, 0x80)))
@@ -333,10 +486,11 @@ contract OrderBook {
     }
     // solhint-enable max-line-length, no-empty-blocks, function-max-lines
 
-    function getCurrentPrice(
-        address askAssetAddress,
-        address bidAssetAddress
-    ) public view returns (Price memory results) {
+    function getCurrentPrice(address askAssetAddress, address bidAssetAddress)
+        public
+        view
+        returns (Price memory results)
+    {
         return _currentPrice[bidAssetAddress][askAssetAddress];
     }
 
@@ -380,192 +534,315 @@ contract OrderBook {
             // 0xc0 length
 
             switch gt(timeFrom, 0)
-            case 1 {
-                let s := 0
-                let e := sub(mload(add(mem_offset, 0x20)), 1)
-                let m := div(add(s, e), 2)
+                case 1 {
+                    let s := 0
+                    let e := sub(mload(add(mem_offset, 0x20)), 1)
+                    let m := div(add(s, e), 2)
 
-                for {} lt(s, e) {} {
-                    let t := sload(add(add(position, mul(m, 12)), 10))
+                    for {
 
-                    switch lt(t, timeFrom)
-                    case 1 {
-                        s := add(m, 1)
-                        m := div(add(s, e), 2)
+                    } lt(s, e) {
+
+                    } {
+                        let t := sload(add(add(position, mul(m, 12)), 10))
+
+                        switch lt(t, timeFrom)
+                            case 1 {
+                                s := add(m, 1)
+                                m := div(add(s, e), 2)
+                            }
+                            case 0 {
+                                switch gt(t, timeFrom)
+                                    case 1 {
+                                        e := m
+                                        m := div(add(s, e), 2)
+                                    }
+                                    case 0 {
+                                        // m := add(m, 1)
+                                        s := e
+                                    }
+                            }
+
+                        mstore(
+                            add(mem_offset, 0xc0),
+                            add(mload(add(mem_offset, 0xc0)), 1)
+                        )
                     }
-                    case 0 {
-                        switch gt(t, timeFrom)
-                        case 1 {
-                            e := m
-                            m := div(add(s, e), 2)
-                        }
-                        case 0 {
-                            // m := add(m, 1)
-                            s := e
-                        }
-                    }
 
-                    mstore(add(mem_offset, 0xc0), add(mload(add(mem_offset, 0xc0)), 1))
+                    mstore(add(mem_offset, 0x40), m)
                 }
-
-                mstore(add(mem_offset, 0x40), m)
-            }
 
             switch gt(timeTo, 0)
-            case 1 {
-                let s := 0
-                let e := sub(mload(add(mem_offset, 0x20)), 1)
-                let m := div(add(s, e), 2)
+                case 1 {
+                    let s := 0
+                    let e := sub(mload(add(mem_offset, 0x20)), 1)
+                    let m := div(add(s, e), 2)
 
-                for {} lt(s, e) {} {
-                    let t := sload(add(add(position, mul(m, 12)), 10))
+                    for {
 
-                    switch lt(t, timeTo)
-                    case 1 {
-                        s := add(m, 1)
-                        m := div(add(s, e), 2)
+                    } lt(s, e) {
+
+                    } {
+                        let t := sload(add(add(position, mul(m, 12)), 10))
+
+                        switch lt(t, timeTo)
+                            case 1 {
+                                s := add(m, 1)
+                                m := div(add(s, e), 2)
+                            }
+                            case 0 {
+                                switch gt(t, timeTo)
+                                    case 1 {
+                                        e := m
+                                        m := div(add(s, e), 2)
+                                    }
+                                    case 0 {
+                                        m := add(m, 1)
+                                        s := e
+                                    }
+                            }
                     }
-                    case 0 {
-                        switch gt(t, timeTo)
-                        case 1 {
-                            e := m
-                            m := div(add(s, e), 2)
-                        }
-                        case 0 {
-                            m := add(m, 1)
-                            s := e
-                        }
-                    }
+
+                    mstore(add(mem_offset, 0x60), m)
                 }
-
-                mstore(add(mem_offset, 0x60), m)
-            }
 
             results := mload(0x40)
-            mstore(0x40, add(results, mul(0x20, add(sub(mload(add(mem_offset, 0x60)), mload(add(mem_offset, 0x40))), 1))))
+            mstore(
+                0x40,
+                add(
+                    results,
+                    mul(
+                        0x20,
+                        add(
+                            sub(
+                                mload(add(mem_offset, 0x60)),
+                                mload(add(mem_offset, 0x40))
+                            ),
+                            1
+                        )
+                    )
+                )
+            )
 
-            for { let i := mload(add(mem_offset, 0x40)) } lt(i, mload(add(mem_offset, 0x60))) { i := add(i, 1) } {
+            for {
+                let i := mload(add(mem_offset, 0x40))
+            } lt(i, mload(add(mem_offset, 0x60))) {
+                i := add(i, 1)
+            } {
                 let order_position := add(position, mul(i, 12))
-                let order_taker := and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, sload(add(order_position, 1)))
+                let order_taker := and(
+                    0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                    sload(add(order_position, 1))
+                )
 
-                switch and(iszero(eq(taker, 0x0000000000000000000000000000000000000000)), iszero(eq(order_taker, taker)))
-                case 1 {
-                }
-                case 0 {
-                    mstore(add(mem_offset, 0x80), add(mload(add(mem_offset, 0x80)), 1))
+                switch and(
+                    iszero(
+                        eq(taker, 0x0000000000000000000000000000000000000000)
+                    ),
+                    iszero(eq(order_taker, taker))
+                )
+                    case 1 {
 
-                    let offset := mload(0x40)
-                    mstore(add(results, mul(0x20, mload(add(mem_offset, 0x80)))), offset)
-                    mstore(0x40, add(offset, mul(0x20, 14)))
-
-                    // nonce
-                    mstore(offset, sload(order_position))
-
-                    // taker
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(add(mem_offset, 0xa0), sload(order_position))
-                    mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
-
-                    // askAssetProxyId
-                    offset := add(offset, 0x20)
-                    mstore(offset, mul(and(0x0000000000000000ffffffff0000000000000000000000000000000000000000, mload(add(mem_offset, 0xa0))), exp(2, 64)))
-
-                    // askAssetAddress
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(add(mem_offset, 0xa0), sload(order_position))
-                    mstore(offset, and(0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff, mload(add(mem_offset, 0xa0))))
-
-                    // askAssetAmount
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(offset, sload(order_position))
-
-                    // askAssetData
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    {
-                        let q := mload(0x40)
-
-                        mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                        mstore(0x40, add(q, 0x20))
-                        switch gt(mload(add(mem_offset, 0xc0)), 0)
-                        case 1 {
-                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                            mstore(0x40, add(q, 0x40))
-                        }
-                        mstore(offset, q)
                     }
+                    case 0 {
+                        mstore(
+                            add(mem_offset, 0x80),
+                            add(mload(add(mem_offset, 0x80)), 1)
+                        )
 
-                    // bidAssetProxyId
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(add(mem_offset, 0xa0), sload(order_position))
-                    mstore(offset, mul(and(0x00000000000000000000000000000000000000000000000000000000ffffffff, mload(add(mem_offset, 0xa0))), exp(2, 224)))
+                        let offset := mload(0x40)
+                        mstore(
+                            add(
+                                results,
+                                mul(0x20, mload(add(mem_offset, 0x80)))
+                            ),
+                            offset
+                        )
+                        mstore(0x40, add(offset, mul(0x20, 14)))
 
-                    // bidAssetAddress
-                    offset := add(offset, 0x20)
-                    mstore(offset, div(and(0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000, mload(add(mem_offset, 0xa0))), exp(2, 32)))
+                        // nonce
+                        mstore(offset, sload(order_position))
 
-                    // bidAssetAmount
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(offset, sload(order_position))
-
-                    // bidAssetData
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    {
-                        let q := mload(0x40)
-
+                        // taker
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
                         mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                        mstore(0x40, add(q, 0x20))
-                        switch gt(mload(add(mem_offset, 0xc0)), 0)
-                        case 1 {
-                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                            mstore(0x40, add(q, 0x40))
-                        }
-                        mstore(offset, q)
-                    }
+                        mstore(
+                            offset,
+                            and(
+                                0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                                mload(add(mem_offset, 0xa0))
+                            )
+                        )
 
-                    // bidAssetFilledAmount
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(offset, sload(order_position))
+                        // askAssetProxyId
+                        offset := add(offset, 0x20)
+                        mstore(
+                            offset,
+                            mul(
+                                and(
+                                    0x0000000000000000ffffffff0000000000000000000000000000000000000000,
+                                    mload(add(mem_offset, 0xa0))
+                                ),
+                                exp(2, 64)
+                            )
+                        )
 
-                    // status
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(offset, sload(order_position))
-
-                    // timestamp
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    mstore(offset, sload(order_position))
-
-                    // auxiliary
-                    order_position := add(order_position, 1)
-                    offset := add(offset, 0x20)
-                    {
-                        let q := mload(0x40)
-
+                        // askAssetAddress
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
                         mstore(add(mem_offset, 0xa0), sload(order_position))
-                        mstore(add(mem_offset, 0xc0), and(0x00000000000000000000000000000000000000000000000000000000000000ff, mload(add(mem_offset, 0xa0))))
-                        mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
-                        mstore(0x40, add(q, 0x20))
-                        switch gt(mload(add(mem_offset, 0xc0)), 0)
-                        case 1 {
-                            mstore(add(q, 0x20), and(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00, mload(add(mem_offset, 0xa0))))
-                            mstore(0x40, add(q, 0x40))
+                        mstore(
+                            offset,
+                            and(
+                                0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff,
+                                mload(add(mem_offset, 0xa0))
+                            )
+                        )
+
+                        // askAssetAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // askAssetData
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(
+                                add(mem_offset, 0xc0),
+                                and(
+                                    0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                    mload(add(mem_offset, 0xa0))
+                                )
+                            )
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                case 1 {
+                                    mstore(
+                                        add(q, 0x20),
+                                        and(
+                                            0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(0x40, add(q, 0x40))
+                                }
+                            mstore(offset, q)
                         }
-                        mstore(offset, q)
+
+                        // bidAssetProxyId
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(add(mem_offset, 0xa0), sload(order_position))
+                        mstore(
+                            offset,
+                            mul(
+                                and(
+                                    0x00000000000000000000000000000000000000000000000000000000ffffffff,
+                                    mload(add(mem_offset, 0xa0))
+                                ),
+                                exp(2, 224)
+                            )
+                        )
+
+                        // bidAssetAddress
+                        offset := add(offset, 0x20)
+                        mstore(
+                            offset,
+                            div(
+                                and(
+                                    0x0000000000000000ffffffffffffffffffffffffffffffffffffffff00000000,
+                                    mload(add(mem_offset, 0xa0))
+                                ),
+                                exp(2, 32)
+                            )
+                        )
+
+                        // bidAssetAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // bidAssetData
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(
+                                add(mem_offset, 0xc0),
+                                and(
+                                    0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                    mload(add(mem_offset, 0xa0))
+                                )
+                            )
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                case 1 {
+                                    mstore(
+                                        add(q, 0x20),
+                                        and(
+                                            0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(0x40, add(q, 0x40))
+                                }
+                            mstore(offset, q)
+                        }
+
+                        // bidAssetFilledAmount
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // status
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // timestamp
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        mstore(offset, sload(order_position))
+
+                        // auxiliary
+                        order_position := add(order_position, 1)
+                        offset := add(offset, 0x20)
+                        {
+                            let q := mload(0x40)
+
+                            mstore(add(mem_offset, 0xa0), sload(order_position))
+                            mstore(
+                                add(mem_offset, 0xc0),
+                                and(
+                                    0x00000000000000000000000000000000000000000000000000000000000000ff,
+                                    mload(add(mem_offset, 0xa0))
+                                )
+                            )
+                            mstore(q, div(mload(add(mem_offset, 0xc0)), 2))
+                            mstore(0x40, add(q, 0x20))
+                            switch gt(mload(add(mem_offset, 0xc0)), 0)
+                                case 1 {
+                                    mstore(
+                                        add(q, 0x20),
+                                        and(
+                                            0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00,
+                                            mload(add(mem_offset, 0xa0))
+                                        )
+                                    )
+                                    mstore(0x40, add(q, 0x40))
+                                }
+                            mstore(offset, q)
+                        }
                     }
-                }
             }
 
             mstore(results, mload(add(mem_offset, 0x80)))

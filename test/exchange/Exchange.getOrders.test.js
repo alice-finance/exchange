@@ -5,9 +5,10 @@ const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
 const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 
 const { BN, time, constants } = require("openzeppelin-test-helpers");
+const { expect } = require("chai");
 const { ZERO_ADDRESS } = constants;
 
-contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, taker1]) {
+contract("Exchange.getOrders", function([admin, owner, maker1, maker2, maker3, taker1]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
@@ -20,7 +21,7 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
     await exchange.methods[signature](...args, { from: admin });
   }
 
-  before(async function () {
+  before(async function() {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
 
@@ -46,126 +47,146 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
 
     this.timeStart = await time.latest();
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("10000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker1 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("10000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker1 }
+    );
 
     await time.increase(time.duration.seconds(5));
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("20000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker3 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("20000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker3 }
+    );
 
     await time.increase(time.duration.seconds(5));
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("30000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker2 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("30000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker2 }
+    );
 
     await time.increase(time.duration.seconds(5));
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("40000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker3 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("40000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker3 }
+    );
 
     await time.increase(time.duration.seconds(5));
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("50000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker1 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("50000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker1 }
+    );
 
     await time.increase(time.duration.seconds(5));
     this.timeEnd = await time.latest();
 
-    await this.exchange.createOrder({
-      askAssetProxyId: ERC20_PROXY_ID,
-      askAssetAddress: this.erc20Ask.address,
-      askAssetAmount: erc20AskValue.toString(),
-      askAssetData: "0x00",
-      bidAssetProxyId: ERC20_PROXY_ID,
-      bidAssetAddress: this.erc20Bid.address,
-      bidAssetAmount: new BN("60000").toString(),
-      bidAssetData: "0x00",
-      feeAmount: 0
-    }, { from: maker2 });
+    await this.exchange.createOrder(
+      {
+        askAssetProxyId: ERC20_PROXY_ID,
+        askAssetAddress: this.erc20Ask.address,
+        askAssetAmount: erc20AskValue.toString(),
+        askAssetData: "0x00",
+        bidAssetProxyId: ERC20_PROXY_ID,
+        bidAssetAddress: this.erc20Bid.address,
+        bidAssetAmount: new BN("60000").toString(),
+        bidAssetData: "0x00",
+        feeAmount: 0
+      },
+      { from: maker2 }
+    );
 
     await time.advanceBlock();
   });
 
-  it("no orders", async function () {
-    let orders = await this.exchange.getOrders(
-      this.erc20Proxy.address,
-      this.erc20Bid.address,
-      3,
-      ZERO_ADDRESS,
-      0,
-      0
-    );
+  it("no orders", async function() {
+    let orders = await this.exchange.getOrders(this.erc20Proxy.address, this.erc20Bid.address, 3, ZERO_ADDRESS, 0, 0);
 
-    orders.length.should.be.equal(0);
+    expect(orders.length).to.be.equal(0);
   });
 
-  describe("getOrders", function () {
-    before(async function () {
-      await this.exchange.cancelOrder({
-        askAssetAddress: this.erc20Ask.address,
-        bidAssetAddress: this.erc20Bid.address,
-        nonce: 2
-      }, { from: maker2 });
+  describe("getOrders", function() {
+    before(async function() {
+      await this.exchange.cancelOrder(
+        {
+          askAssetAddress: this.erc20Ask.address,
+          bidAssetAddress: this.erc20Bid.address,
+          nonce: 2
+        },
+        { from: maker2 }
+      );
 
-      await this.exchange.cancelOrder({
-        askAssetAddress: this.erc20Ask.address,
-        bidAssetAddress: this.erc20Bid.address,
-        nonce: 4
-      }, { from: maker1 });
+      await this.exchange.cancelOrder(
+        {
+          askAssetAddress: this.erc20Ask.address,
+          bidAssetAddress: this.erc20Bid.address,
+          nonce: 4
+        },
+        { from: maker1 }
+      );
 
-      await this.exchange.fillOrders({
-        askAssetAddress: this.erc20Ask.address,
-        bidAssetAddress: this.erc20Bid.address,
-        nonces: [1, 5],
-        bidAssetAmountToFill: new BN("210000").toString(),
-        feeAmount: 0
-      }, { from: taker1 });
+      await this.exchange.fillOrders(
+        {
+          askAssetAddress: this.erc20Ask.address,
+          bidAssetAddress: this.erc20Bid.address,
+          nonces: [1, 5],
+          bidAssetAmountToFill: new BN("210000").toString(),
+          feeAmount: 0
+        },
+        { from: taker1 }
+      );
     });
 
     // from: 10000, maker1
@@ -175,9 +196,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
     // from: 50000, maker1 - cancelled
     // from: 60000, maker2 - filled
 
-    describe("all status", function () {
-      context("without maker", function () {
-        it("should get all orders", async function () {
+    describe("all status", function() {
+      context("without maker", function() {
+        it("should get all orders", async function() {
           let orders = await this.exchange.getOrders(
             this.erc20Ask.address,
             this.erc20Bid.address,
@@ -187,22 +208,22 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(6);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("20000");
-          orders[1].maker.should.be.equal(maker3);
-          orders[2].bidAssetAmount.should.be.equal("30000");
-          orders[2].maker.should.be.equal(maker2);
-          orders[3].bidAssetAmount.should.be.equal("40000");
-          orders[3].maker.should.be.equal(maker3);
-          orders[4].bidAssetAmount.should.be.equal("50000");
-          orders[4].maker.should.be.equal(maker1);
-          orders[5].bidAssetAmount.should.be.equal("60000");
-          orders[5].maker.should.be.equal(maker2);
+          expect(orders.length).to.be.equal(6);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("20000");
+          expect(orders[1].maker).to.be.equal(maker3);
+          expect(orders[2].bidAssetAmount).to.be.equal("30000");
+          expect(orders[2].maker).to.be.equal(maker2);
+          expect(orders[3].bidAssetAmount).to.be.equal("40000");
+          expect(orders[3].maker).to.be.equal(maker3);
+          expect(orders[4].bidAssetAmount).to.be.equal("50000");
+          expect(orders[4].maker).to.be.equal(maker1);
+          expect(orders[5].bidAssetAmount).to.be.equal("60000");
+          expect(orders[5].maker).to.be.equal(maker2);
         });
 
-        it("should get time range (timeFrom)", async function () {
+        it("should get time range (timeFrom)", async function() {
           let orders = await this.exchange.getOrders(
             this.erc20Ask.address,
             this.erc20Bid.address,
@@ -212,20 +233,20 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(5);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
-          orders[1].bidAssetAmount.should.be.equal("30000");
-          orders[1].maker.should.be.equal(maker2);
-          orders[2].bidAssetAmount.should.be.equal("40000");
-          orders[2].maker.should.be.equal(maker3);
-          orders[3].bidAssetAmount.should.be.equal("50000");
-          orders[3].maker.should.be.equal(maker1);
-          orders[4].bidAssetAmount.should.be.equal("60000");
-          orders[4].maker.should.be.equal(maker2);
+          expect(orders.length).to.be.equal(5);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
+          expect(orders[1].bidAssetAmount).to.be.equal("30000");
+          expect(orders[1].maker).to.be.equal(maker2);
+          expect(orders[2].bidAssetAmount).to.be.equal("40000");
+          expect(orders[2].maker).to.be.equal(maker3);
+          expect(orders[3].bidAssetAmount).to.be.equal("50000");
+          expect(orders[3].maker).to.be.equal(maker1);
+          expect(orders[4].bidAssetAmount).to.be.equal("60000");
+          expect(orders[4].maker).to.be.equal(maker2);
         });
 
-        it("should get time range (timeTo)", async function () {
+        it("should get time range (timeTo)", async function() {
           let orders = await this.exchange.getOrders(
             this.erc20Ask.address,
             this.erc20Bid.address,
@@ -235,189 +256,175 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(5);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("20000");
-          orders[1].maker.should.be.equal(maker3);
-          orders[2].bidAssetAmount.should.be.equal("30000");
-          orders[2].maker.should.be.equal(maker2);
-          orders[3].bidAssetAmount.should.be.equal("40000");
-          orders[3].maker.should.be.equal(maker3);
-          orders[4].bidAssetAmount.should.be.equal("50000");
-          orders[4].maker.should.be.equal(maker1);
+          expect(orders.length).to.be.equal(5);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("20000");
+          expect(orders[1].maker).to.be.equal(maker3);
+          expect(orders[2].bidAssetAmount).to.be.equal("30000");
+          expect(orders[2].maker).to.be.equal(maker2);
+          expect(orders[3].bidAssetAmount).to.be.equal("40000");
+          expect(orders[3].maker).to.be.equal(maker3);
+          expect(orders[4].bidAssetAmount).to.be.equal("50000");
+          expect(orders[4].maker).to.be.equal(maker1);
         });
 
-        it("should get time range (timeFrom, timeTo)", async function () {
+        it("should get time range (timeFrom, timeTo)", async function() {
           let orders = await this.exchange.getOrders(
             this.erc20Ask.address,
             this.erc20Bid.address,
             0,
-            ZERO_ADDRESS,
-            this.timeStart.add(time.duration.seconds(3)),
-            this.timeEnd.sub(time.duration.seconds(3))
-          );
-
-          orders.length.should.be.equal(4);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
-          orders[1].bidAssetAmount.should.be.equal("30000");
-          orders[1].maker.should.be.equal(maker2);
-          orders[2].bidAssetAmount.should.be.equal("40000");
-          orders[2].maker.should.be.equal(maker3);
-          orders[3].bidAssetAmount.should.be.equal("50000");
-          orders[3].maker.should.be.equal(maker1);
-        });
-      });
-
-      context("with maker", function () {
-        it("should get all orders", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            0,
-            maker1,
-            0,
-            0
-          );
-
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("50000");
-          orders[1].maker.should.be.equal(maker1);
-        });
-
-        it("should get time range (timeFrom)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            0,
-            maker1,
-            this.timeStart.add(time.duration.seconds(3)),
-            0
-          );
-
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("50000");
-          orders[0].maker.should.be.equal(maker1);
-        });
-
-        it("should get time range (timeTo)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            0,
-            maker1,
-            0,
-            this.timeEnd.sub(time.duration.seconds(3))
-          );
-
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("50000");
-          orders[1].maker.should.be.equal(maker1);
-        });
-
-        it("should get time range (timeFrom, timeTo)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            0,
-            maker1,
-            this.timeStart.add(time.duration.seconds(3)),
-            this.timeEnd.sub(time.duration.seconds(3))
-          );
-
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("50000");
-          orders[0].maker.should.be.equal(maker1);
-        });
-      });
-    });
-
-    describe("fillable", function () {
-      context("without maker", function () {
-        it("should get all orders", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            1,
-            ZERO_ADDRESS,
-            0,
-            0
-          );
-
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("40000");
-          orders[1].maker.should.be.equal(maker3);
-        });
-
-        it("should get time range (timeFrom)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            1,
-            ZERO_ADDRESS,
-            this.timeStart.add(time.duration.seconds(3)),
-            0
-          );
-
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("40000");
-          orders[0].maker.should.be.equal(maker3);
-        });
-
-        it("should get time range (timeTo)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            1,
-            ZERO_ADDRESS,
-            0,
-            this.timeEnd.sub(time.duration.seconds(3))
-          );
-
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
-          orders[1].bidAssetAmount.should.be.equal("40000");
-          orders[1].maker.should.be.equal(maker3);
-        });
-
-        it("should get time range (timeFrom, timeTo)", async function () {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            1,
             ZERO_ADDRESS,
             this.timeStart.add(time.duration.seconds(3)),
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("40000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(4);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
+          expect(orders[1].bidAssetAmount).to.be.equal("30000");
+          expect(orders[1].maker).to.be.equal(maker2);
+          expect(orders[2].bidAssetAmount).to.be.equal("40000");
+          expect(orders[2].maker).to.be.equal(maker3);
+          expect(orders[3].bidAssetAmount).to.be.equal("50000");
+          expect(orders[3].maker).to.be.equal(maker1);
         });
       });
 
       context("with maker", function() {
         it("should get all orders", async function() {
+          let orders = await this.exchange.getOrders(this.erc20Ask.address, this.erc20Bid.address, 0, maker1, 0, 0);
+
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("50000");
+          expect(orders[1].maker).to.be.equal(maker1);
+        });
+
+        it("should get time range (timeFrom)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            0,
+            maker1,
+            this.timeStart.add(time.duration.seconds(3)),
+            0
+          );
+
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("50000");
+          expect(orders[0].maker).to.be.equal(maker1);
+        });
+
+        it("should get time range (timeTo)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            0,
+            maker1,
+            0,
+            this.timeEnd.sub(time.duration.seconds(3))
+          );
+
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("50000");
+          expect(orders[1].maker).to.be.equal(maker1);
+        });
+
+        it("should get time range (timeFrom, timeTo)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            0,
+            maker1,
+            this.timeStart.add(time.duration.seconds(3)),
+            this.timeEnd.sub(time.duration.seconds(3))
+          );
+
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("50000");
+          expect(orders[0].maker).to.be.equal(maker1);
+        });
+      });
+    });
+
+    describe("fillable", function() {
+      context("without maker", function() {
+        it("should get all orders", async function() {
           let orders = await this.exchange.getOrders(
             this.erc20Ask.address,
             this.erc20Bid.address,
             1,
-            maker1,
+            ZERO_ADDRESS,
             0,
             0
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("40000");
+          expect(orders[1].maker).to.be.equal(maker3);
+        });
+
+        it("should get time range (timeFrom)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            1,
+            ZERO_ADDRESS,
+            this.timeStart.add(time.duration.seconds(3)),
+            0
+          );
+
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("40000");
+          expect(orders[0].maker).to.be.equal(maker3);
+        });
+
+        it("should get time range (timeTo)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            1,
+            ZERO_ADDRESS,
+            0,
+            this.timeEnd.sub(time.duration.seconds(3))
+          );
+
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
+          expect(orders[1].bidAssetAmount).to.be.equal("40000");
+          expect(orders[1].maker).to.be.equal(maker3);
+        });
+
+        it("should get time range (timeFrom, timeTo)", async function() {
+          let orders = await this.exchange.getOrders(
+            this.erc20Ask.address,
+            this.erc20Bid.address,
+            1,
+            ZERO_ADDRESS,
+            this.timeStart.add(time.duration.seconds(3)),
+            this.timeEnd.sub(time.duration.seconds(3))
+          );
+
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("40000");
+          expect(orders[0].maker).to.be.equal(maker3);
+        });
+      });
+
+      context("with maker", function() {
+        it("should get all orders", async function() {
+          let orders = await this.exchange.getOrders(this.erc20Ask.address, this.erc20Bid.address, 1, maker1, 0, 0);
+
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
         });
 
         it("should get time range (timeFrom)", async function() {
@@ -430,9 +437,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("40000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("40000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
 
         it("should get time range (timeTo)", async function() {
@@ -445,9 +452,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("10000");
-          orders[0].maker.should.be.equal(maker1);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("10000");
+          expect(orders[0].maker).to.be.equal(maker1);
         });
 
         it("should get time range (timeFrom, timeTo)", async function() {
@@ -460,9 +467,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("40000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("40000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
       });
     });
@@ -479,11 +486,11 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
-          orders[1].bidAssetAmount.should.be.equal("60000");
-          orders[1].maker.should.be.equal(maker2);
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
+          expect(orders[1].bidAssetAmount).to.be.equal("60000");
+          expect(orders[1].maker).to.be.equal(maker2);
         });
 
         it("should get time range (timeFrom)", async function() {
@@ -496,11 +503,11 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(2);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
-          orders[1].bidAssetAmount.should.be.equal("60000");
-          orders[1].maker.should.be.equal(maker2);
+          expect(orders.length).to.be.equal(2);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
+          expect(orders[1].bidAssetAmount).to.be.equal("60000");
+          expect(orders[1].maker).to.be.equal(maker2);
         });
 
         it("should get time range (timeTo)", async function() {
@@ -513,9 +520,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
 
         it("should get time range (timeFrom, timeTo)", async function() {
@@ -528,26 +535,19 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
       });
 
       context("with maker", function() {
         it("should get all orders", async function() {
-          let orders = await this.exchange.getOrders(
-            this.erc20Ask.address,
-            this.erc20Bid.address,
-            2,
-            maker3,
-            0,
-            0
-          );
+          let orders = await this.exchange.getOrders(this.erc20Ask.address, this.erc20Bid.address, 2, maker3, 0, 0);
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
 
         it("should get time range (timeFrom)", async function() {
@@ -560,9 +560,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             0
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("60000");
-          orders[0].maker.should.be.equal(maker2);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("60000");
+          expect(orders[0].maker).to.be.equal(maker2);
         });
 
         it("should get time range (timeTo)", async function() {
@@ -575,9 +575,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
 
         it("should get time range (timeFrom, timeTo)", async function() {
@@ -590,34 +590,27 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
             this.timeEnd.sub(time.duration.seconds(3))
           );
 
-          orders.length.should.be.equal(1);
-          orders[0].bidAssetAmount.should.be.equal("20000");
-          orders[0].maker.should.be.equal(maker3);
+          expect(orders.length).to.be.equal(1);
+          expect(orders[0].bidAssetAmount).to.be.equal("20000");
+          expect(orders[0].maker).to.be.equal(maker3);
         });
       });
     });
   });
 
-  describe("cancelled", function () {
-    context("without maker", function () {
-      it("should get all orders", async function () {
-        let orders = await this.exchange.getOrders(
-          this.erc20Ask.address,
-          this.erc20Bid.address,
-          3,
-          ZERO_ADDRESS,
-          0,
-          0
-        );
+  describe("cancelled", function() {
+    context("without maker", function() {
+      it("should get all orders", async function() {
+        let orders = await this.exchange.getOrders(this.erc20Ask.address, this.erc20Bid.address, 3, ZERO_ADDRESS, 0, 0);
 
-        orders.length.should.be.equal(2);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
-        orders[1].bidAssetAmount.should.be.equal("50000");
-        orders[1].maker.should.be.equal(maker1);
+        expect(orders.length).to.be.equal(2);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
+        expect(orders[1].bidAssetAmount).to.be.equal("50000");
+        expect(orders[1].maker).to.be.equal(maker1);
       });
 
-      it("should get time range (timeFrom)", async function () {
+      it("should get time range (timeFrom)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -627,14 +620,14 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           0
         );
 
-        orders.length.should.be.equal(2);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
-        orders[1].bidAssetAmount.should.be.equal("50000");
-        orders[1].maker.should.be.equal(maker1);
+        expect(orders.length).to.be.equal(2);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
+        expect(orders[1].bidAssetAmount).to.be.equal("50000");
+        expect(orders[1].maker).to.be.equal(maker1);
       });
 
-      it("should get time range (timeTo)", async function () {
+      it("should get time range (timeTo)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -644,14 +637,14 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           this.timeEnd.sub(time.duration.seconds(3))
         );
 
-        orders.length.should.be.equal(2);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
-        orders[1].bidAssetAmount.should.be.equal("50000");
-        orders[1].maker.should.be.equal(maker1);
+        expect(orders.length).to.be.equal(2);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
+        expect(orders[1].bidAssetAmount).to.be.equal("50000");
+        expect(orders[1].maker).to.be.equal(maker1);
       });
 
-      it("should get time range (timeFrom, timeTo)", async function () {
+      it("should get time range (timeFrom, timeTo)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -661,31 +654,24 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           this.timeEnd.sub(time.duration.seconds(3))
         );
 
-        orders.length.should.be.equal(2);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
-        orders[1].bidAssetAmount.should.be.equal("50000");
-        orders[1].maker.should.be.equal(maker1);
+        expect(orders.length).to.be.equal(2);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
+        expect(orders[1].bidAssetAmount).to.be.equal("50000");
+        expect(orders[1].maker).to.be.equal(maker1);
       });
     });
 
-    context("with maker", function () {
-      it("should get all orders", async function () {
-        let orders = await this.exchange.getOrders(
-          this.erc20Ask.address,
-          this.erc20Bid.address,
-          3,
-          maker2,
-          0,
-          0
-        );
+    context("with maker", function() {
+      it("should get all orders", async function() {
+        let orders = await this.exchange.getOrders(this.erc20Ask.address, this.erc20Bid.address, 3, maker2, 0, 0);
 
-        orders.length.should.be.equal(1);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
+        expect(orders.length).to.be.equal(1);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
       });
 
-      it("should get time range (timeFrom)", async function () {
+      it("should get time range (timeFrom)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -695,12 +681,12 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           0
         );
 
-        orders.length.should.be.equal(1);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
+        expect(orders.length).to.be.equal(1);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
       });
 
-      it("should get time range (timeTo)", async function () {
+      it("should get time range (timeTo)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -710,12 +696,12 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           this.timeEnd.sub(time.duration.seconds(3))
         );
 
-        orders.length.should.be.equal(1);
-        orders[0].bidAssetAmount.should.be.equal("50000");
-        orders[0].maker.should.be.equal(maker1);
+        expect(orders.length).to.be.equal(1);
+        expect(orders[0].bidAssetAmount).to.be.equal("50000");
+        expect(orders[0].maker).to.be.equal(maker1);
       });
 
-      it("should get time range (timeFrom, timeTo)", async function () {
+      it("should get time range (timeFrom, timeTo)", async function() {
         let orders = await this.exchange.getOrders(
           this.erc20Ask.address,
           this.erc20Bid.address,
@@ -725,9 +711,9 @@ contract("Exchange.getOrders", function ([admin, owner, maker1, maker2, maker3, 
           this.timeEnd.sub(time.duration.seconds(3))
         );
 
-        orders.length.should.be.equal(1);
-        orders[0].bidAssetAmount.should.be.equal("30000");
-        orders[0].maker.should.be.equal(maker2);
+        expect(orders.length).to.be.equal(1);
+        expect(orders[0].bidAssetAmount).to.be.equal("30000");
+        expect(orders[0].maker).to.be.equal(maker2);
       });
     });
   });

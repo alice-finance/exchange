@@ -1,14 +1,13 @@
 pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import "zos-lib/contracts/Initializable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-eth/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
 import "../proxy/AssetProxyRegistry.sol";
 import "./Statistics.sol";
-
 
 /**
  * @title Exchange
@@ -107,7 +106,10 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
      * @param proxyId proxy ID of asset proxy
      * @param assetProxy address of AssetProxy contract
      */
-    function registerAssetProxy(bytes4 proxyId, AssetProxy assetProxy) public onlyOwner {
+    function registerAssetProxy(bytes4 proxyId, AssetProxy assetProxy)
+        public
+        onlyOwner
+    {
         super.registerAssetProxy(proxyId, assetProxy);
     }
 
@@ -119,21 +121,47 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
     function createOrder(CreateOrderParams memory params) public {
         require(params.askAssetProxyId != 0, "askAssetProxyId is 0");
         require(params.askAssetAddress != address(0), "askAssetAddress is 0");
-        require(params.askAssetAmount > 0, "askAssetAmount must be greater than 0");
-        require(params.askAssetAmount <= MAX_AMOUNT, "askAssetAmount exceeded limit");
+        require(
+            params.askAssetAmount > 0,
+            "askAssetAmount must be greater than 0"
+        );
+        require(
+            params.askAssetAmount <= MAX_AMOUNT,
+            "askAssetAmount exceeded limit"
+        );
 
         require(params.bidAssetProxyId != 0, "bidAssetProxyId is 0");
         require(params.bidAssetAddress != address(0), "bidAssetAddress is 0");
-        require(params.bidAssetAmount > 0, "bidAssetAmount must be greater than 0");
-        require(params.bidAssetAmount <= MAX_AMOUNT, "bidAssetAmount exceeded limit");
+        require(
+            params.bidAssetAmount > 0,
+            "bidAssetAmount must be greater than 0"
+        );
+        require(
+            params.bidAssetAmount <= MAX_AMOUNT,
+            "bidAssetAmount exceeded limit"
+        );
 
         AssetProxy askAssetProxy = _assetProxyOfProxyId[params.askAssetProxyId];
-        require(address(askAssetProxy) != address(0), "askAssetProxy not found");
-        require(address(_assetProxyOfProxyId[params.bidAssetProxyId]) != address(0), "bidAssetProxy not found");
-        require(askAssetProxy.canTransferFrom(msg.sender, params.askAssetAmount, params.askAssetAddress,
-            params.askAssetData), "cannot transfer");
+        require(
+            address(askAssetProxy) != address(0),
+            "askAssetProxy not found"
+        );
+        require(
+            address(_assetProxyOfProxyId[params.bidAssetProxyId]) != address(0),
+            "bidAssetProxy not found"
+        );
+        require(
+            askAssetProxy.canTransferFrom(
+                msg.sender,
+                params.askAssetAmount,
+                params.askAssetAddress,
+                params.askAssetData
+            ),
+            "cannot transfer"
+        );
 
-        Order[] storage allOrders = _orders[params.bidAssetAddress][params.askAssetAddress];
+        Order[] storage allOrders = _orders[params.bidAssetAddress][params
+            .askAssetAddress];
         uint256 nonce = allOrders.length;
         allOrders.length += 1;
         allOrders[nonce].nonce = nonce;
@@ -163,7 +191,12 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             now // solhint-disable-line not-rely-on-time
         );
 
-        _addOrderPrice(params.askAssetAddress, params.bidAssetAddress, params.askAssetAmount, params.bidAssetAmount);
+        _addOrderPrice(
+            params.askAssetAddress,
+            params.bidAssetAddress,
+            params.askAssetAmount,
+            params.bidAssetAmount
+        );
     }
 
     /**
@@ -175,20 +208,31 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         require(params.bidAssetAddress != address(0), "bidAssetAddress is 0");
 
         require(params.bidAssetAmountToFill > 0, "bidAssetAmountToFill is 0");
-        require(params.bidAssetAmountToFill <= MAX_AMOUNT, "bidAssetAmountToFill exceeded limit");
+        require(
+            params.bidAssetAmountToFill <= MAX_AMOUNT,
+            "bidAssetAmountToFill exceeded limit"
+        );
 
-        require(_orders[params.bidAssetAddress][params.askAssetAddress].length > params.nonce, "order not exists");
-        Order storage order = _orders[params.bidAssetAddress][params.askAssetAddress][params.nonce];
+        require(
+            _orders[params.bidAssetAddress][params.askAssetAddress].length >
+                params.nonce,
+            "order not exists"
+        );
+        Order storage order = _orders[params.bidAssetAddress][params
+            .askAssetAddress][params.nonce];
 
         require(order.status == OrderStatus.fillable, "order is not fillable");
 
-        require(_fillOrder(
-            params.askAssetAddress,
-            params.bidAssetAddress,
-            params.nonce,
-            msg.sender,
-            params.bidAssetAmountToFill
-        ), "order not filled");
+        require(
+            _fillOrder(
+                params.askAssetAddress,
+                params.bidAssetAddress,
+                params.nonce,
+                msg.sender,
+                params.bidAssetAmountToFill
+            ),
+            "order not filled"
+        );
     }
 
     /**
@@ -197,8 +241,13 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
      * @param params struct FillOrderParams
      */
     function fillAndCreateOrder(FillOrderParams memory params) public {
-        require(_orders[params.bidAssetAddress][params.askAssetAddress].length > params.nonce, "order not exists");
-        Order storage order = _orders[params.bidAssetAddress][params.askAssetAddress][params.nonce];
+        require(
+            _orders[params.bidAssetAddress][params.askAssetAddress].length >
+                params.nonce,
+            "order not exists"
+        );
+        Order storage order = _orders[params.bidAssetAddress][params
+            .askAssetAddress][params.nonce];
 
         uint256 filled = order.bidAssetFilledAmount;
 
@@ -209,19 +258,23 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         // create new order when overfilled
         if (params.bidAssetAmountToFill > filled) {
             uint256 newAskAssetAmount = params.bidAssetAmountToFill - filled;
-            uint256 newBidAssetAmount = (newAskAssetAmount * order.askAssetAmount) / order.bidAssetAmount;
+            uint256 newBidAssetAmount = (newAskAssetAmount *
+                order.askAssetAmount) /
+                order.bidAssetAmount;
 
-            createOrder(CreateOrderParams(
-                order.bidAssetProxyId,
-                order.bidAssetAddress,
-                newAskAssetAmount,
-                order.bidAssetData,
-                order.askAssetProxyId,
-                order.askAssetAddress,
-                newBidAssetAmount,
-                order.askAssetData,
-                0
-            ));
+            createOrder(
+                CreateOrderParams(
+                    order.bidAssetProxyId,
+                    order.bidAssetAddress,
+                    newAskAssetAmount,
+                    order.bidAssetData,
+                    order.askAssetProxyId,
+                    order.askAssetAddress,
+                    newBidAssetAmount,
+                    order.askAssetData,
+                    0
+                )
+            );
         }
     }
 
@@ -237,12 +290,20 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         uint256[] memory nonces = params.nonces;
 
         require(params.bidAssetAmountToFill > 0, "bidAssetAmountToFill is 0");
-        require(params.bidAssetAmountToFill <= MAX_AMOUNT, "bidAssetAmountToFill exceeded limit");
+        require(
+            params.bidAssetAmountToFill <= MAX_AMOUNT,
+            "bidAssetAmountToFill exceeded limit"
+        );
         uint256 amountToFill = params.bidAssetAmountToFill;
 
         for (uint256 i = 0; i < nonces.length && amountToFill > 0; i++) {
-            require(_orders[params.bidAssetAddress][params.askAssetAddress].length > nonces[i], "order not exists");
-            Order storage order = _orders[params.bidAssetAddress][params.askAssetAddress][nonces[i]];
+            require(
+                _orders[params.bidAssetAddress][params.askAssetAddress].length >
+                    nonces[i],
+                "order not exists"
+            );
+            Order storage order = _orders[params.bidAssetAddress][params
+                .askAssetAddress][nonces[i]];
 
             uint256 before = order.bidAssetFilledAmount;
 
@@ -287,7 +348,9 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         uint256 before;
 
         for (i = 0; i < nonces.length; i++) {
-            before += _orders[params.bidAssetAddress][params.askAssetAddress][nonces[i]].bidAssetFilledAmount;
+            before += _orders[params.bidAssetAddress][params
+                .askAssetAddress][nonces[i]]
+                .bidAssetFilledAmount;
         }
 
         fillOrders(params);
@@ -295,27 +358,34 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         uint256 filled;
 
         for (i = 0; i < nonces.length; i++) {
-            filled += _orders[params.bidAssetAddress][params.askAssetAddress][nonces[i]].bidAssetFilledAmount;
+            filled += _orders[params.bidAssetAddress][params
+                .askAssetAddress][nonces[i]]
+                .bidAssetFilledAmount;
         }
 
         filled = filled - before;
 
         if (params.bidAssetAmountToFill > filled) {
-            Order storage firstOrder = _orders[params.bidAssetAddress][params.askAssetAddress][nonces[0]];
+            Order storage firstOrder = _orders[params.bidAssetAddress][params
+                .askAssetAddress][nonces[0]];
             uint256 newAskAssetAmount = params.bidAssetAmountToFill - filled;
-            uint256 newBidAssetAmount = (newAskAssetAmount * firstOrder.askAssetAmount) / firstOrder.bidAssetAmount;
+            uint256 newBidAssetAmount = (newAskAssetAmount *
+                firstOrder.askAssetAmount) /
+                firstOrder.bidAssetAmount;
 
-            createOrder(CreateOrderParams(
-                firstOrder.bidAssetProxyId,
-                firstOrder.bidAssetAddress,
-                newAskAssetAmount,
-                firstOrder.bidAssetData,
-                firstOrder.askAssetProxyId,
-                firstOrder.askAssetAddress,
-                newBidAssetAmount,
-                firstOrder.askAssetData,
-                0
-            ));
+            createOrder(
+                CreateOrderParams(
+                    firstOrder.bidAssetProxyId,
+                    firstOrder.bidAssetAddress,
+                    newAskAssetAmount,
+                    firstOrder.bidAssetData,
+                    firstOrder.askAssetProxyId,
+                    firstOrder.askAssetAddress,
+                    newBidAssetAmount,
+                    firstOrder.askAssetData,
+                    0
+                )
+            );
         }
     }
 
@@ -336,21 +406,34 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         AssetProxy bidAssetProxy = _assetProxyOfProxyId[order.bidAssetProxyId];
 
         // cut fill amount to remaining if the user tries to fill larger amount than remaining
-        uint256 amountToFill = Math.min(bidAssetAmountToFill,
-            order.bidAssetAmount.sub(order.bidAssetFilledAmount));
-        uint256 askAssetAmountToTake = amountToFill.mul(order.askAssetAmount).div(order.bidAssetAmount);
+        uint256 amountToFill = Math.min(
+            bidAssetAmountToFill,
+            order.bidAssetAmount.sub(order.bidAssetFilledAmount)
+        );
+        uint256 askAssetAmountToTake = amountToFill
+            .mul(order.askAssetAmount)
+            .div(order.bidAssetAmount);
 
         if (askAssetAmountToTake < 1) return false;
 
-        order.bidAssetFilledAmount = order.bidAssetFilledAmount.add(amountToFill);
+        order.bidAssetFilledAmount = order.bidAssetFilledAmount.add(
+            amountToFill
+        );
 
         // update order status
         _updateOrderStatus(order);
 
         _exchangeAssets(
             order.maker,
-            askAssetProxy, order.askAssetAddress, askAssetAmountToTake, order.askAssetData,
-            taker, bidAssetProxy, order.bidAssetAddress, amountToFill, order.bidAssetData
+            askAssetProxy,
+            order.askAssetAddress,
+            askAssetAmountToTake,
+            order.askAssetData,
+            taker,
+            bidAssetProxy,
+            order.bidAssetAddress,
+            amountToFill,
+            order.bidAssetData
         );
 
         uint256 orderFillIndex = _recordOrderFill(order, taker, amountToFill);
@@ -358,7 +441,12 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
 
         if (order.status == OrderStatus.filled) {
             // Remove from active list
-            _removeOrderPrice(order.askAssetAddress, order.bidAssetAddress, order.askAssetAmount, order.bidAssetAmount);
+            _removeOrderPrice(
+                order.askAssetAddress,
+                order.bidAssetAddress,
+                order.askAssetAmount,
+                order.bidAssetAmount
+            );
         }
 
         return true;
@@ -415,11 +503,15 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
     function _updateOrderStatus(Order storage order) internal {
         if (order.bidAssetFilledAmount == order.bidAssetAmount) {
             order.status = OrderStatus.filled;
-        } else if (order.bidAssetAmount > order.askAssetAmount
-            && order.bidAssetAmount
+        } else if (
+            order.bidAssetAmount > order.askAssetAmount &&
+            order
+                .bidAssetAmount
                 .sub(order.bidAssetFilledAmount)
                 .mul(order.askAssetAmount)
-                .div(order.bidAssetAmount) < 1) {
+                .div(order.bidAssetAmount) <
+            1
+        ) {
             /// @notice order is not fillable - if next fill cannot take askAsset anymore
             order.status = OrderStatus.filled;
         }
@@ -436,8 +528,9 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         address taker,
         uint256 bidAssetAmountToFill
     ) internal returns (uint256) {
-        OrderFill[] storage fills = _orderFills[order.bidAssetAddress][order.askAssetAddress];
-        uint index = fills.length;
+        OrderFill[] storage fills = _orderFills[order.bidAssetAddress][order
+            .askAssetAddress];
+        uint256 index = fills.length;
 
         fills.length = fills.length.add(1);
 
@@ -484,13 +577,20 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         Price storage newPrice = prices[prices.length - 1];
         Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
 
-        if (currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid
-            || (currentPrice.ask == 0 && currentPrice.bid == 0)
+        if (
+            currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
+            (currentPrice.ask == 0 && currentPrice.bid == 0)
         ) {
             currentPrice.ask = newPrice.ask;
             currentPrice.bid = newPrice.bid;
 
-            emit PriceChanged(askAssetAddress, bidAssetAddress, currentPrice.ask, currentPrice.bid, now); // solhint-disable-line not-rely-on-time,max-line-length
+            emit PriceChanged(
+                askAssetAddress,
+                bidAssetAddress,
+                currentPrice.ask,
+                currentPrice.bid,
+                now
+            ); // solhint-disable-line not-rely-on-time,max-line-length
         }
     }
 
@@ -506,7 +606,10 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
 
         for (uint256 i = 0; i < prices.length; i++) {
-            if (prices[i].ask == askAssetAmount && prices[i].bid == bidAssetAmount) {
+            if (
+                prices[i].ask == askAssetAmount &&
+                prices[i].bid == bidAssetAmount
+            ) {
                 prices[i] = prices[prices.length - 1];
                 prices.length--;
                 break;
@@ -522,17 +625,19 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
     /**
      * @notice find lowest order price and update current price
      */
-    function _updateOrderPrice(
-        address askAssetAddress,
-        address bidAssetAddress
-    ) internal {
+    function _updateOrderPrice(address askAssetAddress, address bidAssetAddress)
+        internal
+    {
         Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         /// @dev set ask and bid MAX_AMOUNT + 1 which is invalid
         Price memory minimumPrice = Price(MAX_AMOUNT.add(1), MAX_AMOUNT.add(1));
 
         /// @dev find minimum price in list
         for (uint256 i = 0; i < prices.length; i++) {
-            if (prices[i].ask * minimumPrice.bid < minimumPrice.ask * prices[i].bid) {
+            if (
+                prices[i].ask * minimumPrice.bid <
+                minimumPrice.ask * prices[i].bid
+            ) {
                 minimumPrice = prices[i];
             }
         }
@@ -541,12 +646,21 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
         Price memory last = Price(current.ask, current.bid);
 
-        if (minimumPrice.ask != MAX_AMOUNT.add(1) && minimumPrice.bid != MAX_AMOUNT.add(1)) {
+        if (
+            minimumPrice.ask != MAX_AMOUNT.add(1) &&
+            minimumPrice.bid != MAX_AMOUNT.add(1)
+        ) {
             current.ask = minimumPrice.ask;
             current.bid = minimumPrice.bid;
 
             if (last.ask != minimumPrice.ask || last.bid != minimumPrice.bid) {
-                emit PriceChanged(askAssetAddress, bidAssetAddress, minimumPrice.ask, minimumPrice.bid, now); // solhint-disable-line not-rely-on-time,max-line-length
+                emit PriceChanged(
+                    askAssetAddress,
+                    bidAssetAddress,
+                    minimumPrice.ask,
+                    minimumPrice.bid,
+                    now
+                ); // solhint-disable-line not-rely-on-time,max-line-length
             }
         } else {
             current.ask = 0;
@@ -555,9 +669,15 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         }
     }
 
-    function _recordQuote(address askAssetAddress, address bidAssetAddress, uint256 index) internal {
+    function _recordQuote(
+        address askAssetAddress,
+        address bidAssetAddress,
+        uint256 index
+    ) internal {
         OrderFill storage fill = _orderFills[bidAssetAddress][askAssetAddress][index];
-        uint256 timeOpen = fill.timestamp.sub(fill.timestamp.mod(MIN_QUOTE_TIME));
+        uint256 timeOpen = fill.timestamp.sub(
+            fill.timestamp.mod(MIN_QUOTE_TIME)
+        );
         Quote storage quote = _quotes[bidAssetAddress][askAssetAddress][timeOpen];
 
         if (quote.volume == 0) {
@@ -566,14 +686,20 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             quote.open = Price(fill.askAssetAmount, fill.bidAssetAmount);
         }
 
-        if (quote.high.ask * fill.bidAssetAmount < quote.high.bid * fill.askAssetAmount
-            || (quote.high.ask == 0 && quote.high.bid == 0)) {
+        if (
+            quote.high.ask * fill.bidAssetAmount <
+            quote.high.bid * fill.askAssetAmount ||
+            (quote.high.ask == 0 && quote.high.bid == 0)
+        ) {
             quote.high.ask = fill.askAssetAmount;
             quote.high.bid = fill.bidAssetAmount;
         }
 
-        if (quote.low.ask * fill.bidAssetAmount > quote.low.bid * fill.askAssetAmount
-            || (quote.low.ask == 0 && quote.low.bid == 0)) {
+        if (
+            quote.low.ask * fill.bidAssetAmount >
+            quote.low.bid * fill.askAssetAmount ||
+            (quote.low.ask == 0 && quote.low.bid == 0)
+        ) {
             quote.low.ask = fill.askAssetAmount;
             quote.low.bid = fill.bidAssetAmount;
         }
@@ -589,7 +715,8 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
      * @param params struct CancelOrderParams
      */
     function cancelOrder(CancelOrderParams memory params) public {
-        Order storage o = _orders[params.bidAssetAddress][params.askAssetAddress][params.nonce];
+        Order storage o = _orders[params.bidAssetAddress][params
+            .askAssetAddress][params.nonce];
         require(o.maker == msg.sender);
         require(o.status != OrderStatus.cancelled, "order already cancelled");
         require(o.status != OrderStatus.filled, "order already filled");
@@ -603,6 +730,11 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             now // solhint-disable-line not-rely-on-time
         );
 
-        _removeOrderPrice(o.askAssetAddress, o.bidAssetAddress, o.askAssetAmount, o.bidAssetAmount);
+        _removeOrderPrice(
+            o.askAssetAddress,
+            o.bidAssetAddress,
+            o.askAssetAmount,
+            o.bidAssetAmount
+        );
     }
 }

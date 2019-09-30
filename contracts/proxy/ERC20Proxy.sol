@@ -4,14 +4,13 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 import "./AssetProxy.sol";
 
-
 /**
  * @title ERC20Proxy
  * @dev AssetProxy of ERC20 tokens
  */
 contract ERC20Proxy is AssetProxy {
     /// @dev ID of ERC20 Proxy
-    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC20()"));
+    bytes4 internal constant PROXY_ID = bytes4(keccak256("ERC20()"));
 
     /**
      * @dev get ID of current proxy
@@ -53,7 +52,10 @@ contract ERC20Proxy is AssetProxy {
         address assetAddress,
         bytes memory assetData
     ) public {
-        require(canTransferFrom(from, amount, assetAddress, assetData), "cannot transfer from");
+        require(
+            canTransferFrom(from, amount, assetAddress, assetData),
+            "cannot transfer from"
+        );
 
         IERC20 erc20 = IERC20(assetAddress);
         require(erc20.transferFrom(from, to, amount));

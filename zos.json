@@ -6,5 +6,12 @@
     "Exchange": "Exchange",
     "ERC20Proxy": "ERC20Proxy",
     "ERC721Proxy": "ERC721Proxy"
+  },
+  "dependencies": {},
+  "compiler": {
+    "manager": "truffle",
+    "compilerSettings": {
+      "optimizer": {}
+    }
   }
 }
