@@ -1,9 +1,7 @@
 # Created by https://www.gitignore.io/api/solidity,intellij
 
-.env
-
-.zos.session
-zos.dev-5777.json
+.openzeppelin/.session
+.openzeppelin/dev-5777.json
 
 .idea
 build/*

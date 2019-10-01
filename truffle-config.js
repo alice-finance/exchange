@@ -12,32 +12,39 @@ module.exports = {
       gasPrice: 0x01,
       network_id: "*"
     },
-    deploy: {
+    local: {
+      host: "localhost",
+      port: 8545,
+      network_id: "*"
+    },
+    extdev: {
       provider: () => {
         const provider = new LoomTruffleProvider(
-          process.env.CHAIN_ID,
-          process.env.WRITE_URL,
-          process.env.READ_URL,
+          "extdev-plasma-us1",
+          "https://extdev-plasma-us1.dappchains.com/rpc",
+          "https://extdev-plasma-us1.dappchains.com/query",
           process.env.ADMIN_PRIVATE_KEY
         );
         const engine = provider.getProviderEngine();
         engine.addCustomMethod("web3_clientVersion", () => "");
         return provider;
       },
+      gasPrice: 0,
       network_id: "*"
     },
-    console: {
+    plasma: {
       provider: () => {
         const provider = new LoomTruffleProvider(
-          process.env.CHAIN_ID,
-          process.env.WRITE_URL,
-          process.env.READ_URL,
-          process.env.OWNER_PRIVATE_KEY
+          "default",
+          "https://plasma.dappchains.com/rpc",
+          "https://plasma.dappchains.com/query",
+          process.env.ADMIN_PRIVATE_KEY
         );
         const engine = provider.getProviderEngine();
         engine.addCustomMethod("web3_clientVersion", () => "");
         return provider;
       },
+      gasPrice: 0,
       network_id: "*"
     }
   },
@@ -58,7 +65,7 @@ module.exports = {
           enabled: true,
           runs: 200
         },
-        evmVersion: "byzantium"
+        evmVersion: "constantinople"
       }
     }
   }

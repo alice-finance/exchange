@@ -1,14 +1,15 @@
 pragma solidity ^0.5.3;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-import "./AssetProxy.sol";
+import "./IAssetProxy.sol";
 
 /**
  * @title ERC20Proxy
  * @dev AssetProxy of ERC20 tokens
  */
-contract ERC20Proxy is AssetProxy {
+contract ERC20Proxy is IAssetProxy, Initializable {
     /// @dev ID of ERC20 Proxy
     bytes4 internal constant PROXY_ID = bytes4(keccak256("ERC20()"));
 

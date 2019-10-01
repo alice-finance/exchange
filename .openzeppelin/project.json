@@ -1,13 +1,14 @@
 {
-  "zosversion": "2",
-  "name": "exchange",
-  "version": "1.0.4",
+  "manifestVersion": "2.2",
   "contracts": {
     "Exchange": "Exchange",
+    "ERC721Proxy": "ERC721Proxy",
     "ERC20Proxy": "ERC20Proxy",
-    "ERC721Proxy": "ERC721Proxy"
+    "MarketPairRegistry": "MarketPairRegistry"
   },
   "dependencies": {},
+  "name": "@alice-finance/exchange",
+  "version": "1.0.4",
   "compiler": {
     "manager": "truffle",
     "compilerSettings": {

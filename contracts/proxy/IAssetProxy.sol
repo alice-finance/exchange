@@ -1,16 +1,14 @@
 pragma solidity ^0.5.3;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
-
 /**
  * @title AssetProxy
  */
-contract AssetProxy is Initializable {
+interface IAssetProxy {
     /**
      * @dev get ID of current proxy
      * @return proxy ID
      */
-    function proxyId() public pure returns (bytes4);
+    function proxyId() external pure returns (bytes4);
 
     /**
      * @dev Check an asset is transferable
@@ -24,8 +22,8 @@ contract AssetProxy is Initializable {
         address from,
         uint256 amount,
         address assetAddress,
-        bytes memory assetData
-    ) public view returns (bool);
+        bytes calldata assetData
+    ) external view returns (bool);
 
     /**
      * @dev Transfer asset from address to address
@@ -40,6 +38,6 @@ contract AssetProxy is Initializable {
         address to,
         uint256 amount,
         address assetAddress,
-        bytes memory assetData
-    ) public;
+        bytes calldata assetData
+    ) external;
 }

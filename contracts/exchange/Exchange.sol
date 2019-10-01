@@ -4,8 +4,8 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
+import "../ownership/Ownable.sol";
 import "../proxy/AssetProxyRegistry.sol";
 import "./Statistics.sol";
 
@@ -106,7 +106,7 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
      * @param proxyId proxy ID of asset proxy
      * @param assetProxy address of AssetProxy contract
      */
-    function registerAssetProxy(bytes4 proxyId, AssetProxy assetProxy)
+    function registerAssetProxy(bytes4 proxyId, IAssetProxy assetProxy)
         public
         onlyOwner
     {
@@ -141,7 +141,7 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
             "bidAssetAmount exceeded limit"
         );
 
-        AssetProxy askAssetProxy = _assetProxyOfProxyId[params.askAssetProxyId];
+        IAssetProxy askAssetProxy = _assetProxyOfProxyId[params.askAssetProxyId];
         require(
             address(askAssetProxy) != address(0),
             "askAssetProxy not found"
@@ -402,8 +402,8 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
         Order storage order = _orders[bidAssetAddress][askAssetAddress][nonce];
 
         // Below will always return valid assetProxy because cannot create order without properly setted proxy
-        AssetProxy askAssetProxy = _assetProxyOfProxyId[order.askAssetProxyId];
-        AssetProxy bidAssetProxy = _assetProxyOfProxyId[order.bidAssetProxyId];
+        IAssetProxy askAssetProxy = _assetProxyOfProxyId[order.askAssetProxyId];
+        IAssetProxy bidAssetProxy = _assetProxyOfProxyId[order.bidAssetProxyId];
 
         // cut fill amount to remaining if the user tries to fill larger amount than remaining
         uint256 amountToFill = Math.min(
@@ -467,12 +467,12 @@ contract Exchange is Initializable, Ownable, AssetProxyRegistry, Statistics {
      */
     function _exchangeAssets(
         address maker,
-        AssetProxy askAssetProxy,
+        IAssetProxy askAssetProxy,
         address askAssetAddress,
         uint256 askAssetAmount,
         bytes memory askAssetData,
         address taker,
-        AssetProxy bidAssetProxy,
+        IAssetProxy bidAssetProxy,
         address bidAssetAddress,
         uint256 bidAssetAmount,
         bytes memory bidAssetData
