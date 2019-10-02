@@ -144,11 +144,11 @@
       "storage": null
     },
     "MarketPairRegistry": {
-      "address": "0x41bE633AC6f0B3f77A2D33151CcBaA8bc22b20A8",
-      "constructorCode": "608060405234801561001057600080fd5b50610d35806100206000396000f3fe",
-      "bodyBytecodeHash": "6befdbb7ece1cf408639eb7266de490bdda37edbdbbc98b5c4330dc91723e950",
-      "localBytecodeHash": "c92668e89da3234b9f1b5a051cbca0d656cf41a6c222ad4d951cb71c27f195d1",
-      "deployedBytecodeHash": "c92668e89da3234b9f1b5a051cbca0d656cf41a6c222ad4d951cb71c27f195d1",
+      "address": "0x515c2A9cDc6AF10B58ef76022A367aBBD54E1cCe",
+      "constructorCode": "608060405234801561001057600080fd5b50610d1a806100206000396000f3fe",
+      "bodyBytecodeHash": "8b2845b80f1b48dab75ef721f30a1eb529ff2c29b63b1b17f71881e3205cdff3",
+      "localBytecodeHash": "4c42175b4edeca12b864b16b670e3c763363cf503a99ac3a9138ee85bc47f05c",
+      "deployedBytecodeHash": "4c42175b4edeca12b864b16b670e3c763363cf503a99ac3a9138ee85bc47f05c",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -305,7 +305,18 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [
+          {
+            "contract": "MarketPairRegistry",
+            "path": "contracts/registry/MarketPairRegistry.sol",
+            "label": "_marketPair",
+            "astId": 2870,
+            "type": "t_array:dyn<t_struct<IMarketPairRegistry.MarketPair>>",
+            "src": "197:24:11"
+          }
+        ],
+        "storageDiff": []
       }
     }
   },

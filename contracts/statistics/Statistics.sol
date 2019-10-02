@@ -1,9 +1,10 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.11;
 pragma experimental ABIEncoderV2;
 
-import "./OrderBook.sol";
+import "../exchange/OrderBook.sol";
+import "../pubsub/ISubscriber.sol";
 
-contract Statistics is OrderBook {
+contract Statistics is OrderBook, ISubscriber {
     // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**
      * @notice Get quotes of given params

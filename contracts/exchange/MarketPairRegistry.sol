@@ -1,10 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./IMarketPairRegistry.sol";
 import "../ownership/Ownable.sol";
 
-contract MarketPairRegistry is IMarketPairRegistry, Ownable {
+contract MarketPairRegistry is Ownable {
+    struct MarketPair {
+        address ask;
+        address bid;
+    }
+
     MarketPair[] _marketPair;
 
     mapping(address => mapping(address => bool)) _askBidRegistered;

@@ -4,7 +4,8 @@
     "Exchange": "Exchange",
     "ERC721Proxy": "ERC721Proxy",
     "ERC20Proxy": "ERC20Proxy",
-    "MarketPairRegistry": "MarketPairRegistry"
+    "MarketPairRegistry": "MarketPairRegistry",
+    "Statistics": "Statistics"
   },
   "dependencies": {},
   "name": "@alice-finance/exchange",
@@ -12,7 +13,10 @@
   "compiler": {
     "manager": "truffle",
     "compilerSettings": {
-      "optimizer": {}
+      "optimizer": {
+        "enabled": true,
+        "runs": "200"
+      }
     }
   }
 }
