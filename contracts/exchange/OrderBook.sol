@@ -72,6 +72,8 @@ contract OrderBook {
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Order[]
     mapping(address => mapping(address => Order[])) internal _orders;
+    /// @dev mapping bidAssetAddress => askAssetAddress => uint256[]
+    mapping(address => mapping(address => uint256[])) internal _activeOrderIds;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Price
     mapping(address => mapping(address => Price)) internal _currentPrice;
