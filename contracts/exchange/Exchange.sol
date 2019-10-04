@@ -92,13 +92,13 @@ contract Exchange is
         uint256 timestamp
     );
 
-    event PriceChanged(
-        address indexed askAssetAddress,
-        address indexed bidAssetAddress,
-        uint256 askAssetAmount,
-        uint256 bidAssetAmount,
-        uint256 timestamp
-    );
+//    event PriceChanged(
+//        address indexed askAssetAddress,
+//        address indexed bidAssetAddress,
+//        uint256 askAssetAmount,
+//        uint256 bidAssetAmount,
+//        uint256 timestamp
+//    );
 
     function initialize(address sender) public initializer {
         Ownable.initialize(sender);
@@ -114,6 +114,14 @@ contract Exchange is
         onlyOwner
     {
         super.registerAssetProxy(proxyId, assetProxy);
+    }
+
+    function addSubscriber(bytes32 eventHash, address subscriber) public onlyOwner returns (bool)  {
+        return Publisher.addSubscriber(eventHash, subscriber);
+    }
+
+    function removeSubscriber(bytes32 eventHash, address subscriber) public onlyOwner returns (bool) {
+        return Publisher.removeSubscriber(eventHash, subscriber);
     }
 
     /**
@@ -195,24 +203,12 @@ contract Exchange is
             now // solhint-disable-line not-rely-on-time
         );
 
-        _publishEvent(
-            EXCHANGE_ORDER_CREATED,
-            abi.encode(
-                params.askAssetAddress,
-                params.askAssetAmount,
-                params.bidAssetAddress,
-                params.bidAssetAmount,
-                now
-            )
-        );
-
-        //        _addOrderPrice(
-        //            params.askAssetAddress,
-        //            params.bidAssetAddress,
-        //            params.askAssetAmount,
-        //            params.bidAssetAmount
-        //        );
-
+//        _addOrderPrice(
+//            params.askAssetAddress,
+//            params.bidAssetAddress,
+//            params.askAssetAmount,
+//            params.bidAssetAmount
+//        );
     }
 
     /**
@@ -440,17 +436,7 @@ contract Exchange is
         _updateOrderStatus(order);
 
         uint256 orderFillIndex = _recordOrderFill(order, taker, amountToFill);
-        //        _recordQuote(askAssetAddress, bidAssetAddress, orderFillIndex);
-        _publishEvent(
-            EXCHANGE_ORDER_FILLED,
-            abi.encode(
-                order.askAssetAddress,
-                order.askAssetAmount,
-                order.bidAssetAddress,
-                order.bidAssetAmount,
-                now
-            )
-        );
+//                _recordQuote(askAssetAddress, bidAssetAddress, orderFillIndex);
 
         _exchangeAssets(
             order.maker,
@@ -467,22 +453,12 @@ contract Exchange is
 
         if (order.status == OrderStatus.filled) {
             // Remove from active list
-            _publishEvent(
-                EXCHANGE_ORDER_FILLED,
-                abi.encode(
-                    order.askAssetAddress,
-                    order.askAssetAmount,
-                    order.bidAssetAddress,
-                    order.bidAssetAmount,
-                    now
-                )
-            );
-            //            _removeOrderPrice(
-            //                order.askAssetAddress,
-            //                order.bidAssetAddress,
-            //                order.askAssetAmount,
-            //                order.bidAssetAmount
-            //            );
+//                        _removeOrderPrice(
+//                            order.askAssetAddress,
+//                            order.bidAssetAddress,
+//                            order.askAssetAmount,
+//                            order.bidAssetAmount
+//                        );
         }
 
         return true;
@@ -599,150 +575,6 @@ contract Exchange is
     }
 
     /**
-     * @notice add order's price to list
-     */
-    function _addOrderPrice(
-        address askAssetAddress,
-        address bidAssetAddress,
-        uint256 askAssetAmount,
-        uint256 bidAssetAmount
-    ) internal {
-        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
-        prices.length += 1;
-        Price storage newPrice = prices[prices.length - 1];
-        newPrice.ask = askAssetAmount;
-        newPrice.bid = bidAssetAmount;
-
-        Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
-
-        if (
-            currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
-            (currentPrice.ask == 0 && currentPrice.bid == 0)
-        ) {
-            currentPrice.ask = newPrice.ask;
-            currentPrice.bid = newPrice.bid;
-
-            emit PriceChanged(
-                askAssetAddress,
-                bidAssetAddress,
-                currentPrice.ask,
-                currentPrice.bid,
-                now
-            ); // solhint-disable-line not-rely-on-time,max-line-length
-        }
-    }
-
-    /**
-     * @notice remove order's price from list
-     */
-    //    function _removeOrderPrice(
-    //        address askAssetAddress,
-    //        address bidAssetAddress,
-    //        uint256 askAssetAmount,
-    //        uint256 bidAssetAmount
-    //    ) internal {
-    //        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
-    //
-    //        for (uint256 i = 0; i < prices.length; i++) {
-    //            if (
-    //                prices[i].ask == askAssetAmount &&
-    //                prices[i].bid == bidAssetAmount
-    //            ) {
-    //                prices[i] = prices[prices.length - 1];
-    //                prices.length--;
-    //                break;
-    //            }
-    //        }
-    //
-    //        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
-    //        if (current.ask == askAssetAmount && current.bid == bidAssetAmount) {
-    //            _updateOrderPrice(askAssetAddress, bidAssetAddress);
-    //        }
-    //    }
-
-    /**
-     * @notice find lowest order price and update current price
-     */
-    //    function _updateOrderPrice(address askAssetAddress, address bidAssetAddress)
-    //        internal
-    //    {
-    //        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
-    //        /// @dev set ask and bid MAX_AMOUNT + 1 which is invalid
-    //        Price memory minimumPrice = Price(MAX_AMOUNT.add(1), MAX_AMOUNT.add(1));
-    //
-    //        /// @dev find minimum price in list
-    //        for (uint256 i = 0; i < prices.length; i++) {
-    //            if (
-    //                prices[i].ask * minimumPrice.bid <
-    //                minimumPrice.ask * prices[i].bid
-    //            ) {
-    //                minimumPrice = prices[i];
-    //            }
-    //        }
-    //
-    //        /// @dev check if minimumPrice is changed
-    //        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
-    //
-    //        /// @dev minimum price changed
-    //        if (
-    //            minimumPrice.ask != MAX_AMOUNT.add(1) &&
-    //            minimumPrice.bid != MAX_AMOUNT.add(1)
-    //        ) {
-    //            current.ask = minimumPrice.ask;
-    //            current.bid = minimumPrice.bid;
-    //
-    //            emit PriceChanged(
-    //                askAssetAddress,
-    //                bidAssetAddress,
-    //                minimumPrice.ask,
-    //                minimumPrice.bid,
-    //                now
-    //            ); // solhint-disable-line not-rely-on-time,max-line-length
-    //        }
-    //    }
-
-    //    function _recordQuote(
-    //        address askAssetAddress,
-    //        address bidAssetAddress,
-    //        uint256 index
-    //    ) internal {
-    //        OrderFill storage fill = _orderFills[bidAssetAddress][askAssetAddress][index];
-    //        uint256 timeOpen = fill.timestamp.sub(
-    //            fill.timestamp.mod(MIN_QUOTE_TIME)
-    //        );
-    //        Quote storage quote = _quotes[bidAssetAddress][askAssetAddress][timeOpen];
-    //
-    //        if (quote.volume == 0) {
-    //            quote.timeOpen = timeOpen;
-    //            quote.timeClose = timeOpen + 59;
-    //            quote.open = Price(fill.askAssetAmount, fill.bidAssetAmount);
-    //        }
-    //
-    //        if (
-    //            quote.high.ask * fill.bidAssetAmount <
-    //            quote.high.bid * fill.askAssetAmount ||
-    //            (quote.high.ask == 0 && quote.high.bid == 0)
-    //        ) {
-    //            quote.high.ask = fill.askAssetAmount;
-    //            quote.high.bid = fill.bidAssetAmount;
-    //        }
-    //
-    //        if (
-    //            quote.low.ask * fill.bidAssetAmount >
-    //            quote.low.bid * fill.askAssetAmount ||
-    //            (quote.low.ask == 0 && quote.low.bid == 0)
-    //        ) {
-    //            quote.low.ask = fill.askAssetAmount;
-    //            quote.low.bid = fill.bidAssetAmount;
-    //        }
-    //
-    //        quote.close.ask = fill.askAssetAmount;
-    //        quote.close.bid = fill.bidAssetAmount;
-    //
-    //        quote.volume = quote.volume.add(fill.bidAssetFilledAmount);
-    //    }
-
-    /**
      * @dev Cancel Order of given params
      * @param params struct CancelOrderParams
      */
@@ -762,22 +594,11 @@ contract Exchange is
             now // solhint-disable-line not-rely-on-time
         );
 
-        _publishEvent(
-            EXCHANGE_ORDER_CANCELLED,
-            abi.encode(
-                o.nonce,
-                o.askAssetAddress,
-                o.askAssetAmount,
-                o.bidAssetAddress,
-                o.bidAssetAmount,
-                now
-            )
-        );
-        //        _removeOrderPrice(
-        //            o.askAssetAddress,
-        //            o.bidAssetAddress,
-        //            o.askAssetAmount,
-        //            o.bidAssetAmount
-        //        );
+//                _removeOrderPrice(
+//                    o.askAssetAddress,
+//                    o.bidAssetAddress,
+//                    o.askAssetAmount,
+//                    o.bidAssetAmount
+//                );
     }
 }

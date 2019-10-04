@@ -1,11 +1,11 @@
 {
   "contracts": {
     "ERC721Proxy": {
-      "address": "0x383ED7988822c53F480B749d3aacFB701B5A4C7d",
-      "constructorCode": "608060405234801561001057600080fd5b506105c4806100206000396000f3fe",
-      "bodyBytecodeHash": "9f47e22a189ee89e32f8145af7d768c3cb928a22a07484e0e1b6f372c6c2fcfe",
-      "localBytecodeHash": "72df12148468ade25d48cfa6a5957320e2b9b890fda89674a4309d594280be98",
-      "deployedBytecodeHash": "72df12148468ade25d48cfa6a5957320e2b9b890fda89674a4309d594280be98",
+      "address": "0x0c99274c86075aB87ddec29656E9fd8a0189fFB1",
+      "constructorCode": "608060405234801561001057600080fd5b5061051b806100206000396000f3fe",
+      "bodyBytecodeHash": "386984bbcfa5c3c0467eac3f28c5a5ca5546c7e6acac3fc7a2b675607d11f756",
+      "localBytecodeHash": "3dc3eb8212b5d7c07603ef6e6bc16c998ab22099d70b08751f6bbe32161c0c6d",
+      "deployedBytecodeHash": "3dc3eb8212b5d7c07603ef6e6bc16c998ab22099d70b08751f6bbe32161c0c6d",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -30,33 +30,33 @@
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 2868,
+          "astId": 3227,
           "type": "t_bool",
-          "src": "757:24:11"
+          "src": "757:24:15"
         },
         {
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 2870,
+          "astId": 3229,
           "type": "t_bool",
-          "src": "876:25:11"
+          "src": "876:25:15"
         },
         {
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 2926,
+          "astId": 3285,
           "type": "t_array:50<t_uint256>",
-          "src": "1951:29:11"
+          "src": "1951:29:15"
         },
         {
           "contract": "ERC721Proxy",
           "path": "contracts/proxy/ERC721Proxy.sol",
           "label": "______gap",
-          "astId": 2714,
+          "astId": 2743,
           "type": "t_array:50<t_uint256>",
-          "src": "3729:29:8"
+          "src": "3808:29:7"
         }
       ],
       "warnings": {
@@ -64,15 +64,17 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [],
+        "storageDiff": []
       }
     },
     "ERC20Proxy": {
-      "address": "0xf713d91Af5D0C42D192F23AE7952EeB4d7951190",
-      "constructorCode": "608060405234801561001057600080fd5b50610493806100206000396000f3fe",
-      "bodyBytecodeHash": "f0a907c55de4c9696a51217855951bb6e38b70e594e6065721a742022f61773d",
-      "localBytecodeHash": "ec86127c3a8f838a4ee04e15960be9836a1172705d61c3d2c20094a1ee6c4da2",
-      "deployedBytecodeHash": "ec86127c3a8f838a4ee04e15960be9836a1172705d61c3d2c20094a1ee6c4da2",
+      "address": "0xfe8Db4E8916eaBf5aD8270a51989157A9b88A1C1",
+      "constructorCode": "608060405234801561001057600080fd5b506103e1806100206000396000f3fe",
+      "bodyBytecodeHash": "393c349b5d863ee908d229e75c09f4db689384ff0e70217fbc741ce138234c43",
+      "localBytecodeHash": "30893bdcf83e458a661c9370ae0ad04d37533d2a78db9b6e8f821ef1138a9f1a",
+      "deployedBytecodeHash": "30893bdcf83e458a661c9370ae0ad04d37533d2a78db9b6e8f821ef1138a9f1a",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -97,33 +99,33 @@
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 2868,
+          "astId": 3227,
           "type": "t_bool",
-          "src": "757:24:11"
+          "src": "757:24:15"
         },
         {
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 2870,
+          "astId": 3229,
           "type": "t_bool",
-          "src": "876:25:11"
+          "src": "876:25:15"
         },
         {
           "contract": "Initializable",
           "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 2926,
+          "astId": 3285,
           "type": "t_array:50<t_uint256>",
-          "src": "1951:29:11"
+          "src": "1951:29:15"
         },
         {
           "contract": "ERC20Proxy",
           "path": "contracts/proxy/ERC20Proxy.sol",
           "label": "______gap",
-          "astId": 2510,
+          "astId": 2536,
           "type": "t_array:50<t_uint256>",
-          "src": "1829:29:7"
+          "src": "1908:29:6"
         }
       ],
       "warnings": {
@@ -131,7 +133,9 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [],
+        "storageDiff": []
       }
     },
     "Exchange": {

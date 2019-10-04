@@ -1,10 +1,67 @@
 pragma solidity ^0.5.11;
 pragma experimental ABIEncoderV2;
 
-import "../exchange/OrderBook.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../pubsub/ISubscriber.sol";
 
-contract Statistics is OrderBook, ISubscriber {
+contract Statistics is ISubscriber {
+    using SafeMath for uint256;
+
+    uint256 public constant MAX_AMOUNT = 2**128 - 1;
+    uint256 public constant MIN_QUOTE_TIME = 60;
+
+    event PriceChanged(
+        address indexed askAssetAddress,
+        address indexed bidAssetAddress,
+        uint256 askAssetAmount,
+        uint256 bidAssetAmount,
+        uint256 timestamp
+    );
+
+    struct Price {
+        uint256 ask;
+        uint256 bid;
+    }
+
+    struct Quote {
+        uint256 timeOpen;
+        uint256 timeClose;
+        Price open;
+        Price high;
+        Price low;
+        Price close;
+        uint256 volume;
+    }
+
+    /// @dev mapping bidAssetAddress => askAssetAddress => Price
+    mapping(address => mapping(address => Price)) internal _currentPrice;
+
+    /// @dev mapping bidAssetAddress => askAssetAddress => Price[]
+    mapping(address => mapping(address => Price[])) internal _prices;
+
+    /// @dev mapping bidAssetAddress => askAssetAddress => timestamp => Quote
+    mapping(address => mapping(address => mapping(uint256 => Quote))) internal _quotes;
+
+    function isSubscriber() public view returns (bool) {
+        return true;
+    }
+
+    function notify(bytes32 eventHash, bytes memory data)
+        public
+        returns (bool)
+    {
+        if (eventHash == "") {} else if (eventHash == "") {}
+        return true;
+    }
+
+    function getCurrentPrice(address askAssetAddress, address bidAssetAddress)
+        public
+        view
+        returns (Price memory results)
+    {
+        return _currentPrice[bidAssetAddress][askAssetAddress];
+    }
+
     // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**
      * @notice Get quotes of given params
@@ -337,4 +394,146 @@ contract Statistics is OrderBook, ISubscriber {
         }
     }
     // solhint-enable max-line-length, no-empty-blocks, function-max-lines
+
+    /**
+     * @notice add order's price to list
+     */
+    function _addOrderPrice(
+        address askAssetAddress,
+        address bidAssetAddress,
+        uint256 askAssetAmount,
+        uint256 bidAssetAmount
+    ) internal {
+        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        prices.length += 1;
+        Price storage newPrice = prices[prices.length - 1];
+        newPrice.ask = askAssetAmount;
+        newPrice.bid = bidAssetAmount;
+
+        Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
+
+        if (
+            currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
+            (currentPrice.ask == 0 && currentPrice.bid == 0)
+        ) {
+            currentPrice.ask = newPrice.ask;
+            currentPrice.bid = newPrice.bid;
+
+            emit PriceChanged(
+                askAssetAddress,
+                bidAssetAddress,
+                currentPrice.ask,
+                currentPrice.bid,
+                now
+            ); // solhint-disable-line not-rely-on-time,max-line-length
+        }
+    }
+
+    /**
+     * @notice remove order's price from list
+     */
+    function _removeOrderPrice(
+        address askAssetAddress,
+        address bidAssetAddress,
+        uint256 askAssetAmount,
+        uint256 bidAssetAmount
+    ) internal {
+        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+
+        for (uint256 i = 0; i < prices.length; i++) {
+            if (
+                prices[i].ask == askAssetAmount &&
+                prices[i].bid == bidAssetAmount
+            ) {
+                prices[i] = prices[prices.length - 1];
+                prices.length--;
+                break;
+            }
+        }
+
+        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
+        if (current.ask == askAssetAmount && current.bid == bidAssetAmount) {
+            _updateOrderPrice(askAssetAddress, bidAssetAddress);
+        }
+    }
+
+    /**
+     * @notice find lowest order price and update current price
+     */
+    function _updateOrderPrice(address askAssetAddress, address bidAssetAddress)
+        internal
+    {
+        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        /// @dev set ask and bid MAX_AMOUNT + 1 which is invalid
+        Price memory minimumPrice = Price(MAX_AMOUNT.add(1), MAX_AMOUNT.add(1));
+
+        /// @dev find minimum price in list
+        for (uint256 i = 0; i < prices.length; i++) {
+            if (
+                prices[i].ask * minimumPrice.bid <
+                minimumPrice.ask * prices[i].bid
+            ) {
+                minimumPrice = prices[i];
+            }
+        }
+
+        /// @dev check if minimumPrice is changed
+        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
+
+        /// @dev minimum price changed
+        if (
+            minimumPrice.ask != MAX_AMOUNT.add(1) &&
+            minimumPrice.bid != MAX_AMOUNT.add(1)
+        ) {
+            current.ask = minimumPrice.ask;
+            current.bid = minimumPrice.bid;
+
+            emit PriceChanged(
+                askAssetAddress,
+                bidAssetAddress,
+                minimumPrice.ask,
+                minimumPrice.bid,
+                now
+            ); // solhint-disable-line not-rely-on-time,max-line-length
+        }
+    }
+
+    function _recordQuote(
+        address askAssetAddress,
+        address bidAssetAddress,
+        uint256 askAssetAmount,
+        uint256 bidAssetAmount,
+        uint256 bidAssetFilledAmount,
+        uint256 timestamp
+    ) internal {
+        uint256 timeOpen = timestamp.sub(timestamp.mod(MIN_QUOTE_TIME));
+        Quote storage quote = _quotes[bidAssetAddress][askAssetAddress][timeOpen];
+
+        if (quote.volume == 0) {
+            quote.timeOpen = timeOpen;
+            quote.timeClose = timeOpen + 59;
+            quote.open = Price(askAssetAmount, bidAssetAmount);
+        }
+
+        if (
+            quote.high.ask * bidAssetAmount < quote.high.bid * askAssetAmount ||
+            (quote.high.ask == 0 && quote.high.bid == 0)
+        ) {
+            quote.high.ask = askAssetAmount;
+            quote.high.bid = bidAssetAmount;
+        }
+
+        if (
+            quote.low.ask * bidAssetAmount > quote.low.bid * askAssetAmount ||
+            (quote.low.ask == 0 && quote.low.bid == 0)
+        ) {
+            quote.low.ask = askAssetAmount;
+            quote.low.bid = bidAssetAmount;
+        }
+
+        quote.close.ask = askAssetAmount;
+        quote.close.bid = bidAssetAmount;
+
+        quote.volume = quote.volume.add(bidAssetFilledAmount);
+    }
 }

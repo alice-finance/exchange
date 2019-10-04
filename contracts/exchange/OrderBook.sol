@@ -12,8 +12,6 @@ contract OrderBook {
     /// @dev MAX_AMOUNT is UINT128_MAX
     uint256 public constant MAX_AMOUNT = 2**128 - 1;
 
-    uint256 public constant MIN_QUOTE_TIME = 60;
-
     enum OrderStatus {
         invalid, // Order is invalid
         fillable, // Order is fillable
@@ -55,37 +53,30 @@ contract OrderBook {
         bytes auxiliary;
     }
 
-    struct Price {
-        uint256 ask;
-        uint256 bid;
-    }
-
-    struct Quote {
-        uint256 timeOpen;
-        uint256 timeClose;
-        Price open;
-        Price high;
-        Price low;
-        Price close;
-        uint256 volume;
-    }
+//    struct Price {
+//        uint256 ask;
+//        uint256 bid;
+//    }
+//
+//    struct Quote {
+//        uint256 timeOpen;
+//        uint256 timeClose;
+//        Price open;
+//        Price high;
+//        Price low;
+//        Price close;
+//        uint256 volume;
+//    }
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Order[]
     mapping(address => mapping(address => Order[])) internal _orders;
-    /// @dev mapping bidAssetAddress => askAssetAddress => uint256[]
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderId[]
     mapping(address => mapping(address => uint256[])) internal _activeOrderIds;
-
-    /// @dev mapping bidAssetAddress => askAssetAddress => Price
-    mapping(address => mapping(address => Price)) internal _currentPrice;
-
-    /// @dev mapping bidAssetAddress => askAssetAddress => Price[]
-    mapping(address => mapping(address => Price[])) internal _prices;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => OrderFill[]
     mapping(address => mapping(address => OrderFill[])) internal _orderFills;
-
-    /// @dev mapping bidAssetAddress => askAssetAddress => timestamp => Quote
-    mapping(address => mapping(address => mapping(uint256 => Quote))) internal _quotes;
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderId => orderFillId[]
+    mapping(address => mapping(address => mapping(uint256 => uint256[]))) internal _orderFillIds;
 
     /**
      * @notice get order of given params
@@ -487,14 +478,6 @@ contract OrderBook {
         }
     }
     // solhint-enable max-line-length, no-empty-blocks, function-max-lines
-
-    function getCurrentPrice(address askAssetAddress, address bidAssetAddress)
-        public
-        view
-        returns (Price memory results)
-    {
-        return _currentPrice[bidAssetAddress][askAssetAddress];
-    }
 
     // solhint-disable max-line-length, no-empty-blocks, function-max-lines
     /**

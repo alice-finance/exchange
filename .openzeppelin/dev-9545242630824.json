@@ -1,0 +1,496 @@
+{
+  "contracts": {
+    "ERC20Proxy": {
+      "address": "0x56DB87A17B8982E57683E49ed00f5b7FDd36BD88",
+      "constructorCode": "608060405234801561001057600080fd5b506103e1806100206000396000f3fe",
+      "bodyBytecodeHash": "393c349b5d863ee908d229e75c09f4db689384ff0e70217fbc741ce138234c43",
+      "localBytecodeHash": "30893bdcf83e458a661c9370ae0ad04d37533d2a78db9b6e8f821ef1138a9f1a",
+      "deployedBytecodeHash": "30893bdcf83e458a661c9370ae0ad04d37533d2a78db9b6e8f821ef1138a9f1a",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 3227,
+          "type": "t_bool",
+          "src": "757:24:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 3229,
+          "type": "t_bool",
+          "src": "876:25:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 3285,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:15"
+        },
+        {
+          "contract": "ERC20Proxy",
+          "path": "contracts/proxy/ERC20Proxy.sol",
+          "label": "______gap",
+          "astId": 2536,
+          "type": "t_array:50<t_uint256>",
+          "src": "1908:29:6"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "MarketPairRegistry": {
+      "address": "0xBd5199f9671836fB3076916624a85788886Ef855",
+      "constructorCode": "608060405234801561001057600080fd5b50610d1a806100206000396000f3fe",
+      "bodyBytecodeHash": "8b2845b80f1b48dab75ef721f30a1eb529ff2c29b63b1b17f71881e3205cdff3",
+      "localBytecodeHash": "4c42175b4edeca12b864b16b670e3c763363cf503a99ac3a9138ee85bc47f05c",
+      "deployedBytecodeHash": "4c42175b4edeca12b864b16b670e3c763363cf503a99ac3a9138ee85bc47f05c",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_struct<IMarketPairRegistry.MarketPair>": {
+          "id": "t_struct<IMarketPairRegistry.MarketPair>",
+          "kind": "struct",
+          "label": "IMarketPairRegistry.MarketPair",
+          "members": [
+            {
+              "label": "ask",
+              "astId": 2238,
+              "type": "t_address",
+              "src": "238:11:12"
+            },
+            {
+              "label": "bid",
+              "astId": 2240,
+              "type": "t_address",
+              "src": "259:11:12"
+            }
+          ]
+        },
+        "t_array:dyn<t_struct<IMarketPairRegistry.MarketPair>>": {
+          "id": "t_array:dyn<t_struct<IMarketPairRegistry.MarketPair>>",
+          "valueType": "t_struct<IMarketPairRegistry.MarketPair>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "IMarketPairRegistry.MarketPair[]"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_mapping<t_array:dyn<t_address>>": {
+          "id": "t_mapping<t_array:dyn<t_address>>",
+          "valueType": "t_array:dyn<t_address>",
+          "label": "mapping(key => address[])",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 2652,
+          "type": "t_bool",
+          "src": "757:24:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 2654,
+          "type": "t_bool",
+          "src": "876:25:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 2710,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:15"
+        },
+        {
+          "contract": "Ownable",
+          "path": "contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 1648,
+          "type": "t_address",
+          "src": "317:22:4"
+        },
+        {
+          "contract": "Ownable",
+          "path": "contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 1749,
+          "type": "t_array:50<t_uint256>",
+          "src": "2055:29:4"
+        },
+        {
+          "contract": "MarketPairRegistry",
+          "path": "contracts/registry/MarketPairRegistry.sol",
+          "label": "_marketPair",
+          "astId": 2276,
+          "type": "t_array:dyn<t_struct<IMarketPairRegistry.MarketPair>>",
+          "src": "197:24:13"
+        },
+        {
+          "contract": "MarketPairRegistry",
+          "path": "contracts/registry/MarketPairRegistry.sol",
+          "label": "_askBidRegistered",
+          "astId": 2282,
+          "type": "t_mapping<t_bool>",
+          "src": "228:62:13"
+        },
+        {
+          "contract": "MarketPairRegistry",
+          "path": "contracts/registry/MarketPairRegistry.sol",
+          "label": "_bidAskRegistered",
+          "astId": 2288,
+          "type": "t_mapping<t_bool>",
+          "src": "296:62:13"
+        },
+        {
+          "contract": "MarketPairRegistry",
+          "path": "contracts/registry/MarketPairRegistry.sol",
+          "label": "_bidsOfAsk",
+          "astId": 2293,
+          "type": "t_mapping<t_array:dyn<t_address>>",
+          "src": "364:40:13"
+        },
+        {
+          "contract": "MarketPairRegistry",
+          "path": "contracts/registry/MarketPairRegistry.sol",
+          "label": "_asksOfBid",
+          "astId": 2298,
+          "type": "t_mapping<t_array:dyn<t_address>>",
+          "src": "410:40:13"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "ERC721Proxy": {
+      "address": "0xDE0e4cda706a69787f21A4802eFCE289A5dCFDD0",
+      "constructorCode": "608060405234801561001057600080fd5b5061051b806100206000396000f3fe",
+      "bodyBytecodeHash": "386984bbcfa5c3c0467eac3f28c5a5ca5546c7e6acac3fc7a2b675607d11f756",
+      "localBytecodeHash": "3dc3eb8212b5d7c07603ef6e6bc16c998ab22099d70b08751f6bbe32161c0c6d",
+      "deployedBytecodeHash": "3dc3eb8212b5d7c07603ef6e6bc16c998ab22099d70b08751f6bbe32161c0c6d",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 2652,
+          "type": "t_bool",
+          "src": "757:24:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 2654,
+          "type": "t_bool",
+          "src": "876:25:15"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 2710,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:15"
+        },
+        {
+          "contract": "ERC721Proxy",
+          "path": "contracts/proxy/ERC721Proxy.sol",
+          "label": "______gap",
+          "astId": 2126,
+          "type": "t_array:50<t_uint256>",
+          "src": "3808:29:7"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "Exchange": {
+      "address": "0xD2D1208Add41E903b6BE1E7f89F8b9339d89499d",
+      "constructorCode": "608060405234801561001057600080fd5b50614520806100206000396000f3fe",
+      "bodyBytecodeHash": "fe62362f67201113b4822e8f0da68634e708c31ed404b920c44d419a0d6444d4",
+      "localBytecodeHash": "1eb691395b05e5e7971841e3fa74c15218d268e931a513964a94ca58915c64fb",
+      "deployedBytecodeHash": "1eb691395b05e5e7971841e3fa74c15218d268e931a513964a94ca58915c64fb",
+      "types": null,
+      "storage": null
+    },
+    "Statistics": {
+      "address": "0x25D51513c3342496a40AE816fC917AB9bA52bE67",
+      "constructorCode": "608060405234801561001057600080fd5b50610897806100206000396000f3fe",
+      "bodyBytecodeHash": "541b51de516f8b822121b5180ebe7d17161c8dd513bb81f50d507999f10047cc",
+      "localBytecodeHash": "042958913d13d9fba722e51b94e831b72f9e2964562102dbc3d9ef300b5b22b0",
+      "deployedBytecodeHash": "042958913d13d9fba722e51b94e831b72f9e2964562102dbc3d9ef300b5b22b0",
+      "types": {
+        "t_struct<Statistics.Price>": {
+          "id": "t_struct<Statistics.Price>",
+          "kind": "struct",
+          "label": "Statistics.Price",
+          "members": [
+            {
+              "label": "ask",
+              "astId": 2765,
+              "type": "t_uint256",
+              "src": "561:11:14"
+            },
+            {
+              "label": "bid",
+              "astId": 2767,
+              "type": "t_uint256",
+              "src": "582:11:14"
+            }
+          ]
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_mapping<t_struct<Statistics.Price>>": {
+          "id": "t_mapping<t_struct<Statistics.Price>>",
+          "valueType": "t_struct<Statistics.Price>",
+          "label": "mapping(key => Statistics.Price)",
+          "kind": "mapping"
+        },
+        "t_array:dyn<t_struct<Statistics.Price>>": {
+          "id": "t_array:dyn<t_struct<Statistics.Price>>",
+          "valueType": "t_struct<Statistics.Price>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "Statistics.Price[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>",
+          "valueType": "t_array:dyn<t_struct<Statistics.Price>>",
+          "label": "mapping(key => Statistics.Price[])",
+          "kind": "mapping"
+        },
+        "t_struct<Statistics.Quote>": {
+          "id": "t_struct<Statistics.Quote>",
+          "kind": "struct",
+          "label": "Statistics.Quote",
+          "members": [
+            {
+              "label": "timeOpen",
+              "astId": 2770,
+              "type": "t_uint256",
+              "src": "629:16:14"
+            },
+            {
+              "label": "timeClose",
+              "astId": 2772,
+              "type": "t_uint256",
+              "src": "655:17:14"
+            },
+            {
+              "label": "open",
+              "astId": 2774,
+              "type": "t_struct<Statistics.Price>",
+              "src": "682:10:14"
+            },
+            {
+              "label": "high",
+              "astId": 2776,
+              "type": "t_struct<Statistics.Price>",
+              "src": "702:10:14"
+            },
+            {
+              "label": "low",
+              "astId": 2778,
+              "type": "t_struct<Statistics.Price>",
+              "src": "722:9:14"
+            },
+            {
+              "label": "close",
+              "astId": 2780,
+              "type": "t_struct<Statistics.Price>",
+              "src": "741:11:14"
+            },
+            {
+              "label": "volume",
+              "astId": 2782,
+              "type": "t_uint256",
+              "src": "762:14:14"
+            }
+          ]
+        },
+        "t_mapping<t_struct<Statistics.Quote>>": {
+          "id": "t_mapping<t_struct<Statistics.Quote>>",
+          "valueType": "t_struct<Statistics.Quote>",
+          "label": "mapping(key => Statistics.Quote)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_currentPrice",
+          "astId": 2789,
+          "type": "t_mapping<t_struct<Statistics.Price>>",
+          "src": "854:68:14"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_prices",
+          "astId": 2796,
+          "type": "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>",
+          "src": "996:64:14"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_quotes",
+          "astId": 2804,
+          "type": "t_mapping<t_struct<Statistics.Quote>>",
+          "src": "1145:82:14"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    }
+  },
+  "solidityLibs": {},
+  "proxies": {
+    "@alice-finance/exchange/Exchange": [
+      {
+        "address": "0x0F8BE8F85468a513f0fb1Ec27668C00e3231e46F",
+        "version": "1.0.4",
+        "implementation": "0x3FC188194591EE5fe3AEA33787D6D4543cb38FBf",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      }
+    ],
+    "@alice-finance/exchange/ERC20Proxy": [
+      {
+        "address": "0x2EB5d8BdDaD7C136E7640d81478d94abC966fA02",
+        "version": "1.0.4",
+        "implementation": "0x56DB87A17B8982E57683E49ed00f5b7FDd36BD88",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      }
+    ],
+    "@alice-finance/exchange/ERC721Proxy": [
+      {
+        "address": "0xEF6F02BA45645fb5B55A42754d7Da71f419f2BfE",
+        "version": "1.0.4",
+        "implementation": "0xDE0e4cda706a69787f21A4802eFCE289A5dCFDD0",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      }
+    ],
+    "@alice-finance/exchange/Statistics": [
+      {
+        "address": "0x38Fb26068E33F93FcD29C04939FE6C766929D93E",
+        "version": "1.0.4",
+        "implementation": "0x25D51513c3342496a40AE816fC917AB9bA52bE67",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      }
+    ]
+  },
+  "manifestVersion": "2.2",
+  "version": "1.0.4",
+  "proxyAdmin": {
+    "address": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f"
+  }
+}
