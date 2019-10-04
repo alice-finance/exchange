@@ -3,11 +3,11 @@ pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../pubsub/ISubscriber.sol";
+import "../exchange/Constants.sol";
 
-contract Statistics is ISubscriber {
+contract Statistics is ISubscriber, Constants {
     using SafeMath for uint256;
 
-    uint256 public constant MAX_AMOUNT = 2**128 - 1;
     uint256 public constant MIN_QUOTE_TIME = 60;
 
     event PriceChanged(
@@ -16,6 +16,22 @@ contract Statistics is ISubscriber {
         uint256 askAssetAmount,
         uint256 bidAssetAmount,
         uint256 timestamp
+    );
+
+    event QuoteChanged(
+        address indexed askAssetAddress,
+        address indexed bidAssetAddress,
+        uint256 indexed timeOpen,
+        uint256 timeClose,
+        uint256 openAsk,
+        uint256 openBid,
+        uint256 highAsk,
+        uint256 highBid,
+        uint256 lowAsk,
+        uint256 lowBid,
+        uint256 closeAsk,
+        uint256 closeBid,
+        uint256 volume
     );
 
     struct Price {
@@ -33,11 +49,20 @@ contract Statistics is ISubscriber {
         uint256 volume;
     }
 
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => isOrderRegistered
+    mapping(address => mapping(address => mapping(uint256 => bool))) internal _orderRegistered;
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => totalAmountToFill
+    mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderAmountToFill;
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => filledAmount
+    mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderFilledAmount;
+
     /// @dev mapping bidAssetAddress => askAssetAddress => Price
     mapping(address => mapping(address => Price)) internal _currentPrice;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Price[]
     mapping(address => mapping(address => Price[])) internal _prices;
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => priceId;
+    mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderPriceId;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => timestamp => Quote
     mapping(address => mapping(address => mapping(uint256 => Quote))) internal _quotes;
@@ -50,7 +75,13 @@ contract Statistics is ISubscriber {
         public
         returns (bool)
     {
-        if (eventHash == "") {} else if (eventHash == "") {}
+        if (eventHash == SIG_ORDER_CREATED) {
+            _handleOrderCreated(data);
+        } else if (eventHash == SIG_ORDER_FILLED) {
+            _handleOrderFilled(data);
+        } else if (eventHash == SIG_ORDER_CANCELLED) {
+            _handleOrderCancelled(data);
+        }
         return true;
     }
 
@@ -399,6 +430,7 @@ contract Statistics is ISubscriber {
      * @notice add order's price to list
      */
     function _addOrderPrice(
+        uint256 nonce,
         address askAssetAddress,
         address bidAssetAddress,
         uint256 askAssetAmount,
@@ -411,6 +443,7 @@ contract Statistics is ISubscriber {
         newPrice.bid = bidAssetAmount;
 
         Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
+        _orderPriceId[bidAssetAddress][askAssetAddress][nonce] = prices.length - 1;
 
         if (
             currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
@@ -535,5 +568,54 @@ contract Statistics is ISubscriber {
         quote.close.bid = bidAssetAmount;
 
         quote.volume = quote.volume.add(bidAssetFilledAmount);
+    }
+
+    function _handleOrderCreated(bytes memory data) internal {
+        //prettier-ignore
+        (
+            uint256 nonce, , ,
+            address askAssetAddress,
+            uint256 askAssetAmount, , ,
+            address bidAssetAddress,
+            uint256 bidAssetAmount, ,
+        ) = abi.decode(data, (uint256, address, bytes4, address, uint256, bytes, bytes4, address, uint256, bytes, uint256));
+
+        _orderRegistered[bidAssetAddress][askAssetAddress][nonce] = true;
+        _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce] = bidAssetAmount;
+        _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] = 0;
+
+        _addOrderPrice(
+            nonce,
+            askAssetAddress,
+            bidAssetAddress,
+            askAssetAmount,
+            bidAssetAmount
+        );
+    }
+
+    function _handleOrderFilled(bytes memory data) internal {
+        // prettier-ignore
+        (
+            uint256 nonce, ,
+            address askAssetAddress,
+            address bidAssetAddress,
+            uint256 bidAssetFilledAmount, ,
+        ) = abi.decode(data, (uint256, address, address, address, uint256, uint8, uint256));
+
+        _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] += bidAssetFilledAmount;
+        if (_orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] == _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce]) {
+            _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
+        }
+    }
+
+    function _handleOrderCancelled(bytes memory data) internal {
+        // prettier-ignore
+        (
+            uint256 nonce,
+            address askAssetAddress,
+            address bidAssetAddress,
+        ) = abi.decode(data, (uint256, address, address, uint256));
+
+        _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
     }
 }

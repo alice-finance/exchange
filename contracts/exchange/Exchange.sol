@@ -23,10 +23,6 @@ contract Exchange is
     using SafeMath for uint256;
     using Math for uint256;
 
-    bytes32 constant EXCHANGE_ORDER_CREATED = 0x6d97b3b78773496fdcf21021287a6d37bfe562951a0c8840c95fa3a4c69499f3; //keccak256("exchange.order.created");
-    bytes32 constant EXCHANGE_ORDER_FILLED = 0xe2fef4a810b4246b407ef2daa0558c2840b904cde1b17553af885ef94ff32153; //keccak256("exchange.order.filled");
-    bytes32 constant EXCHANGE_ORDER_CANCELLED = 0xbe701c5a1d02a85555c0dab90e00eee0381ffb2c1b236368fa996aeae82a0ea3; //keccak256("exchange.order.cancelled");
-
     struct CreateOrderParams {
         bytes4 askAssetProxyId;
         address askAssetAddress;
@@ -76,29 +72,21 @@ contract Exchange is
     );
 
     event OrderFilled(
-        address indexed askAssetAddress,
-        address indexed bidAssetAddress,
         uint256 nonce,
         address indexed taker,
+        address indexed askAssetAddress,
+        address indexed bidAssetAddress,
         uint256 bidAssetFilledAmount,
         OrderStatus status,
         uint256 timestamp
     );
 
     event OrderCancelled(
+        uint256 nonce,
         address indexed askAssetAddress,
         address indexed bidAssetAddress,
-        uint256 nonce,
         uint256 timestamp
     );
-
-//    event PriceChanged(
-//        address indexed askAssetAddress,
-//        address indexed bidAssetAddress,
-//        uint256 askAssetAmount,
-//        uint256 bidAssetAmount,
-//        uint256 timestamp
-//    );
 
     function initialize(address sender) public initializer {
         Ownable.initialize(sender);
@@ -116,11 +104,19 @@ contract Exchange is
         super.registerAssetProxy(proxyId, assetProxy);
     }
 
-    function addSubscriber(bytes32 eventHash, address subscriber) public onlyOwner returns (bool)  {
+    function addSubscriber(bytes32 eventHash, address subscriber)
+        public
+        onlyOwner
+        returns (bool)
+    {
         return Publisher.addSubscriber(eventHash, subscriber);
     }
 
-    function removeSubscriber(bytes32 eventHash, address subscriber) public onlyOwner returns (bool) {
+    function removeSubscriber(bytes32 eventHash, address subscriber)
+        public
+        onlyOwner
+        returns (bool)
+    {
         return Publisher.removeSubscriber(eventHash, subscriber);
     }
 
@@ -203,12 +199,22 @@ contract Exchange is
             now // solhint-disable-line not-rely-on-time
         );
 
-//        _addOrderPrice(
-//            params.askAssetAddress,
-//            params.bidAssetAddress,
-//            params.askAssetAmount,
-//            params.bidAssetAmount
-//        );
+        _publishEvent(
+            SIG_ORDER_CREATED,
+            abi.encode(
+                nonce,
+                msg.sender,
+                params.askAssetProxyId,
+                params.askAssetAddress,
+                params.askAssetAmount,
+                params.askAssetData,
+                params.bidAssetProxyId,
+                params.bidAssetAddress,
+                params.bidAssetAmount,
+                params.bidAssetData,
+                now
+            )
+        );
     }
 
     /**
@@ -434,9 +440,7 @@ contract Exchange is
 
         // update order status
         _updateOrderStatus(order);
-
-        uint256 orderFillIndex = _recordOrderFill(order, taker, amountToFill);
-//                _recordQuote(askAssetAddress, bidAssetAddress, orderFillIndex);
+        _recordOrderFill(order, taker, amountToFill);
 
         _exchangeAssets(
             order.maker,
@@ -450,16 +454,6 @@ contract Exchange is
             amountToFill,
             order.bidAssetData
         );
-
-        if (order.status == OrderStatus.filled) {
-            // Remove from active list
-//                        _removeOrderPrice(
-//                            order.askAssetAddress,
-//                            order.bidAssetAddress,
-//                            order.askAssetAmount,
-//                            order.bidAssetAmount
-//                        );
-        }
 
         return true;
     }
@@ -562,13 +556,26 @@ contract Exchange is
         fills[index].auxiliary = order.auxiliary;
 
         emit OrderFilled(
-            order.askAssetAddress,
-            order.bidAssetAddress,
             order.nonce,
             taker,
+            order.askAssetAddress,
+            order.bidAssetAddress,
             order.bidAssetFilledAmount,
             order.status,
             now // solhint-disable-line not-rely-on-time
+        );
+
+        _publishEvent(
+            SIG_ORDER_FILLED,
+            abi.encode(
+                order.nonce,
+                taker,
+                order.askAssetAddress,
+                order.bidAssetAddress,
+                order.bidAssetFilledAmount,
+                order.status,
+                now
+            )
         );
 
         return index;
@@ -588,17 +595,20 @@ contract Exchange is
         o.status = OrderStatus.cancelled;
 
         emit OrderCancelled(
+            o.nonce,
             o.askAssetAddress,
             o.bidAssetAddress,
-            o.nonce,
             now // solhint-disable-line not-rely-on-time
         );
 
-//                _removeOrderPrice(
-//                    o.askAssetAddress,
-//                    o.bidAssetAddress,
-//                    o.askAssetAmount,
-//                    o.bidAssetAmount
-//                );
+        _publishEvent(
+            SIG_ORDER_CANCELLED,
+            abi.encode(
+                o.nonce,
+                o.askAssetAddress,
+                o.bidAssetAddress,
+                now
+            )
+        );
     }
 }

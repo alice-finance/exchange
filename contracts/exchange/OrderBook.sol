@@ -2,15 +2,15 @@ pragma solidity ^0.5.11;
 pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./Constants.sol";
 
 /**
  * @title OrderBook
  */
-contract OrderBook {
+contract OrderBook is Constants {
     using SafeMath for uint256;
 
     /// @dev MAX_AMOUNT is UINT128_MAX
-    uint256 public constant MAX_AMOUNT = 2**128 - 1;
 
     enum OrderStatus {
         invalid, // Order is invalid
