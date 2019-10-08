@@ -1,4 +1,5 @@
 const Exchange = artifacts.require("./exchange/Exchange.sol");
+const Statistics = artifacts.require("./statistics/Statistics.sol");
 const ERC20Proxy = artifacts.require("./proxy/ERC20Proxy.sol");
 const ERC721Proxy = artifacts.require("./proxy/ERC721Proxy.sol");
 const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
@@ -7,6 +8,10 @@ const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 const { BN, constants, expectEvent } = require("openzeppelin-test-helpers");
 const { expect } = require("chai");
 const { ZERO_ADDRESS } = constants;
+
+const SIG_ORDER_CREATED = "0xbd47c557d46a8fa286d10778547accc8ee2803cbaa0b366b093271369cd57275"; //keccak256("OrderCreated(uint256,address,bytes4,address,uint256,bytes,bytes4,address,uint256,bytes,uint256)");
+const SIG_ORDER_FILLED = "0x8bab5121105c1470f66ada0801bfafc6928c682fadc7792d126cde7b9826059c"; //keccak256("OrderFilled(nonce,address,address,address,uint256,uint8,uint256)");
+const SIG_ORDER_CANCELLED = "0xa4bb54ffb7bcc3eb7bdd81e41ad340b367a9b3a7416cd7764e68713a274c9da3"; //keccak256("OrderCancelled(uint256,address,address,uint256)");
 
 contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, user5, user6]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
@@ -25,6 +30,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
     beforeEach(async function() {
       this.exchange = await Exchange.new({ from: admin });
       await initializeExchange(this.exchange, owner);
+      this.statistics = await Statistics.new({ from: admin });
+      await this.exchange.addSubscriber(SIG_ORDER_CREATED, this.statistics.address, { from: owner });
+      await this.exchange.addSubscriber(SIG_ORDER_FILLED, this.statistics.address, { from: owner });
+      await this.exchange.addSubscriber(SIG_ORDER_CANCELLED, this.statistics.address, { from: owner });
 
       this.erc20Proxy = await ERC20Proxy.new({ from: admin });
       this.erc721Proxy = await ERC721Proxy.new({ from: admin });
@@ -53,7 +62,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
     });
 
     it("should report price change when order has lower price created", async function() {
-      let { logs: logs1 } = await this.exchange.createOrder(
+      let { tx: tx1 } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -68,11 +77,11 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      let event1 = expectEvent.inLogs(logs1, "PriceChanged");
+      let event1 = await expectEvent.inTransaction(tx1, Statistics, "PriceChanged");
       expect(event1.args.askAssetAmount).to.be.bignumber.equal(erc20AskValue);
       expect(event1.args.bidAssetAmount).to.be.bignumber.equal(erc20BidValue);
 
-      let { logs: logs2 } = await this.exchange.createOrder(
+      let { tx: tx2 } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -87,13 +96,13 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      let event2 = expectEvent.inLogs(logs2, "PriceChanged");
+      let event2 = await expectEvent.inTransaction(tx2, Statistics, "PriceChanged");
       expect(event2.args.askAssetAmount).to.be.bignumber.equal(erc20AskValue);
       expect(event2.args.bidAssetAmount).to.be.bignumber.equal(erc20BidValue.mul(new BN("2")));
     });
 
     it("should not report price change when order has higher price created", async function() {
-      let { logs: logs1 } = await this.exchange.createOrder(
+      let { tx: tx1 } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -108,11 +117,11 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      let event1 = expectEvent.inLogs(logs1, "PriceChanged");
+      let event1 = await expectEvent.inTransaction(tx1, Statistics, "PriceChanged");
       expect(event1.args.askAssetAmount).to.be.bignumber.equal(erc20AskValue);
       expect(event1.args.bidAssetAmount).to.be.bignumber.equal(erc20BidValue.mul(new BN("2")));
 
-      let { logs: logs2 } = await this.exchange.createOrder(
+      let { tx: tx2 } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -127,7 +136,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expect(() => expectEvent.inLogs(logs2, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx2, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("should report price change when lowest price order filled", async function() {
@@ -161,7 +173,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      const { logs } = await this.exchange.fillOrder(
+      const { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -172,10 +184,13 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
-        askAssetAmount: erc20AskValue,
-        bidAssetAmount: erc20BidValue
-      });
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
+          askAssetAmount: erc20AskValue,
+          bidAssetAmount: erc20BidValue
+        });
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("should not report price change when lowest price order partially filled", async function() {
@@ -209,7 +224,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      const { logs } = await this.exchange.fillOrder(
+      const { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -220,7 +235,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("should not report price change when fully filled order is not lowest price order", async function() {
@@ -254,7 +272,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      const { logs } = await this.exchange.fillOrder(
+      const { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -265,7 +283,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("should report price change when lowest price order cancelled", async function() {
@@ -299,7 +320,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      const { logs } = await this.exchange.cancelOrder(
+      const { tx } = await this.exchange.cancelOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -308,10 +329,13 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
-        askAssetAmount: erc20AskValue,
-        bidAssetAmount: erc20BidValue
-      });
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
+          askAssetAmount: erc20AskValue,
+          bidAssetAmount: erc20BidValue
+        });
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("should not report price change when cancelled order is not lowest price", async function() {
@@ -345,7 +369,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      const { logs } = await this.exchange.cancelOrder(
+      const { tx } = await this.exchange.cancelOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -354,7 +378,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
   });
 
@@ -375,6 +402,10 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
     before(async function() {
       this.exchange = await Exchange.new({ from: admin });
       await initializeExchange(this.exchange, owner);
+      this.statistics = await Statistics.new({ from: admin });
+      await this.exchange.addSubscriber(SIG_ORDER_CREATED, this.statistics.address, { from: owner });
+      await this.exchange.addSubscriber(SIG_ORDER_FILLED, this.statistics.address, { from: owner });
+      await this.exchange.addSubscriber(SIG_ORDER_CANCELLED, this.statistics.address, { from: owner });
 
       this.erc20Proxy = await ERC20Proxy.new({ from: admin });
       this.erc721Proxy = await ERC721Proxy.new({ from: admin });
@@ -415,7 +446,7 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
     });
 
     it(`should report when #0(${ask1Value}/${bid1Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -430,14 +461,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask1Value,
         bidAssetAmount: bid1Value
       });
     });
 
     it(`should not report when #1(${ask2Value}/${bid2Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -452,11 +483,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it(`should report when #2(${ask3Value}/${bid3Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -471,14 +505,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user3 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask3Value,
         bidAssetAmount: bid3Value
       });
     });
 
     it(`should not report when #3(${ask4Value}/${bid4Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -493,11 +527,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user4 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it(`should not report when #4(${ask5Value}/${bid5Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -512,11 +549,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user5 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it(`should not report when #2(${ask3Value}/${bid3Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -527,11 +567,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user1 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it(`should report when #4(${ask5Value}/${bid5Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -542,14 +585,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask1Value,
         bidAssetAmount: bid1Value
       });
     });
 
     it(`should not report when #1(${ask2Value}/${bid2Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -560,11 +603,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user3 }
       );
 
-      expect(() => expectEvent.inLogs(logs, "PriceChanged")).to.throw();
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it(`should report when #5(${ask6Value}/${bid6Value}) created`, async function() {
-      let { logs } = await this.exchange.createOrder(
+      let { tx } = await this.exchange.createOrder(
         {
           askAssetProxyId: ERC20_PROXY_ID,
           askAssetAddress: this.erc20Ask.address,
@@ -579,14 +625,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user6 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask6Value,
         bidAssetAmount: bid6Value
       });
     });
 
     it(`should report when #5(${ask6Value}/${bid6Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -597,14 +643,14 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user2 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask1Value,
         bidAssetAmount: bid1Value
       });
     });
 
     it(`should report when #0(${ask1Value}/${bid1Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -615,14 +661,15 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user5 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
+      await expectEvent.inTransaction(tx, Statistics, "PriceChanged", {
         askAssetAmount: ask4Value,
         bidAssetAmount: bid4Value
       });
     });
 
-    it(`should report when #3(${ask4Value}/${bid4Value}) filled`, async function() {
-      let { logs } = await this.exchange.fillOrder(
+    it(`should not report when #3(${ask4Value}/${bid4Value}) filled`, async function() {
+      // last order filled
+      let { tx } = await this.exchange.fillOrder(
         {
           askAssetAddress: this.erc20Ask.address,
           bidAssetAddress: this.erc20Bid.address,
@@ -633,10 +680,11 @@ contract("Exchange.price", function([admin, owner, user1, user2, user3, user4, u
         { from: user6 }
       );
 
-      expectEvent.inLogs(logs, "PriceChanged", {
-        askAssetAmount: new BN("0"),
-        bidAssetAmount: new BN("0")
-      });
+      // maintain last price
+      try {
+        await expectEvent.inTransaction(tx, Statistics, "PriceChanged");
+        throw Error("should not reach this code");
+      } catch {}
     });
 
     it("check order count", async function() {

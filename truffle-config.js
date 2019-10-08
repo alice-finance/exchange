@@ -12,11 +12,6 @@ module.exports = {
       gasPrice: 0x01,
       network_id: "*"
     },
-    local: {
-      host: "localhost",
-      port: 8545,
-      network_id: "*"
-    },
     extdev: {
       provider: () => {
         const provider = new LoomTruffleProvider(

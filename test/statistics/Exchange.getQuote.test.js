@@ -1,4 +1,5 @@
 const Exchange = artifacts.require("./exchange/Exchange.sol");
+const Statistics = artifacts.require("./statistics/Statistics.sol");
 const ERC20Proxy = artifacts.require("./proxy/ERC20Proxy.sol");
 const ERC721Proxy = artifacts.require("./proxy/ERC721Proxy.sol");
 const ERC20 = artifacts.require("./mock/ERC20Mock.sol");
@@ -8,7 +9,7 @@ const { BN, time } = require("openzeppelin-test-helpers");
 const { expect } = require("chai");
 const { performance } = require("perf_hooks");
 
-contract("Exchange.getQuote", function([admin, owner, maker, taker]) {
+contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
   const ERC20_PROXY_ID = "0xcc4aa204";
   const ERC721_PROXY_ID = "0x9013e617";
@@ -66,6 +67,7 @@ contract("Exchange.getQuote", function([admin, owner, maker, taker]) {
   before(async function() {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
+    this.statistics = await Statistics.new({ from: admin });
 
     this.erc20Proxy = await ERC20Proxy.new({ from: admin });
     this.erc721Proxy = await ERC721Proxy.new({ from: admin });

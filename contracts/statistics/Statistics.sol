@@ -35,6 +35,7 @@ contract Statistics is ISubscriber, Constants {
     );
 
     struct Price {
+        uint256 nonce;
         uint256 ask;
         uint256 bid;
     }
@@ -61,8 +62,6 @@ contract Statistics is ISubscriber, Constants {
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Price[]
     mapping(address => mapping(address => Price[])) internal _prices;
-    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => priceId;
-    mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderPriceId;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => timestamp => Quote
     mapping(address => mapping(address => mapping(uint256 => Quote))) internal _quotes;
@@ -439,11 +438,11 @@ contract Statistics is ISubscriber, Constants {
         Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         prices.length += 1;
         Price storage newPrice = prices[prices.length - 1];
+        newPrice.nonce = nonce;
         newPrice.ask = askAssetAmount;
         newPrice.bid = bidAssetAmount;
 
         Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
-        _orderPriceId[bidAssetAddress][askAssetAddress][nonce] = prices.length - 1;
 
         if (
             currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
@@ -466,18 +465,18 @@ contract Statistics is ISubscriber, Constants {
      * @notice remove order's price from list
      */
     function _removeOrderPrice(
+        uint256 nonce,
         address askAssetAddress,
-        address bidAssetAddress,
-        uint256 askAssetAmount,
-        uint256 bidAssetAmount
+        address bidAssetAddress
     ) internal {
         Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        uint256 askAssetAmount;
+        uint256 bidAssetAmount;
 
         for (uint256 i = 0; i < prices.length; i++) {
-            if (
-                prices[i].ask == askAssetAmount &&
-                prices[i].bid == bidAssetAmount
-            ) {
+            if (prices[i].nonce == nonce) {
+                askAssetAmount = prices[i].ask;
+                bidAssetAmount = prices[i].bid;
                 prices[i] = prices[prices.length - 1];
                 prices.length--;
                 break;
@@ -498,7 +497,7 @@ contract Statistics is ISubscriber, Constants {
     {
         Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         /// @dev set ask and bid MAX_AMOUNT + 1 which is invalid
-        Price memory minimumPrice = Price(MAX_AMOUNT.add(1), MAX_AMOUNT.add(1));
+        Price memory minimumPrice = Price(0, MAX_AMOUNT.add(1), 1);
 
         /// @dev find minimum price in list
         for (uint256 i = 0; i < prices.length; i++) {
@@ -545,7 +544,7 @@ contract Statistics is ISubscriber, Constants {
         if (quote.volume == 0) {
             quote.timeOpen = timeOpen;
             quote.timeClose = timeOpen + 59;
-            quote.open = Price(askAssetAmount, bidAssetAmount);
+            quote.open = Price(0, askAssetAmount, bidAssetAmount);
         }
 
         if (
@@ -603,8 +602,15 @@ contract Statistics is ISubscriber, Constants {
         ) = abi.decode(data, (uint256, address, address, address, uint256, uint8, uint256));
 
         _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] += bidAssetFilledAmount;
-        if (_orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] == _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce]) {
-            _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
+        if (
+            _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] ==
+            _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce]
+        ) {
+            _removeOrderPrice(
+                nonce,
+                askAssetAddress,
+                bidAssetAddress
+            );
         }
     }
 
@@ -616,6 +622,10 @@ contract Statistics is ISubscriber, Constants {
             address bidAssetAddress,
         ) = abi.decode(data, (uint256, address, address, uint256));
 
-        _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
+        _removeOrderPrice(
+            nonce,
+            askAssetAddress,
+            bidAssetAddress
+        );
     }
 }
