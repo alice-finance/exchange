@@ -3,26 +3,32 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "enum OrderBook.OrderStatus",
         "name": "orderStatus",
         "type": "uint8"
       },
       {
+        "internalType": "address",
         "name": "maker",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "timeFrom",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "timeTo",
         "type": "uint256"
       }
@@ -32,62 +38,77 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "nonce",
             "type": "uint256"
           },
           {
+            "internalType": "address",
             "name": "maker",
             "type": "address"
           },
           {
+            "internalType": "bytes4",
             "name": "askAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "askAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "askAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "bytes4",
             "name": "bidAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "bidAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetFilledAmount",
             "type": "uint256"
           },
           {
+            "internalType": "enum OrderBook.OrderStatus",
             "name": "status",
             "type": "uint8"
           },
           {
+            "internalType": "uint256",
             "name": "timestamp",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "auxiliary",
             "type": "bytes"
           }
         ],
+        "internalType": "struct OrderBook.Order[]",
         "name": "results",
         "type": "tuple[]"
       }
@@ -98,103 +119,28 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "timeFrom",
-        "type": "uint256"
-      },
-      {
-        "name": "timeTo",
-        "type": "uint256"
-      },
-      {
-        "name": "interval",
-        "type": "uint256"
-      }
-    ],
-    "name": "getQuotes",
+    "inputs": [],
+    "name": "SIG_ORDER_FILLED",
     "outputs": [
       {
-        "components": [
-          {
-            "name": "timeOpen",
-            "type": "uint256"
-          },
-          {
-            "name": "timeClose",
-            "type": "uint256"
-          },
-          {
-            "components": [
-              {
-                "name": "ask",
-                "type": "uint256"
-              },
-              {
-                "name": "bid",
-                "type": "uint256"
-              }
-            ],
-            "name": "open",
-            "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "name": "ask",
-                "type": "uint256"
-              },
-              {
-                "name": "bid",
-                "type": "uint256"
-              }
-            ],
-            "name": "high",
-            "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "name": "ask",
-                "type": "uint256"
-              },
-              {
-                "name": "bid",
-                "type": "uint256"
-              }
-            ],
-            "name": "low",
-            "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "name": "ask",
-                "type": "uint256"
-              },
-              {
-                "name": "bid",
-                "type": "uint256"
-              }
-            ],
-            "name": "close",
-            "type": "tuple"
-          },
-          {
-            "name": "volume",
-            "type": "uint256"
-          }
-        ],
-        "name": "results",
-        "type": "tuple[]"
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "SIG_ORDER_CANCELLED",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -216,6 +162,7 @@
     "name": "owner",
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -230,6 +177,33 @@
     "name": "isOwner",
     "outputs": [
       {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "eventHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      }
+    ],
+    "name": "isSubscriber",
+    "outputs": [
+      {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
@@ -241,11 +215,12 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "MIN_QUOTE_TIME",
+    "name": "SIG_ORDER_CREATED",
     "outputs": [
       {
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -256,14 +231,17 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "nonce",
         "type": "uint256"
       }
@@ -273,62 +251,77 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "nonce",
             "type": "uint256"
           },
           {
+            "internalType": "address",
             "name": "maker",
             "type": "address"
           },
           {
+            "internalType": "bytes4",
             "name": "askAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "askAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "askAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "bytes4",
             "name": "bidAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "bidAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetFilledAmount",
             "type": "uint256"
           },
           {
+            "internalType": "enum OrderBook.OrderStatus",
             "name": "status",
             "type": "uint8"
           },
           {
+            "internalType": "uint256",
             "name": "timestamp",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "auxiliary",
             "type": "bytes"
           }
         ],
+        "internalType": "struct OrderBook.Order",
         "name": "",
         "type": "tuple"
       }
@@ -343,6 +336,7 @@
     "name": "MAX_AMOUNT",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -355,55 +349,27 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
-        "name": "bidAssetAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getCurrentPrice",
-    "outputs": [
-      {
-        "components": [
-          {
-            "name": "ask",
-            "type": "uint256"
-          },
-          {
-            "name": "bid",
-            "type": "uint256"
-          }
-        ],
-        "name": "results",
-        "type": "tuple"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "taker",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "timeFrom",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "timeTo",
         "type": "uint256"
       }
@@ -413,62 +379,77 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "orderNonce",
             "type": "uint256"
           },
           {
+            "internalType": "address",
             "name": "taker",
             "type": "address"
           },
           {
+            "internalType": "bytes4",
             "name": "askAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "askAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "askAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "bytes4",
             "name": "bidAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "bidAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetFilledAmount",
             "type": "uint256"
           },
           {
+            "internalType": "enum OrderBook.OrderStatus",
             "name": "status",
             "type": "uint8"
           },
           {
+            "internalType": "uint256",
             "name": "timestamp",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "auxiliary",
             "type": "bytes"
           }
         ],
+        "internalType": "struct OrderBook.OrderFill[]",
         "name": "results",
         "type": "tuple[]"
       }
@@ -481,6 +462,7 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "bytes4",
         "name": "proxyId",
         "type": "bytes4"
       }
@@ -488,6 +470,7 @@
     "name": "assetProxyOf",
     "outputs": [
       {
+        "internalType": "contract IAssetProxy",
         "name": "",
         "type": "address"
       }
@@ -500,6 +483,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -515,56 +499,67 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
         "name": "nonce",
         "type": "uint256"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "maker",
         "type": "address"
       },
       {
         "indexed": false,
+        "internalType": "bytes4",
         "name": "askAssetProxyId",
         "type": "bytes4"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
         "indexed": false,
+        "internalType": "uint256",
         "name": "askAssetAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
+        "internalType": "bytes",
         "name": "askAssetData",
         "type": "bytes"
       },
       {
         "indexed": false,
+        "internalType": "bytes4",
         "name": "bidAssetProxyId",
         "type": "bytes4"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
         "indexed": false,
+        "internalType": "uint256",
         "name": "bidAssetAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
+        "internalType": "bytes",
         "name": "bidAssetData",
         "type": "bytes"
       },
       {
         "indexed": false,
+        "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
       }
@@ -576,37 +571,44 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
         "indexed": false,
+        "internalType": "uint256",
         "name": "nonce",
         "type": "uint256"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "taker",
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
         "indexed": false,
+        "internalType": "uint256",
         "name": "bidAssetFilledAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
+        "internalType": "enum OrderBook.OrderStatus",
         "name": "status",
         "type": "uint8"
       },
       {
         "indexed": false,
+        "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
       }
@@ -618,54 +620,26 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
         "indexed": false,
-        "name": "nonces",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "name": "filledNonces",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "OrdersFilled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
+        "internalType": "uint256",
         "name": "nonce",
         "type": "uint256"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
         "indexed": false,
+        "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
       }
@@ -677,44 +651,14 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
         "indexed": false,
-        "name": "askAssetAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "bidAssetAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "PriceChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
+        "internalType": "bytes4",
         "name": "proxyId",
         "type": "bytes4"
       },
       {
         "indexed": false,
+        "internalType": "contract IAssetProxy",
         "name": "assetProxy",
         "type": "address"
       }
@@ -727,11 +671,13 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -743,6 +689,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       }
@@ -757,10 +704,12 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "bytes4",
         "name": "proxyId",
         "type": "bytes4"
       },
       {
+        "internalType": "contract IAssetProxy",
         "name": "assetProxy",
         "type": "address"
       }
@@ -775,44 +724,106 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "eventHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      }
+    ],
+    "name": "addSubscriber",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "eventHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      }
+    ],
+    "name": "removeSubscriber",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "components": [
           {
+            "internalType": "bytes4",
             "name": "askAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "askAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "askAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "bytes4",
             "name": "bidAssetProxyId",
             "type": "bytes4"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmount",
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
             "name": "bidAssetData",
             "type": "bytes"
           },
           {
+            "internalType": "uint256",
             "name": "feeAmount",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.CreateOrderParams",
         "name": "params",
         "type": "tuple"
       }
@@ -829,26 +840,32 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "nonce",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmountToFill",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "feeAmount",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.FillOrderParams",
         "name": "params",
         "type": "tuple"
       }
@@ -865,26 +882,32 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "nonce",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmountToFill",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "feeAmount",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.FillOrderParams",
         "name": "params",
         "type": "tuple"
       }
@@ -901,26 +924,32 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256[]",
             "name": "nonces",
             "type": "uint256[]"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmountToFill",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "feeAmount",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.FillOrdersParams",
         "name": "params",
         "type": "tuple"
       }
@@ -937,26 +966,32 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256[]",
             "name": "nonces",
             "type": "uint256[]"
           },
           {
+            "internalType": "uint256",
             "name": "bidAssetAmountToFill",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "feeAmount",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.FillOrdersParams",
         "name": "params",
         "type": "tuple"
       }
@@ -973,18 +1008,22 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "askAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bidAssetAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "nonce",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Exchange.CancelOrderParams",
         "name": "params",
         "type": "tuple"
       }

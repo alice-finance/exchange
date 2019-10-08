@@ -300,62 +300,503 @@
       }
     },
     "Exchange": {
-      "address": "0xD2D1208Add41E903b6BE1E7f89F8b9339d89499d",
-      "constructorCode": "608060405234801561001057600080fd5b50614520806100206000396000f3fe",
-      "bodyBytecodeHash": "fe62362f67201113b4822e8f0da68634e708c31ed404b920c44d419a0d6444d4",
-      "localBytecodeHash": "1eb691395b05e5e7971841e3fa74c15218d268e931a513964a94ca58915c64fb",
-      "deployedBytecodeHash": "1eb691395b05e5e7971841e3fa74c15218d268e931a513964a94ca58915c64fb",
-      "types": null,
-      "storage": null
-    },
-    "Statistics": {
-      "address": "0x25D51513c3342496a40AE816fC917AB9bA52bE67",
-      "constructorCode": "608060405234801561001057600080fd5b50610897806100206000396000f3fe",
-      "bodyBytecodeHash": "541b51de516f8b822121b5180ebe7d17161c8dd513bb81f50d507999f10047cc",
-      "localBytecodeHash": "042958913d13d9fba722e51b94e831b72f9e2964562102dbc3d9ef300b5b22b0",
-      "deployedBytecodeHash": "042958913d13d9fba722e51b94e831b72f9e2964562102dbc3d9ef300b5b22b0",
+      "address": "0x0576539C1f314e57D0C4390513f6133AC5723c85",
+      "constructorCode": "608060405234801561001057600080fd5b50614947806100206000396000f3fe",
+      "bodyBytecodeHash": "6d31de7fe6a1662edd6e9e9aa95387a594860cfa0f0f90c152d1657dc03c4d7a",
+      "localBytecodeHash": "71045baae9ebbdcb680b7e54a21b9c15d8980b5edbe841bce36b8fde4f825e92",
+      "deployedBytecodeHash": "71045baae9ebbdcb680b7e54a21b9c15d8980b5edbe841bce36b8fde4f825e92",
       "types": {
-        "t_struct<Statistics.Price>": {
-          "id": "t_struct<Statistics.Price>",
-          "kind": "struct",
-          "label": "Statistics.Price",
-          "members": [
-            {
-              "label": "ask",
-              "astId": 2765,
-              "type": "t_uint256",
-              "src": "561:11:14"
-            },
-            {
-              "label": "bid",
-              "astId": 2767,
-              "type": "t_uint256",
-              "src": "582:11:14"
-            }
-          ]
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
         },
         "t_uint256": {
           "id": "t_uint256",
           "kind": "elementary",
           "label": "uint256"
         },
-        "t_mapping<t_struct<Statistics.Price>>": {
-          "id": "t_mapping<t_struct<Statistics.Price>>",
-          "valueType": "t_struct<Statistics.Price>",
-          "label": "mapping(key => Statistics.Price)",
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_mapping<t_address>": {
+          "id": "t_mapping<t_address>",
+          "valueType": "t_address",
+          "label": "mapping(key => address)",
           "kind": "mapping"
         },
-        "t_array:dyn<t_struct<Statistics.Price>>": {
-          "id": "t_array:dyn<t_struct<Statistics.Price>>",
-          "valueType": "t_struct<Statistics.Price>",
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
           "length": "dyn",
           "kind": "array",
-          "label": "Statistics.Price[]"
+          "label": "address[]"
         },
-        "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>": {
-          "id": "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>",
-          "valueType": "t_array:dyn<t_struct<Statistics.Price>>",
-          "label": "mapping(key => Statistics.Price[])",
+        "t_mapping<t_array:dyn<t_address>>": {
+          "id": "t_mapping<t_array:dyn<t_address>>",
+          "valueType": "t_array:dyn<t_address>",
+          "label": "mapping(key => address[])",
+          "kind": "mapping"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.Order>": {
+          "id": "t_struct<OrderBook.Order>",
+          "kind": "struct",
+          "label": "OrderBook.Order",
+          "members": [
+            {
+              "label": "nonce",
+              "astId": 1498,
+              "type": "t_uint256",
+              "src": "496:13:2"
+            },
+            {
+              "label": "maker",
+              "astId": 1500,
+              "type": "t_address",
+              "src": "556:13:2"
+            },
+            {
+              "label": "askAssetProxyId",
+              "astId": 1502,
+              "type": "t_bytes4",
+              "src": "609:22:2"
+            },
+            {
+              "label": "askAssetAddress",
+              "astId": 1504,
+              "type": "t_address",
+              "src": "670:23:2"
+            },
+            {
+              "label": "askAssetAmount",
+              "astId": 1506,
+              "type": "t_uint256",
+              "src": "731:22:2"
+            },
+            {
+              "label": "askAssetData",
+              "astId": 1508,
+              "type": "t_bytes",
+              "src": "777:18:2"
+            },
+            {
+              "label": "bidAssetProxyId",
+              "astId": 1510,
+              "type": "t_bytes4",
+              "src": "817:22:2"
+            },
+            {
+              "label": "bidAssetAddress",
+              "astId": 1512,
+              "type": "t_address",
+              "src": "878:23:2"
+            },
+            {
+              "label": "bidAssetAmount",
+              "astId": 1514,
+              "type": "t_uint256",
+              "src": "939:22:2"
+            },
+            {
+              "label": "bidAssetData",
+              "astId": 1516,
+              "type": "t_bytes",
+              "src": "985:18:2"
+            },
+            {
+              "label": "bidAssetFilledAmount",
+              "astId": 1518,
+              "type": "t_uint256",
+              "src": "1025:28:2"
+            },
+            {
+              "label": "status",
+              "astId": 1520,
+              "type": "t_enum<OrderBook.OrderStatus>",
+              "src": "1090:18:2"
+            },
+            {
+              "label": "timestamp",
+              "astId": 1522,
+              "type": "t_uint256",
+              "src": "1133:17:2"
+            },
+            {
+              "label": "auxiliary",
+              "astId": 1524,
+              "type": "t_bytes",
+              "src": "1173:15:2"
+            }
+          ]
+        },
+        "t_bytes4": {
+          "id": "t_bytes4",
+          "kind": "elementary",
+          "label": "bytes4"
+        },
+        "t_bytes": {
+          "id": "t_bytes",
+          "kind": "elementary",
+          "label": "bytes"
+        },
+        "t_enum<OrderBook.OrderStatus>": {
+          "id": "t_enum<OrderBook.OrderStatus>",
+          "kind": "enum",
+          "label": "OrderBook.OrderStatus",
+          "members": [
+            "invalid",
+            "fillable",
+            "filled",
+            "cancelled"
+          ]
+        },
+        "t_array:dyn<t_struct<OrderBook.Order>>": {
+          "id": "t_array:dyn<t_struct<OrderBook.Order>>",
+          "valueType": "t_struct<OrderBook.Order>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "OrderBook.Order[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+          "valueType": "t_array:dyn<t_struct<OrderBook.Order>>",
+          "label": "mapping(key => OrderBook.Order[])",
+          "kind": "mapping"
+        },
+        "t_array:dyn<t_uint256>": {
+          "id": "t_array:dyn<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "dyn",
+          "kind": "array",
+          "label": "uint256[]"
+        },
+        "t_mapping<t_array:dyn<t_uint256>>": {
+          "id": "t_mapping<t_array:dyn<t_uint256>>",
+          "valueType": "t_array:dyn<t_uint256>",
+          "label": "mapping(key => uint256[])",
+          "kind": "mapping"
+        },
+        "t_struct<OrderBook.OrderFill>": {
+          "id": "t_struct<OrderBook.OrderFill>",
+          "kind": "struct",
+          "label": "OrderBook.OrderFill",
+          "members": [
+            {
+              "label": "orderNonce",
+              "astId": 1527,
+              "type": "t_uint256",
+              "src": "1240:18:2"
+            },
+            {
+              "label": "taker",
+              "astId": 1529,
+              "type": "t_address",
+              "src": "1268:13:2"
+            },
+            {
+              "label": "askAssetProxyId",
+              "astId": 1531,
+              "type": "t_bytes4",
+              "src": "1291:22:2"
+            },
+            {
+              "label": "askAssetAddress",
+              "astId": 1533,
+              "type": "t_address",
+              "src": "1323:23:2"
+            },
+            {
+              "label": "askAssetAmount",
+              "astId": 1535,
+              "type": "t_uint256",
+              "src": "1356:22:2"
+            },
+            {
+              "label": "askAssetData",
+              "astId": 1537,
+              "type": "t_bytes",
+              "src": "1388:18:2"
+            },
+            {
+              "label": "bidAssetProxyId",
+              "astId": 1539,
+              "type": "t_bytes4",
+              "src": "1416:22:2"
+            },
+            {
+              "label": "bidAssetAddress",
+              "astId": 1541,
+              "type": "t_address",
+              "src": "1448:23:2"
+            },
+            {
+              "label": "bidAssetAmount",
+              "astId": 1543,
+              "type": "t_uint256",
+              "src": "1481:22:2"
+            },
+            {
+              "label": "bidAssetData",
+              "astId": 1545,
+              "type": "t_bytes",
+              "src": "1513:18:2"
+            },
+            {
+              "label": "bidAssetFilledAmount",
+              "astId": 1547,
+              "type": "t_uint256",
+              "src": "1541:28:2"
+            },
+            {
+              "label": "status",
+              "astId": 1549,
+              "type": "t_enum<OrderBook.OrderStatus>",
+              "src": "1579:18:2"
+            },
+            {
+              "label": "timestamp",
+              "astId": 1551,
+              "type": "t_uint256",
+              "src": "1607:17:2"
+            },
+            {
+              "label": "auxiliary",
+              "astId": 1553,
+              "type": "t_bytes",
+              "src": "1634:15:2"
+            }
+          ]
+        },
+        "t_array:dyn<t_struct<OrderBook.OrderFill>>": {
+          "id": "t_array:dyn<t_struct<OrderBook.OrderFill>>",
+          "valueType": "t_struct<OrderBook.OrderFill>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "OrderBook.OrderFill[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+          "valueType": "t_array:dyn<t_struct<OrderBook.OrderFill>>",
+          "label": "mapping(key => OrderBook.OrderFill[])",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 4549,
+          "type": "t_bool",
+          "src": "757:24:17"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 4551,
+          "type": "t_bool",
+          "src": "876:25:17"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/upgrades/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 4607,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:17"
+        },
+        {
+          "contract": "Ownable",
+          "path": "contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 2442,
+          "type": "t_address",
+          "src": "318:22:6"
+        },
+        {
+          "contract": "Ownable",
+          "path": "contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 2543,
+          "type": "t_array:50<t_uint256>",
+          "src": "2056:29:6"
+        },
+        {
+          "contract": "AssetProxyRegistry",
+          "path": "contracts/proxy/AssetProxyRegistry.sol",
+          "label": "_assetProxyOfProxyId",
+          "astId": 2554,
+          "type": "t_mapping<t_address>",
+          "src": "244:60:7"
+        },
+        {
+          "contract": "AssetProxyRegistry",
+          "path": "contracts/proxy/AssetProxyRegistry.sol",
+          "label": "______gap",
+          "astId": 2615,
+          "type": "t_array:50<t_uint256>",
+          "src": "1286:29:7"
+        },
+        {
+          "contract": "Publisher",
+          "path": "contracts/pubsub/Publisher.sol",
+          "label": "_subscribers",
+          "astId": 3013,
+          "type": "t_mapping<t_array:dyn<t_address>>",
+          "src": "121:51:13"
+        },
+        {
+          "contract": "Publisher",
+          "path": "contracts/pubsub/Publisher.sol",
+          "label": "_isSubscriber",
+          "astId": 3019,
+          "type": "t_mapping<t_bool>",
+          "src": "178:67:13"
+        },
+        {
+          "contract": "Publisher",
+          "path": "contracts/pubsub/Publisher.sol",
+          "label": "______gap",
+          "astId": 3183,
+          "type": "t_array:50<t_uint256>",
+          "src": "1651:29:13"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_orders",
+          "astId": 1561,
+          "type": "t_mapping<t_array:dyn<t_struct<OrderBook.Order>>>",
+          "src": "2008:64:2"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_activeOrderIds",
+          "astId": 1568,
+          "type": "t_mapping<t_array:dyn<t_uint256>>",
+          "src": "2147:74:2"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_orderFills",
+          "astId": 1575,
+          "type": "t_mapping<t_array:dyn<t_struct<OrderBook.OrderFill>>>",
+          "src": "2299:72:2"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "_orderFillIds",
+          "astId": 1584,
+          "type": "t_mapping<t_array:dyn<t_uint256>>",
+          "src": "2461:92:2"
+        },
+        {
+          "contract": "OrderBook",
+          "path": "contracts/exchange/OrderBook.sol",
+          "label": "______gap",
+          "astId": 1688,
+          "type": "t_array:50<t_uint256>",
+          "src": "34361:29:2"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "Statistics": {
+      "address": "0x0E2b188342371c39082129656d88A5F31E8111ED",
+      "constructorCode": "608060405234801561001057600080fd5b50611b7b806100206000396000f3fe",
+      "bodyBytecodeHash": "b66197155a2b5c1fc6ef8743f3b01948497d84d003d9648b498080b518fa1214",
+      "localBytecodeHash": "514b21c2a76eb37bb4d1a8ac52468a476c0fc1486d3b4cbd8725cc9284366c84",
+      "deployedBytecodeHash": "514b21c2a76eb37bb4d1a8ac52468a476c0fc1486d3b4cbd8725cc9284366c84",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_mapping<t_uint256>": {
+          "id": "t_mapping<t_uint256>",
+          "valueType": "t_uint256",
+          "label": "mapping(key => uint256)",
+          "kind": "mapping"
+        },
+        "t_struct<Statistics.OrderPrice>": {
+          "id": "t_struct<Statistics.OrderPrice>",
+          "kind": "struct",
+          "label": "Statistics.OrderPrice",
+          "members": [
+            {
+              "label": "nonce",
+              "astId": 3583,
+              "type": "t_uint256",
+              "src": "958:13:16"
+            },
+            {
+              "label": "ask",
+              "astId": 3585,
+              "type": "t_uint256",
+              "src": "981:11:16"
+            },
+            {
+              "label": "bid",
+              "astId": 3587,
+              "type": "t_uint256",
+              "src": "1002:11:16"
+            }
+          ]
+        },
+        "t_mapping<t_struct<Statistics.OrderPrice>>": {
+          "id": "t_mapping<t_struct<Statistics.OrderPrice>>",
+          "valueType": "t_struct<Statistics.OrderPrice>",
+          "label": "mapping(key => Statistics.OrderPrice)",
+          "kind": "mapping"
+        },
+        "t_array:dyn<t_struct<Statistics.OrderPrice>>": {
+          "id": "t_array:dyn<t_struct<Statistics.OrderPrice>>",
+          "valueType": "t_struct<Statistics.OrderPrice>",
+          "length": "dyn",
+          "kind": "array",
+          "label": "Statistics.OrderPrice[]"
+        },
+        "t_mapping<t_array:dyn<t_struct<Statistics.OrderPrice>>>": {
+          "id": "t_mapping<t_array:dyn<t_struct<Statistics.OrderPrice>>>",
+          "valueType": "t_array:dyn<t_struct<Statistics.OrderPrice>>",
+          "label": "mapping(key => Statistics.OrderPrice[])",
           "kind": "mapping"
         },
         "t_struct<Statistics.Quote>": {
@@ -365,45 +806,64 @@
           "members": [
             {
               "label": "timeOpen",
-              "astId": 2770,
+              "astId": 3595,
               "type": "t_uint256",
-              "src": "629:16:14"
+              "src": "1122:16:16"
             },
             {
               "label": "timeClose",
-              "astId": 2772,
+              "astId": 3597,
               "type": "t_uint256",
-              "src": "655:17:14"
+              "src": "1148:17:16"
             },
             {
               "label": "open",
-              "astId": 2774,
-              "type": "t_struct<Statistics.Price>",
-              "src": "682:10:14"
+              "astId": 3599,
+              "type": "t_struct<Statistics.QuotePrice>",
+              "src": "1175:15:16"
             },
             {
               "label": "high",
-              "astId": 2776,
-              "type": "t_struct<Statistics.Price>",
-              "src": "702:10:14"
+              "astId": 3601,
+              "type": "t_struct<Statistics.QuotePrice>",
+              "src": "1200:15:16"
             },
             {
               "label": "low",
-              "astId": 2778,
-              "type": "t_struct<Statistics.Price>",
-              "src": "722:9:14"
+              "astId": 3603,
+              "type": "t_struct<Statistics.QuotePrice>",
+              "src": "1225:14:16"
             },
             {
               "label": "close",
-              "astId": 2780,
-              "type": "t_struct<Statistics.Price>",
-              "src": "741:11:14"
+              "astId": 3605,
+              "type": "t_struct<Statistics.QuotePrice>",
+              "src": "1249:16:16"
             },
             {
               "label": "volume",
-              "astId": 2782,
+              "astId": 3607,
               "type": "t_uint256",
-              "src": "762:14:14"
+              "src": "1275:14:16"
+            }
+          ]
+        },
+        "t_struct<Statistics.QuotePrice>": {
+          "id": "t_struct<Statistics.QuotePrice>",
+          "kind": "struct",
+          "label": "Statistics.QuotePrice",
+          "members": [
+            {
+              "label": "ask",
+              "astId": 3590,
+              "type": "t_uint256",
+              "src": "1054:11:16"
+            },
+            {
+              "label": "bid",
+              "astId": 3592,
+              "type": "t_uint256",
+              "src": "1075:11:16"
             }
           ]
         },
@@ -418,26 +878,58 @@
         {
           "contract": "Statistics",
           "path": "contracts/statistics/Statistics.sol",
+          "label": "_orderRegistered",
+          "astId": 3616,
+          "type": "t_mapping<t_bool>",
+          "src": "1393:90:16"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_orderAmountToFill",
+          "astId": 3624,
+          "type": "t_mapping<t_uint256>",
+          "src": "1580:95:16"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_orderFilledAmount",
+          "astId": 3632,
+          "type": "t_mapping<t_uint256>",
+          "src": "1767:95:16"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
+          "label": "_orderPrice",
+          "astId": 3640,
+          "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+          "src": "1947:91:16"
+        },
+        {
+          "contract": "Statistics",
+          "path": "contracts/statistics/Statistics.sol",
           "label": "_currentPrice",
-          "astId": 2789,
-          "type": "t_mapping<t_struct<Statistics.Price>>",
-          "src": "854:68:14"
+          "astId": 3646,
+          "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+          "src": "2110:73:16"
         },
         {
           "contract": "Statistics",
           "path": "contracts/statistics/Statistics.sol",
           "label": "_prices",
-          "astId": 2796,
-          "type": "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>",
-          "src": "996:64:14"
+          "astId": 3653,
+          "type": "t_mapping<t_array:dyn<t_struct<Statistics.OrderPrice>>>",
+          "src": "2257:69:16"
         },
         {
           "contract": "Statistics",
           "path": "contracts/statistics/Statistics.sol",
           "label": "_quotes",
-          "astId": 2804,
+          "astId": 3661,
           "type": "t_mapping<t_struct<Statistics.Quote>>",
-          "src": "1145:82:14"
+          "src": "2411:82:16"
         }
       ],
       "warnings": {
@@ -445,7 +937,133 @@
         "hasSelfDestruct": false,
         "hasDelegateCall": false,
         "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
+        "uninitializedBaseContracts": [],
+        "storageUncheckedVars": [
+          {
+            "contract": "Statistics",
+            "path": "contracts/statistics/Statistics.sol",
+            "label": "_orderPrice",
+            "astId": 3640,
+            "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+            "src": "1947:91:16"
+          },
+          {
+            "contract": "Statistics",
+            "path": "contracts/statistics/Statistics.sol",
+            "label": "_currentPrice",
+            "astId": 3646,
+            "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+            "src": "2110:73:16"
+          },
+          {
+            "contract": "Statistics",
+            "path": "contracts/statistics/Statistics.sol",
+            "label": "_prices",
+            "astId": 3653,
+            "type": "t_mapping<t_array:dyn<t_struct<Statistics.OrderPrice>>>",
+            "src": "2257:69:16"
+          },
+          {
+            "contract": "Statistics",
+            "path": "contracts/statistics/Statistics.sol",
+            "label": "_quotes",
+            "astId": 3661,
+            "type": "t_mapping<t_struct<Statistics.Quote>>",
+            "src": "2411:82:16"
+          }
+        ],
+        "storageDiff": [
+          {
+            "action": "replace",
+            "updated": {
+              "index": 0,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_orderRegistered",
+              "astId": 3616,
+              "type": "t_mapping<t_bool>",
+              "src": "1393:90:16"
+            },
+            "original": {
+              "index": 0,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_currentPrice",
+              "astId": 2789,
+              "type": "t_mapping<t_struct<Statistics.Price>>",
+              "src": "854:68:14"
+            }
+          },
+          {
+            "action": "replace",
+            "updated": {
+              "index": 1,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_orderAmountToFill",
+              "astId": 3624,
+              "type": "t_mapping<t_uint256>",
+              "src": "1580:95:16"
+            },
+            "original": {
+              "index": 1,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_prices",
+              "astId": 2796,
+              "type": "t_mapping<t_array:dyn<t_struct<Statistics.Price>>>",
+              "src": "996:64:14"
+            }
+          },
+          {
+            "action": "insert",
+            "updated": {
+              "index": 2,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_orderFilledAmount",
+              "astId": 3632,
+              "type": "t_mapping<t_uint256>",
+              "src": "1767:95:16"
+            }
+          },
+          {
+            "action": "append",
+            "updated": {
+              "index": 3,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_orderPrice",
+              "astId": 3640,
+              "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+              "src": "1947:91:16"
+            }
+          },
+          {
+            "action": "append",
+            "updated": {
+              "index": 4,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_currentPrice",
+              "astId": 3646,
+              "type": "t_mapping<t_struct<Statistics.OrderPrice>>",
+              "src": "2110:73:16"
+            }
+          },
+          {
+            "action": "append",
+            "updated": {
+              "index": 5,
+              "contract": "Statistics",
+              "path": "contracts/statistics/Statistics.sol",
+              "label": "_prices",
+              "astId": 3653,
+              "type": "t_mapping<t_array:dyn<t_struct<Statistics.OrderPrice>>>",
+              "src": "2257:69:16"
+            }
+          }
+        ]
       }
     }
   },
@@ -455,7 +1073,7 @@
       {
         "address": "0x0F8BE8F85468a513f0fb1Ec27668C00e3231e46F",
         "version": "1.0.4",
-        "implementation": "0x3FC188194591EE5fe3AEA33787D6D4543cb38FBf",
+        "implementation": "0x0576539C1f314e57D0C4390513f6133AC5723c85",
         "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
         "kind": "Upgradeable"
       }
@@ -482,7 +1100,23 @@
       {
         "address": "0x38Fb26068E33F93FcD29C04939FE6C766929D93E",
         "version": "1.0.4",
-        "implementation": "0x25D51513c3342496a40AE816fC917AB9bA52bE67",
+        "implementation": "0x0E2b188342371c39082129656d88A5F31E8111ED",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      }
+    ],
+    "@alice-finance/exchange/MarketPairRegistry": [
+      {
+        "address": "0x5b6135D129B729b6e1fa585D43ae8FF8123723cE",
+        "version": "1.0.4",
+        "implementation": "0xBd5199f9671836fB3076916624a85788886Ef855",
+        "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
+        "kind": "Upgradeable"
+      },
+      {
+        "address": "0x748b474bdbAd82BF2f4da56E56503167d5F32b88",
+        "version": "1.0.4",
+        "implementation": "0xBd5199f9671836fB3076916624a85788886Ef855",
         "admin": "0x4FCBE64b79A31995B3Da34CF800B1fCabbde411f",
         "kind": "Upgradeable"
       }

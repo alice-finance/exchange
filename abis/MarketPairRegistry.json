@@ -14,6 +14,7 @@
     "name": "owner",
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -28,6 +29,7 @@
     "name": "isOwner",
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
@@ -40,6 +42,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       }
@@ -54,6 +57,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -69,11 +73,13 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
       {
         "indexed": true,
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -89,14 +95,17 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "ask",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "bid",
             "type": "address"
           }
         ],
+        "internalType": "struct IMarketPairRegistry.MarketPair[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -109,6 +118,7 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "ask",
         "type": "address"
       }
@@ -116,6 +126,7 @@
     "name": "getBidsOfAsk",
     "outputs": [
       {
+        "internalType": "address[]",
         "name": "",
         "type": "address[]"
       }
@@ -128,6 +139,7 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "bid",
         "type": "address"
       }
@@ -135,6 +147,7 @@
     "name": "getAsksOfBid",
     "outputs": [
       {
+        "internalType": "address[]",
         "name": "",
         "type": "address[]"
       }
@@ -147,10 +160,12 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "ask",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bid",
         "type": "address"
       }
@@ -158,6 +173,7 @@
     "name": "isRegistered",
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
@@ -170,10 +186,12 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "ask",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bid",
         "type": "address"
       }
@@ -181,6 +199,7 @@
     "name": "registerMarket",
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
@@ -193,10 +212,12 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "ask",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bid",
         "type": "address"
       }
@@ -204,6 +225,7 @@
     "name": "removeMarket",
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }

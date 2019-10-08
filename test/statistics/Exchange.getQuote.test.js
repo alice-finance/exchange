@@ -1,4 +1,4 @@
-const Exchange = artifacts.require("./exchange/Exchange.sol");
+const Exchange = artifacts.require("./mock/ExchangeMock.sol");
 const Statistics = artifacts.require("./statistics/Statistics.sol");
 const ERC20Proxy = artifacts.require("./proxy/ERC20Proxy.sol");
 const ERC721Proxy = artifacts.require("./proxy/ERC721Proxy.sol");
@@ -8,6 +8,10 @@ const ERC721 = artifacts.require("./mock/ERC721Mock.sol");
 const { BN, time } = require("openzeppelin-test-helpers");
 const { expect } = require("chai");
 const { performance } = require("perf_hooks");
+
+const SIG_ORDER_CREATED = "0xbd47c557d46a8fa286d10778547accc8ee2803cbaa0b366b093271369cd57275"; //keccak256("OrderCreated(uint256,address,bytes4,address,uint256,bytes,bytes4,address,uint256,bytes,uint256)");
+const SIG_ORDER_FILLED = "0x8bab5121105c1470f66ada0801bfafc6928c682fadc7792d126cde7b9826059c"; //keccak256("OrderFilled(nonce,address,address,address,uint256,uint8,uint256)");
+const SIG_ORDER_CANCELLED = "0xa4bb54ffb7bcc3eb7bdd81e41ad340b367a9b3a7416cd7764e68713a274c9da3"; //keccak256("OrderCancelled(uint256,address,address,uint256)");
 
 contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
   const LIMIT = new BN("2", 10).pow(new BN("128", 10)).sub(new BN("1"));
@@ -47,12 +51,11 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
     );
   }
 
-  async function fillOrder(context, nonce, amountToFill) {
+  async function fillOrder(context, nonce, amountToFill, timestamp) {
     if (!web3.utils.isBN(amountToFill)) {
       amountToFill = web3.utils.toBN(amountToFill);
     }
-
-    await context.exchange.fillOrder(
+    await context.exchange.fillOrderMock(
       {
         askAssetAddress: context.erc20Ask.address,
         bidAssetAddress: context.erc20Bid.address,
@@ -60,6 +63,7 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         bidAssetAmountToFill: amountToFill.toString(),
         feeAmount: 0
       },
+      timestamp,
       { from: taker }
     );
   }
@@ -68,6 +72,9 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
     this.exchange = await Exchange.new({ from: admin });
     await initializeExchange(this.exchange, owner);
     this.statistics = await Statistics.new({ from: admin });
+    await this.exchange.addSubscriber(SIG_ORDER_CREATED, this.statistics.address, { from: owner });
+    await this.exchange.addSubscriber(SIG_ORDER_FILLED, this.statistics.address, { from: owner });
+    await this.exchange.addSubscriber(SIG_ORDER_CANCELLED, this.statistics.address, { from: owner });
 
     this.erc20Proxy = await ERC20Proxy.new({ from: admin });
     this.erc721Proxy = await ERC721Proxy.new({ from: admin });
@@ -94,7 +101,7 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
   });
 
   it("no fills", async function() {
-    let result = await this.exchange.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, 0, 0);
+    let result = await this.statistics.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, 0, 0);
 
     expect(result.length).to.be.equal(60);
     result.forEach(quote => {
@@ -110,18 +117,23 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
 
       let timeToExpend = now.add(timeAdjustment);
       let t0 = performance.now();
+      const amount = 100;
+      let promises = [];
 
-      for (; now.lt(timeToExpend); now = now.add(time.duration.seconds(5))) {
-        await time.increaseTo(now);
-        await fillOrder(this, Math.floor(Math.random() * 6), 100); // 20000
+      for (let i = 0; now.lt(timeToExpend); now = now.add(time.duration.seconds(5)), i++) {
+        // console.log(`Fill ${i % 6} with ${amount} at ${now}`);
+        let promise = fillOrder(this, i % 6, amount, now); // 20000
+        promises.push(promise);
       }
+
+      await Promise.all(promises);
 
       let t1 = performance.now();
       console.log("Preparing data took " + (t1 - t0) + " milliseconds.");
     });
 
     it("should get quote 60", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(60)),
@@ -129,11 +141,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(1);
     });
 
     it("should get quote 180", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(180)),
@@ -141,11 +154,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(3);
     });
 
     it("should get quote 300", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(300)),
@@ -153,11 +167,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(5);
     });
 
     it("should get quote 900", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(900)),
@@ -165,11 +180,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(15);
     });
 
     it("should get quote 1800", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(1800)),
@@ -177,11 +193,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(30);
     });
 
     it("should get quote 3600", async function() {
-      let result = await this.exchange.getQuotes(
+      let result = await this.statistics.getQuotes(
         this.erc20Ask.address,
         this.erc20Bid.address,
         (await time.latest()).sub(time.duration.seconds(3600)),
@@ -189,14 +206,16 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
         MIN_QUOTE_TIME
       );
 
+      console.log(result);
       expect(result.length).to.be.equal(60);
     });
 
     context("should adjust timeFrom and timeTo", async function() {
       it("1 hour", async function() {
         let now = await time.latest();
-        let result = await this.exchange.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, now, 0);
+        let result = await this.statistics.getQuotes(this.erc20Ask.address, this.erc20Bid.address, 0, now, 0);
 
+        console.log(result);
         expect(result.length).to.be.equal(60);
         expect(result[0].timeOpen).to.be.equal(
           now
@@ -224,7 +243,7 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
       });
 
       it("should get quote 60", async function() {
-        let result = await this.exchange.getQuotes(
+        let result = await this.statistics.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
           (await time.latest()).sub(time.duration.seconds(60)),
@@ -232,11 +251,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
           0
         );
 
+        console.log(result);
         expect(result.length).to.be.equal(1);
       });
 
       it("should get quote 120", async function() {
-        let result = await this.exchange.getQuotes(
+        let result = await this.statistics.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
           0,
@@ -244,11 +264,12 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
           MIN_QUOTE_TIME
         );
 
+        console.log(result);
         expect(result.length).to.be.equal(59);
       });
 
       it("should get quote 180", async function() {
-        let result = await this.exchange.getQuotes(
+        let result = await this.statistics.getQuotes(
           this.erc20Ask.address,
           this.erc20Bid.address,
           (await time.latest()).sub(time.duration.seconds(120)),
@@ -256,6 +277,7 @@ contract("Statistics.getQuote", function([admin, owner, maker, taker]) {
           MIN_QUOTE_TIME
         );
 
+        console.log(result);
         expect(result.length).to.be.equal(1);
       });
     });

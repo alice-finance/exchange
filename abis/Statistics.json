@@ -1,95 +1,28 @@
 [
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "orderStatus",
-        "type": "uint8"
-      },
-      {
-        "name": "maker",
-        "type": "address"
-      },
-      {
-        "name": "timeFrom",
-        "type": "uint256"
-      },
-      {
-        "name": "timeTo",
-        "type": "uint256"
-      }
-    ],
-    "name": "getOrders",
+    "inputs": [],
+    "name": "SIG_ORDER_FILLED",
     "outputs": [
       {
-        "components": [
-          {
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "name": "maker",
-            "type": "address"
-          },
-          {
-            "name": "askAssetProxyId",
-            "type": "bytes4"
-          },
-          {
-            "name": "askAssetAddress",
-            "type": "address"
-          },
-          {
-            "name": "askAssetAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "askAssetData",
-            "type": "bytes"
-          },
-          {
-            "name": "bidAssetProxyId",
-            "type": "bytes4"
-          },
-          {
-            "name": "bidAssetAddress",
-            "type": "address"
-          },
-          {
-            "name": "bidAssetAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "bidAssetData",
-            "type": "bytes"
-          },
-          {
-            "name": "bidAssetFilledAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "name": "auxiliary",
-            "type": "bytes"
-          }
-        ],
-        "name": "results",
-        "type": "tuple[]"
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "SIG_ORDER_CANCELLED",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -102,6 +35,7 @@
     "name": "MIN_QUOTE_TIME",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -112,83 +46,13 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "askAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "bidAssetAddress",
-        "type": "address"
-      },
-      {
-        "name": "nonce",
-        "type": "uint256"
-      }
-    ],
-    "name": "getOrder",
+    "inputs": [],
+    "name": "SIG_ORDER_CREATED",
     "outputs": [
       {
-        "components": [
-          {
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "name": "maker",
-            "type": "address"
-          },
-          {
-            "name": "askAssetProxyId",
-            "type": "bytes4"
-          },
-          {
-            "name": "askAssetAddress",
-            "type": "address"
-          },
-          {
-            "name": "askAssetAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "askAssetData",
-            "type": "bytes"
-          },
-          {
-            "name": "bidAssetProxyId",
-            "type": "bytes4"
-          },
-          {
-            "name": "bidAssetAddress",
-            "type": "address"
-          },
-          {
-            "name": "bidAssetAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "bidAssetData",
-            "type": "bytes"
-          },
-          {
-            "name": "bidAssetFilledAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "name": "auxiliary",
-            "type": "bytes"
-          }
-        ],
+        "internalType": "bytes32",
         "name": "",
-        "type": "tuple"
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -201,6 +65,7 @@
     "name": "MAX_AMOUNT",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -210,13 +75,178 @@
     "type": "function"
   },
   {
-    "constant": true,
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "askAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bidAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "PriceChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidAssetAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "timeOpen",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timeClose",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "openAsk",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "openBid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "highAsk",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "highBid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lowAsk",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lowBid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "closeAsk",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "closeBid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "volume",
+        "type": "uint256"
+      }
+    ],
+    "name": "QuoteChanged",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isSubscriber",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "eventHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "notify",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "askAssetAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       }
@@ -226,14 +256,22 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "ask",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "bid",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Statistics.OrderPrice",
         "name": "results",
         "type": "tuple"
       }
@@ -246,89 +284,112 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
-        "name": "taker",
-        "type": "address"
-      },
-      {
-        "name": "timeFrom",
-        "type": "uint256"
-      },
-      {
-        "name": "timeTo",
+        "internalType": "uint256",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
-    "name": "getOrderFills",
+    "name": "getQuote",
     "outputs": [
       {
         "components": [
           {
-            "name": "orderNonce",
+            "internalType": "uint256",
+            "name": "timeOpen",
             "type": "uint256"
           },
           {
-            "name": "taker",
-            "type": "address"
-          },
-          {
-            "name": "askAssetProxyId",
-            "type": "bytes4"
-          },
-          {
-            "name": "askAssetAddress",
-            "type": "address"
-          },
-          {
-            "name": "askAssetAmount",
+            "internalType": "uint256",
+            "name": "timeClose",
             "type": "uint256"
           },
           {
-            "name": "askAssetData",
-            "type": "bytes"
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Statistics.QuotePrice",
+            "name": "open",
+            "type": "tuple"
           },
           {
-            "name": "bidAssetProxyId",
-            "type": "bytes4"
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Statistics.QuotePrice",
+            "name": "high",
+            "type": "tuple"
           },
           {
-            "name": "bidAssetAddress",
-            "type": "address"
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Statistics.QuotePrice",
+            "name": "low",
+            "type": "tuple"
           },
           {
-            "name": "bidAssetAmount",
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "ask",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bid",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Statistics.QuotePrice",
+            "name": "close",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
             "type": "uint256"
-          },
-          {
-            "name": "bidAssetData",
-            "type": "bytes"
-          },
-          {
-            "name": "bidAssetFilledAmount",
-            "type": "uint256"
-          },
-          {
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "name": "auxiliary",
-            "type": "bytes"
           }
         ],
-        "name": "results",
-        "type": "tuple[]"
+        "internalType": "struct Statistics.Quote",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "payable": false,
@@ -339,22 +400,27 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "askAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "bidAssetAddress",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "timeFrom",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "timeTo",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "interval",
         "type": "uint256"
       }
@@ -364,74 +430,90 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "timeOpen",
             "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "timeClose",
             "type": "uint256"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "ask",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "bid",
                 "type": "uint256"
               }
             ],
+            "internalType": "struct Statistics.QuotePrice",
             "name": "open",
             "type": "tuple"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "ask",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "bid",
                 "type": "uint256"
               }
             ],
+            "internalType": "struct Statistics.QuotePrice",
             "name": "high",
             "type": "tuple"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "ask",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "bid",
                 "type": "uint256"
               }
             ],
+            "internalType": "struct Statistics.QuotePrice",
             "name": "low",
             "type": "tuple"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "ask",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "bid",
                 "type": "uint256"
               }
             ],
+            "internalType": "struct Statistics.QuotePrice",
             "name": "close",
             "type": "tuple"
           },
           {
+            "internalType": "uint256",
             "name": "volume",
             "type": "uint256"
           }
         ],
+        "internalType": "struct Statistics.Quote[]",
         "name": "results",
         "type": "tuple[]"
       }

@@ -34,8 +34,13 @@ contract Statistics is ISubscriber, Constants {
         uint256 volume
     );
 
-    struct Price {
+    struct OrderPrice {
         uint256 nonce;
+        uint256 ask;
+        uint256 bid;
+    }
+
+    struct QuotePrice {
         uint256 ask;
         uint256 bid;
     }
@@ -43,10 +48,10 @@ contract Statistics is ISubscriber, Constants {
     struct Quote {
         uint256 timeOpen;
         uint256 timeClose;
-        Price open;
-        Price high;
-        Price low;
-        Price close;
+        QuotePrice open;
+        QuotePrice high;
+        QuotePrice low;
+        QuotePrice close;
         uint256 volume;
     }
 
@@ -56,12 +61,14 @@ contract Statistics is ISubscriber, Constants {
     mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderAmountToFill;
     /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => filledAmount
     mapping(address => mapping(address => mapping(uint256 => uint256))) internal _orderFilledAmount;
+    /// @dev mapping bidAssetAddress => askAssetAddress => orderNonce => price
+    mapping(address => mapping(address => mapping(uint256 => OrderPrice))) internal _orderPrice;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Price
-    mapping(address => mapping(address => Price)) internal _currentPrice;
+    mapping(address => mapping(address => OrderPrice)) internal _currentPrice;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => Price[]
-    mapping(address => mapping(address => Price[])) internal _prices;
+    mapping(address => mapping(address => OrderPrice[])) internal _prices;
 
     /// @dev mapping bidAssetAddress => askAssetAddress => timestamp => Quote
     mapping(address => mapping(address => mapping(uint256 => Quote))) internal _quotes;
@@ -87,9 +94,18 @@ contract Statistics is ISubscriber, Constants {
     function getCurrentPrice(address askAssetAddress, address bidAssetAddress)
         public
         view
-        returns (Price memory results)
+        returns (OrderPrice memory results)
     {
         return _currentPrice[bidAssetAddress][askAssetAddress];
+    }
+
+    function getQuote(
+        address askAssetAddress,
+        address bidAssetAddress,
+        uint256 timestamp
+    ) public view returns (Quote memory) {
+        uint256 timeOpen = timestamp.sub(timestamp.mod(MIN_QUOTE_TIME));
+        return _quotes[bidAssetAddress][askAssetAddress][timeOpen];
     }
 
     // solhint-disable max-line-length, no-empty-blocks, function-max-lines
@@ -435,14 +451,14 @@ contract Statistics is ISubscriber, Constants {
         uint256 askAssetAmount,
         uint256 bidAssetAmount
     ) internal {
-        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        OrderPrice[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         prices.length += 1;
-        Price storage newPrice = prices[prices.length - 1];
+        OrderPrice storage newPrice = prices[prices.length - 1];
         newPrice.nonce = nonce;
         newPrice.ask = askAssetAmount;
         newPrice.bid = bidAssetAmount;
 
-        Price storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
+        OrderPrice storage currentPrice = _currentPrice[bidAssetAddress][askAssetAddress];
 
         if (
             currentPrice.ask * newPrice.bid > newPrice.ask * currentPrice.bid ||
@@ -469,7 +485,7 @@ contract Statistics is ISubscriber, Constants {
         address askAssetAddress,
         address bidAssetAddress
     ) internal {
-        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        OrderPrice[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         uint256 askAssetAmount;
         uint256 bidAssetAmount;
 
@@ -483,7 +499,7 @@ contract Statistics is ISubscriber, Constants {
             }
         }
 
-        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
+        OrderPrice storage current = _currentPrice[bidAssetAddress][askAssetAddress];
         if (current.ask == askAssetAmount && current.bid == bidAssetAmount) {
             _updateOrderPrice(askAssetAddress, bidAssetAddress);
         }
@@ -495,9 +511,9 @@ contract Statistics is ISubscriber, Constants {
     function _updateOrderPrice(address askAssetAddress, address bidAssetAddress)
         internal
     {
-        Price[] storage prices = _prices[bidAssetAddress][askAssetAddress];
+        OrderPrice[] storage prices = _prices[bidAssetAddress][askAssetAddress];
         /// @dev set ask and bid MAX_AMOUNT + 1 which is invalid
-        Price memory minimumPrice = Price(0, MAX_AMOUNT.add(1), 1);
+        OrderPrice memory minimumPrice = OrderPrice(0, MAX_AMOUNT.add(1), 1);
 
         /// @dev find minimum price in list
         for (uint256 i = 0; i < prices.length; i++) {
@@ -510,7 +526,7 @@ contract Statistics is ISubscriber, Constants {
         }
 
         /// @dev check if minimumPrice is changed
-        Price storage current = _currentPrice[bidAssetAddress][askAssetAddress];
+        OrderPrice storage current = _currentPrice[bidAssetAddress][askAssetAddress];
 
         /// @dev minimum price changed
         if (
@@ -531,20 +547,24 @@ contract Statistics is ISubscriber, Constants {
     }
 
     function _recordQuote(
+        uint256 nonce,
         address askAssetAddress,
         address bidAssetAddress,
-        uint256 askAssetAmount,
-        uint256 bidAssetAmount,
         uint256 bidAssetFilledAmount,
         uint256 timestamp
     ) internal {
         uint256 timeOpen = timestamp.sub(timestamp.mod(MIN_QUOTE_TIME));
         Quote storage quote = _quotes[bidAssetAddress][askAssetAddress][timeOpen];
+        uint256 askAssetAmount = _orderPrice[bidAssetAddress][askAssetAddress][nonce]
+            .ask;
+        uint256 bidAssetAmount = _orderPrice[bidAssetAddress][askAssetAddress][nonce]
+            .bid;
 
         if (quote.volume == 0) {
             quote.timeOpen = timeOpen;
             quote.timeClose = timeOpen + 59;
-            quote.open = Price(0, askAssetAmount, bidAssetAmount);
+            quote.open.ask = askAssetAmount;
+            quote.open.bid = bidAssetAmount;
         }
 
         if (
@@ -567,6 +587,22 @@ contract Statistics is ISubscriber, Constants {
         quote.close.bid = bidAssetAmount;
 
         quote.volume = quote.volume.add(bidAssetFilledAmount);
+
+        emit QuoteChanged(
+            askAssetAddress,
+            bidAssetAddress,
+            quote.timeOpen,
+            quote.timeClose,
+            quote.open.ask,
+            quote.open.bid,
+            quote.high.ask,
+            quote.high.bid,
+            quote.low.ask,
+            quote.low.bid,
+            quote.close.ask,
+            quote.close.bid,
+            quote.volume
+        );
     }
 
     function _handleOrderCreated(bytes memory data) internal {
@@ -582,6 +618,11 @@ contract Statistics is ISubscriber, Constants {
         _orderRegistered[bidAssetAddress][askAssetAddress][nonce] = true;
         _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce] = bidAssetAmount;
         _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] = 0;
+        _orderPrice[bidAssetAddress][askAssetAddress][nonce].nonce = nonce;
+        _orderPrice[bidAssetAddress][askAssetAddress][nonce]
+            .ask = askAssetAmount;
+        _orderPrice[bidAssetAddress][askAssetAddress][nonce]
+            .bid = bidAssetAmount;
 
         _addOrderPrice(
             nonce,
@@ -599,18 +640,24 @@ contract Statistics is ISubscriber, Constants {
             address askAssetAddress,
             address bidAssetAddress,
             uint256 bidAssetFilledAmount, ,
+            uint256 timestamp
         ) = abi.decode(data, (uint256, address, address, address, uint256, uint8, uint256));
 
         _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] += bidAssetFilledAmount;
+
+        _recordQuote(
+            nonce,
+            askAssetAddress,
+            bidAssetAddress,
+            bidAssetFilledAmount,
+            timestamp
+        );
+
         if (
             _orderFilledAmount[bidAssetAddress][askAssetAddress][nonce] ==
             _orderAmountToFill[bidAssetAddress][askAssetAddress][nonce]
         ) {
-            _removeOrderPrice(
-                nonce,
-                askAssetAddress,
-                bidAssetAddress
-            );
+            _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
         }
     }
 
@@ -622,10 +669,6 @@ contract Statistics is ISubscriber, Constants {
             address bidAssetAddress,
         ) = abi.decode(data, (uint256, address, address, uint256));
 
-        _removeOrderPrice(
-            nonce,
-            askAssetAddress,
-            bidAssetAddress
-        );
+        _removeOrderPrice(nonce, askAssetAddress, bidAssetAddress);
     }
 }
